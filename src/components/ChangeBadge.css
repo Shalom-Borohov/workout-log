@@ -1,0 +1,21 @@
+.change-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.change-badge ion-icon {
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.change-badge-up {
+  color: var(--app-up);
+}
+
+.change-badge-record {
+  color: var(--app-record);
+}

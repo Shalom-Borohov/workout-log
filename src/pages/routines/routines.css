@@ -1,0 +1,96 @@
+.section-header {
+  padding-block-start: 0;
+}
+
+.section-name {
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --color: var(--app-label-secondary);
+  --placeholder-color: var(--app-label-tertiary);
+  --placeholder-opacity: 1;
+  min-height: 44px;
+  font-size: inherit;
+}
+
+.section-group {
+  margin-block-end: 8px;
+}
+
+.list-ios.list-inset.section-group ion-reorder-group ion-item:last-of-type {
+  --inner-border-width: 0 0 0.55px 0;
+}
+
+.count-stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.count-stepper-value,
+.preview-sets {
+  min-inline-size: 2ch;
+  font-size: 1.0625rem;
+  text-align: center;
+  color: var(--app-label-secondary);
+}
+
+.count-stepper {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  background: var(--app-fill);
+}
+
+.count-stepper .count-stepper-half {
+  display: grid;
+  place-items: center;
+  inline-size: 48px;
+  block-size: 44px;
+  border-radius: 8px;
+  color: var(--app-label);
+  font-size: 1.375rem;
+  transition: background-color 150ms ease-out;
+}
+
+.count-stepper-half:active:not(:disabled) {
+  background: var(--app-fill);
+}
+
+.count-stepper-half:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -2px;
+}
+
+.count-stepper-half:disabled {
+  color: var(--app-label-tertiary);
+}
+
+.count-stepper-divider {
+  inline-size: 1px;
+  block-size: 18px;
+  background: var(--app-label-tertiary);
+}
+
+.amount-input {
+  text-align: end;
+}
+
+.start-button {
+  position: relative;
+  margin-inline-start: 12px;
+  font-weight: 600;
+}
+
+.start-button ion-icon {
+  font-size: 0.875em;
+}
+
+.start-button::after {
+  content: '';
+  position: absolute;
+  inset: -8px -4px;
+}
+
+.option-icon {
+  font-size: 1.75rem;
+}

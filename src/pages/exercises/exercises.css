@@ -1,0 +1,58 @@
+.weight-chart {
+  padding-block: 12px;
+  padding-inline: 16px;
+}
+
+.weight-chart-plot {
+  position: relative;
+}
+
+.weight-chart svg {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  overflow: visible;
+}
+
+.weight-chart-baseline {
+  stroke: var(--app-label-tertiary);
+  stroke-width: 1;
+}
+
+.weight-chart-line {
+  fill: none;
+  stroke: var(--ion-color-primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.weight-chart-dot {
+  fill: var(--ion-color-primary);
+  stroke: var(--ion-item-background);
+  stroke-width: 2;
+}
+
+.weight-chart-value {
+  position: absolute;
+  inset-inline-end: 0;
+  padding-inline: 4px;
+  border-radius: 4px;
+  background: var(--ion-item-background);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.weight-chart-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-block-start: 6px;
+  color: var(--app-label-secondary);
+  font-size: 0.75rem;
+}
+
+.exercise-best {
+  font-size: 1.0625rem;
+  white-space: nowrap;
+}

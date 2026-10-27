@@ -1,0 +1,232 @@
+.live-title {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.live-clock {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.live-progress {
+  --background: var(--app-fill);
+  --progress-background: var(--ion-color-primary);
+  height: 3px;
+}
+
+.live-footer-center {
+  display: flex;
+  justify-content: center;
+}
+
+.item-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-block: 20px 4px;
+  padding-inline: 20px;
+}
+
+.item-heading ion-note {
+  font-size: 15px;
+}
+
+.item-heading h1 {
+  margin: 0 0 2px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.item-heading .item-section {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.item-previous {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--app-label-secondary);
+}
+
+.item-previous-label {
+  font-weight: 600;
+}
+
+.item-heading .item-skipped {
+  --color: var(--ion-color-warning-shade);
+  font-weight: 600;
+}
+
+.set-group.list-inset {
+  margin-block: 4px 12px;
+}
+
+.set-row {
+  --min-height: 52px;
+  --inner-padding-end: 6px;
+}
+
+.set-select {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-block-size: 52px;
+  text-align: start;
+}
+
+.set-title {
+  font-size: 15px;
+  color: var(--app-label-secondary);
+}
+
+.set-value {
+  font-size: 17px;
+}
+
+.set-done .set-value {
+  color: var(--app-label-secondary);
+}
+
+.set-check {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--app-label-secondary);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.set-check[aria-pressed='true'] {
+  color: var(--ion-color-success);
+}
+
+.set-check:active {
+  opacity: 0.6;
+}
+
+.set-check-small {
+  inline-size: 48px;
+  block-size: 48px;
+  margin-inline-start: 4px;
+  font-size: 30px;
+}
+
+.set-check-large {
+  grid-area: check;
+  align-self: center;
+  inline-size: 76px;
+  block-size: 76px;
+  font-size: 68px;
+}
+
+.set-row-current {
+  --inner-padding-end: 12px;
+}
+
+.current-set {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'title check'
+    'steppers check';
+  column-gap: 12px;
+  row-gap: 6px;
+  inline-size: 100%;
+  padding-block: 12px 14px;
+}
+
+.current-title {
+  grid-area: title;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.current-steppers {
+  grid-area: steppers;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stepper {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+  border-radius: 12px;
+  background: var(--app-fill);
+}
+
+.stepper-button {
+  display: grid;
+  place-items: center;
+  inline-size: 48px;
+  block-size: 48px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--ion-color-primary);
+  font-size: 24px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.stepper-button:active {
+  opacity: 0.6;
+}
+
+.stepper-button:disabled {
+  color: var(--app-label-tertiary);
+  cursor: default;
+}
+
+.stepper-value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-inline-size: 0;
+}
+
+.stepper-input {
+  min-height: 36px;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: center;
+  caret-color: var(--ion-color-primary);
+  --color: var(--app-label);
+  --background: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --placeholder-color: var(--app-label-tertiary);
+  --placeholder-opacity: 1;
+}
+
+.stepper-unit {
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--app-label-secondary);
+}
+
+.list-current {
+  font-weight: 600;
+  --background: var(--app-fill);
+}
+
+.finish-delete {
+  inline-size: 100%;
+  text-align: center;
+  color: var(--ion-color-danger);
+}

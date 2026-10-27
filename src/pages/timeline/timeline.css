@@ -1,0 +1,119 @@
+.start-workout {
+  margin-inline: 16px;
+  margin-block: 8px 4px;
+}
+
+.start-workout ion-icon[slot='start'] {
+  font-size: 1rem;
+}
+
+.active-workout-text {
+  display: flex;
+  flex: 1;
+  gap: 0.5rem;
+  min-width: 0;
+  text-align: start;
+}
+
+.active-workout-text strong {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.active-workout-routine {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+.active-workout-clock {
+  margin-inline-start: 0.75rem;
+}
+
+.active-workout ion-icon[slot='end'] {
+  font-size: 1.125rem;
+  opacity: 0.8;
+}
+
+.week-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-inline-end: 32px;
+}
+
+.week-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--app-label);
+}
+
+ion-item .workout-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-block: 0.75rem;
+}
+
+.workout-card-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.workout-card .workout-card-title {
+  flex: 1;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.workout-card-date,
+.workout-card .workout-card-meta,
+.workout-card .workout-card-summary {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.workout-card-date {
+  color: var(--app-label-secondary);
+}
+
+.workout-card-changes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin-block: 0.25rem;
+  white-space: normal;
+}
+
+.workout-card .workout-card-summary {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workout-overview {
+  margin-block: 0 0.5rem;
+  margin-inline: 20px;
+  font-size: 0.9375rem;
+  color: var(--app-label-secondary);
+}
+
+.workout-exercise .workout-exercise-name {
+  margin-block: 0 0.125rem;
+  font-size: 1.0625rem;
+}
+
+.workout-exercise .workout-exercise-sets {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.workout-delete {
+  margin-block-start: 2rem;
+}
