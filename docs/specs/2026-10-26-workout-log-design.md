@@ -33,6 +33,7 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 22. **Duplicate routine (added 2026-10-28):** a "שכפול" swipe action creates "<name> (עותק)" with fresh ids and opens it in the editor.
 23. **Past workouts (added 2026-10-28):**
     - "+" on the timeline opens "הוספת אימון קודם". You choose the routine, date, start time (in the past) and duration.
+    - The duration is at most 3 hours (the time limit in item 27), and the workout must end by now. Otherwise saving is disabled and a message explains why.
     - The workout is created finished, with sets prefilled from sessions before that date, and opens in edit mode.
 24. **Start button (added 2026-10-28):** "התחל אימון", and the "אימון בתהליך" banner during a workout, are pinned at the bottom of the timeline, above the tab bar.
 25. **Weight fill-down (added 2026-10-28):** entering a weight on set N also sets it on later unticked sets of that exercise whose weight is empty or still equals set N's previous weight. Weight only.

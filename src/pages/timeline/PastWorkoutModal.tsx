@@ -20,12 +20,15 @@ import { TIMELINE_COPY } from './copy'
 import { useRoutines } from '../../data/hooks'
 import { addPastWorkout } from '../../data/repo'
 import { isoDate, pad } from '../../domain/format'
+import { MAX_SECONDS } from '../../domain/limits'
 import { hasExercises } from '../../domain/progress'
-import { HOUR_MS, MINUTE_MS } from '../../domain/time'
+import { HOUR_MS, MINUTE_MS, SECONDS_PER_MINUTE } from '../../domain/time'
 import { useNow } from '../../hooks/useNow'
 import { workoutPath } from '../../navigation/paths'
 
 const DEFAULT_DURATION_MINUTES = 60
+
+const MAX_DURATION_MINUTES = MAX_SECONDS / SECONDS_PER_MINUTE
 
 const timeValue = (date: Date) => `${pad(date.getHours())}:${pad(date.getMinutes())}`
 
@@ -44,7 +47,17 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
   const startedAt = new Date(`${date}T${time}`).getTime()
   const minutes = Number(duration)
   const inFuture = startedAt >= now
-  const valid = routine !== undefined && Number.isFinite(startedAt) && !inFuture && Number.isInteger(minutes) && minutes > 0
+  const tooLong = minutes > MAX_DURATION_MINUTES
+  const endsAfterNow = !inFuture && startedAt + minutes * MINUTE_MS > now
+
+  const valid =
+    routine !== undefined &&
+    Number.isFinite(startedAt) &&
+    Number.isInteger(minutes) &&
+    minutes > 0 &&
+    !inFuture &&
+    !tooLong &&
+    !endsAfterNow
 
   async function save() {
     if (!routine) {
@@ -111,6 +124,7 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
               type="number"
               inputmode="numeric"
               min={1}
+              max={MAX_DURATION_MINUTES}
               value={duration}
               onIonInput={(event) => typeof event.detail.value === 'string' && setDuration(event.detail.value)}
             />
@@ -119,6 +133,16 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
         {inFuture && (
           <IonNote color="danger" className="list-footer">
             {TIMELINE_COPY.startTimeMustBePast}
+          </IonNote>
+        )}
+        {endsAfterNow && (
+          <IonNote color="danger" className="list-footer">
+            {TIMELINE_COPY.mustEndByNow}
+          </IonNote>
+        )}
+        {tooLong && (
+          <IonNote color="danger" className="list-footer">
+            {TIMELINE_COPY.maxDuration(MAX_DURATION_MINUTES)}
           </IonNote>
         )}
       </IonContent>

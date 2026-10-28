@@ -79,4 +79,26 @@ describe('past workout', () => {
     expect(await screen.findByText('שעת ההתחלה צריכה להיות בעבר')).toBeInTheDocument()
     expect(saveButton()).toHaveProperty('disabled', true)
   })
+
+  it('cannot save a workout longer than 3 hours', async () => {
+    await saveRoutine(legs)
+    await openModal()
+
+    ionInput(await ionField('תאריך'), '2026-10-24')
+    ionInput(await ionField('משך (דקות)'), '181')
+
+    expect(await screen.findByText('משך האימון עד 180 דקות')).toBeInTheDocument()
+    expect(saveButton()).toHaveProperty('disabled', true)
+  })
+
+  it('cannot save a workout that ends after now', async () => {
+    await saveRoutine(legs)
+    await openModal()
+
+    ionInput(await ionField('שעת התחלה'), '11:30')
+    ionInput(await ionField('משך (דקות)'), '45')
+
+    expect(await screen.findByText('האימון צריך להסתיים עד עכשיו')).toBeInTheDocument()
+    expect(saveButton()).toHaveProperty('disabled', true)
+  })
 })
