@@ -1,0 +1,16 @@
+export const TIMELINE_COPY = {
+  addSummaryPlaceholder: 'הוספת סיכום…',
+  irreversibleAction: 'אי אפשר לבטל את הפעולה.',
+  activeWorkout: 'אימון בתהליך',
+  whichRoutineQuestion: 'באיזה אימון?',
+  startWorkout: 'התחל אימון',
+  addPastWorkout: 'הוספת אימון קודם',
+  emptyTitle: 'עוד אין אימונים',
+  emptyBody: 'לוחצים על „התחל אימון” למטה. כל אימון שמסיימים יופיע כאן, עם השיפורים והשיאים.',
+  pastWorkout: 'אימון קודם',
+  routine: 'אימון',
+  date: 'תאריך',
+  startTime: 'שעת התחלה',
+  durationMinutes: 'משך (דקות)',
+  startTimeMustBePast: 'שעת ההתחלה צריכה להיות בעבר',
+} as const

@@ -1,50 +1,62 @@
-import type { SetLog, Target } from './types'
+import { COMMON_COPY } from '../copy/common'
+import { FORMAT_COPY } from '../copy/format'
+import { completedSets } from './progress'
+import { SECOND_MS, SECONDS_PER_HOUR, SECONDS_PER_MINUTE } from './time'
+import type { SetLog, Target, WorkoutExercise } from './types'
 
-const weekdays = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']
+export const LIST_SEPARATOR = ' · '
 
-export const pad = (n: number) => String(n).padStart(2, '0')
+export const pad = (value: number) => String(value).padStart(2, '0')
 
-export function dayMonth(ts: number): string {
-  const d = new Date(ts)
+export function isoDate(timestamp: number): string {
+  const date = new Date(timestamp)
 
-  return `${d.getDate()}.${d.getMonth() + 1}`
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
-export function formatDay(ts: number): string {
-  return `יום ${weekdays[new Date(ts).getDay()]} ${dayMonth(ts)}`
+export function dayMonth(timestamp: number): string {
+  const date = new Date(timestamp)
+
+  return `${date.getDate()}.${date.getMonth() + 1}`
 }
 
-export function formatClock(ms: number): string {
-  const total = Math.floor(ms / 1000)
-  const hours = Math.floor(total / 3600)
-  const minutes = Math.floor((total % 3600) / 60)
-  const seconds = total % 60
+export function formatDay(timestamp: number): string {
+  return FORMAT_COPY.day(FORMAT_COPY.weekdays[new Date(timestamp).getDay()], dayMonth(timestamp))
+}
+
+export function formatClock(durationMs: number): string {
+  const total = Math.floor(durationMs / SECOND_MS)
+  const hours = Math.floor(total / SECONDS_PER_HOUR)
+  const minutes = Math.floor((total % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE)
+  const seconds = total % SECONDS_PER_MINUTE
 
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${minutes}:${pad(seconds)}`
 }
 
 export function durationUnit(target: Target): 'minutes' | 'seconds' {
-  return target.kind === 'duration' && target.seconds > 0 && target.seconds % 60 === 0 ? 'minutes' : 'seconds'
+  return target.kind === 'duration' && target.seconds > 0 && target.seconds % SECONDS_PER_MINUTE === 0 ? 'minutes' : 'seconds'
 }
 
 export function amountUnit(target: Target): string {
   if (target.kind === 'reps') {
-    return 'חזרות'
+    return COMMON_COPY.reps
   }
 
-  return durationUnit(target) === 'minutes' ? 'דק׳' : 'שנ׳'
+  return durationUnit(target) === 'minutes' ? FORMAT_COPY.minutesUnit : FORMAT_COPY.secondsUnit
 }
 
 export function toDisplayAmount(amount: number, target: Target): number {
-  return target.kind === 'duration' && durationUnit(target) === 'minutes' ? amount / 60 : amount
+  return target.kind === 'duration' && durationUnit(target) === 'minutes' ? amount / SECONDS_PER_MINUTE : amount
 }
 
-export function fromDisplayAmount(value: number, target: Target): number {
-  return Math.round(target.kind === 'duration' && durationUnit(target) === 'minutes' ? value * 60 : value)
+export function fromDisplayAmount(displayAmount: number, target: Target): number {
+  return Math.round(
+    target.kind === 'duration' && durationUnit(target) === 'minutes' ? displayAmount * SECONDS_PER_MINUTE : displayAmount,
+  )
 }
 
-export function formatWeight(kg: number): string {
-  return `${kg} ק״ג`
+export function formatWeight(weight: number): string {
+  return FORMAT_COPY.kilograms(weight)
 }
 
 export function countLabel(count: number, one: string, many: string): string {
@@ -56,7 +68,7 @@ export function formatAmount(amount: number, target: Target): string {
     return String(amount)
   }
 
-  return amount % 60 === 0 ? `${amount / 60} דק׳` : `${amount} שנ׳`
+  return amount % SECONDS_PER_MINUTE === 0 ? FORMAT_COPY.minutes(amount / SECONDS_PER_MINUTE) : FORMAT_COPY.seconds(amount)
 }
 
 export function formatSet(set: SetLog, target: Target): string {
@@ -70,35 +82,46 @@ function amountsText(amounts: number[], target: Target): string {
     return amounts.join(', ')
   }
 
-  return amounts.every((a) => a % 60 === 0)
-    ? `${amounts.map((a) => a / 60).join(', ')} דק׳`
-    : `${amounts.join(', ')} שנ׳`
+  return amounts.every((amount) => amount % SECONDS_PER_MINUTE === 0)
+    ? FORMAT_COPY.minutes(amounts.map((amount) => amount / SECONDS_PER_MINUTE).join(', '))
+    : FORMAT_COPY.seconds(amounts.join(', '))
 }
 
 export function formatSets(sets: SetLog[], target: Target): string {
   const [first] = sets
-  if (!first || !sets.every((s) => s.weight === first.weight)) {
+  if (!first || !sets.every((set) => set.weight === first.weight)) {
     return sets
-      .map((s) => (s.weight === null ? formatAmount(s.amount, target) : `${formatWeight(s.weight)} × ${formatAmount(s.amount, target)}`))
-      .join(' · ')
+      .map((set) =>
+        set.weight === null ? formatAmount(set.amount, target) : `${formatWeight(set.weight)} × ${formatAmount(set.amount, target)}`,
+      )
+      .join(LIST_SEPARATOR)
   }
-  const amounts = amountsText(sets.map((s) => s.amount), target)
+  const amounts = amountsText(sets.map((set) => set.amount), target)
 
   if (first.weight !== null) {
     return `${formatWeight(first.weight)} × ${amounts}`
   }
 
-  return target.kind === 'reps' ? `${amounts} חזרות` : amounts
+  return target.kind === 'reps' ? FORMAT_COPY.reps(amounts) : amounts
+}
+
+export function exerciseResult(exercise: WorkoutExercise, format: (sets: SetLog[], target: Target) => string): string {
+  if (exercise.skipped) {
+    return COMMON_COPY.skipped
+  }
+  const sets = completedSets(exercise)
+
+  return sets.length > 0 ? format(sets, exercise.target) : FORMAT_COPY.notDone
 }
 
 export function setsLabel(sets: number): string {
-  return countLabel(sets, 'סט אחד', 'סטים')
+  return countLabel(sets, FORMAT_COPY.oneSet, COMMON_COPY.sets)
 }
 
 export function formatSummary(minutes: number, doneSets: number): string {
-  return `${minutes} דק׳ · ${setsLabel(doneSets)}`
+  return `${FORMAT_COPY.minutes(minutes)} · ${setsLabel(doneSets)}`
 }
 
 export function formatWeekSummary(workouts: number, doneSets: number): string {
-  return `${countLabel(workouts, 'אימון אחד', 'אימונים')} · ${setsLabel(doneSets)}`
+  return `${countLabel(workouts, FORMAT_COPY.oneWorkout, FORMAT_COPY.workouts)} · ${setsLabel(doneSets)}`
 }

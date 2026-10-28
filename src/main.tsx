@@ -13,8 +13,11 @@ import '@ionic/react/css/palettes/dark.system.css'
 import './theme.css'
 
 import { App } from './App'
+import { guardTapsDuringTransitions } from './navigation/tapGuard'
 
 setupIonicReact({ mode: 'ios' })
+
+guardTapsDuringTransitions(document)
 
 navigator.storage?.persist?.()
 

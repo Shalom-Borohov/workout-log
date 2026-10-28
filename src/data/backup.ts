@@ -1,18 +1,22 @@
-import type {
-  Routine,
-  RoutineExercise,
-  RoutineItem,
-  RoutineSection,
-  SetLog,
-  Target,
-  Workout,
-  WorkoutExercise,
-  WorkoutItem,
-  WorkoutSection,
-} from '../domain/types'
+import { APP_COPY } from '../copy/app'
+import type { Routine, SetLog, Target, Workout } from '../domain/types'
 import { db } from './db'
+import {
+  type LegacyRoutine,
+  type LegacyRoutineExercise,
+  type LegacyRoutineItem,
+  type LegacyRoutineSection,
+  type LegacyWorkout,
+  type LegacyWorkoutExercise,
+  type LegacyWorkoutItem,
+  type LegacyWorkoutSection,
+  upgradeRoutine,
+  upgradeWorkout,
+} from './migrate'
 
 export type Backup = { version: 1; exportedAt: number; routines: Routine[]; workouts: Workout[] }
+
+type LegacyBackup = { version: 1; exportedAt: number; routines: LegacyRoutine[]; workouts: LegacyWorkout[] }
 
 type Guard<T> = (value: unknown) => value is T
 
@@ -24,65 +28,94 @@ const isNumber = (value: unknown): value is number => typeof value === 'number' 
 
 const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean'
 
+const isNumberOrNull = (value: unknown): value is number | null => value === null || isNumber(value)
+
+const optional =
+  <T>(guard: Guard<T>): Guard<T | undefined> =>
+  (value: unknown): value is T | undefined =>
+    value === undefined || guard(value)
+
 const arrayOf =
   <T>(guard: Guard<T>): Guard<T[]> =>
-  (value: unknown): value is T[] =>
-    Array.isArray(value) && value.every(guard)
+  (list: unknown): list is T[] =>
+    Array.isArray(list) && list.every(guard)
 
-function isTarget(value: unknown): value is Target {
-  if (!isObject(value)) {
+function isTarget(target: unknown): target is Target {
+  if (!isObject(target)) {
     return false
   }
 
-  return (value.kind === 'reps' && isNumber(value.reps)) || (value.kind === 'duration' && isNumber(value.seconds))
+  return (target.kind === 'reps' && isNumber(target.reps)) || (target.kind === 'duration' && isNumber(target.seconds))
 }
 
-const isRoutineExercise = (v: unknown): v is RoutineExercise => isObject(v) && isString(v.name) && isTarget(v.target)
+const isRoutineExercise = (exercise: unknown): exercise is LegacyRoutineExercise =>
+  isObject(exercise) &&
+  isString(exercise.name) &&
+  isTarget(exercise.target) &&
+  optional(isNumberOrNull)(exercise.weight) &&
+  optional(isString)(exercise.tip)
 
-const isRoutineItem = (v: unknown): v is RoutineItem =>
-  isObject(v) && isString(v.id) && arrayOf(isRoutineExercise)(v.exercises)
+const isRoutineItem = (item: unknown): item is LegacyRoutineItem =>
+  isObject(item) &&
+  isString(item.id) &&
+  optional(isNumberOrNull)(item.sets) &&
+  arrayOf(isRoutineExercise)(item.exercises)
 
-const isRoutineSection = (v: unknown): v is RoutineSection =>
-  isObject(v) && isString(v.id) && isString(v.name) && isNumber(v.sets) && arrayOf(isRoutineItem)(v.items)
+const isRoutineSection = (section: unknown): section is LegacyRoutineSection =>
+  isObject(section) &&
+  isString(section.id) &&
+  isString(section.name) &&
+  isNumber(section.sets) &&
+  arrayOf(isRoutineItem)(section.items)
 
-const isRoutine = (v: unknown): v is Routine =>
-  isObject(v) && isString(v.id) && isString(v.name) && isNumber(v.updatedAt) && arrayOf(isRoutineSection)(v.sections)
+const isRoutine = (routine: unknown): routine is LegacyRoutine =>
+  isObject(routine) &&
+  isString(routine.id) &&
+  isString(routine.name) &&
+  isNumber(routine.updatedAt) &&
+  arrayOf(isRoutineSection)(routine.sections)
 
-const isSetLog = (v: unknown): v is SetLog =>
-  isObject(v) && (v.weight === null || isNumber(v.weight)) && isNumber(v.amount) && isBoolean(v.done)
+const isSetLog = (set: unknown): set is SetLog =>
+  isObject(set) && isNumberOrNull(set.weight) && isNumber(set.amount) && isBoolean(set.done)
 
-const isWorkoutExercise = (v: unknown): v is WorkoutExercise =>
-  isObject(v) && isString(v.name) && isTarget(v.target) && arrayOf(isSetLog)(v.sets) && isBoolean(v.skipped)
+const isWorkoutExercise = (exercise: unknown): exercise is LegacyWorkoutExercise =>
+  isObject(exercise) &&
+  isString(exercise.name) &&
+  isTarget(exercise.target) &&
+  arrayOf(isSetLog)(exercise.sets) &&
+  isBoolean(exercise.skipped) &&
+  optional(isString)(exercise.tip) &&
+  optional(isString)(exercise.note)
 
-const isWorkoutItem = (v: unknown): v is WorkoutItem =>
-  isObject(v) && isString(v.id) && arrayOf(isWorkoutExercise)(v.exercises)
+const isWorkoutItem = (item: unknown): item is LegacyWorkoutItem =>
+  isObject(item) && isString(item.id) && arrayOf(isWorkoutExercise)(item.exercises)
 
-const isWorkoutSection = (v: unknown): v is WorkoutSection =>
-  isObject(v) && isString(v.name) && arrayOf(isWorkoutItem)(v.items)
+const isWorkoutSection = (section: unknown): section is LegacyWorkoutSection =>
+  isObject(section) && isString(section.name) && arrayOf(isWorkoutItem)(section.items)
 
-const isWorkout = (v: unknown): v is Workout =>
-  isObject(v) &&
-  isString(v.id) &&
-  isString(v.routineId) &&
-  isString(v.routineName) &&
-  isNumber(v.startedAt) &&
-  (v.finishedAt === null || isNumber(v.finishedAt)) &&
-  isString(v.summary) &&
-  arrayOf(isWorkoutSection)(v.sections)
+const isWorkout = (workout: unknown): workout is LegacyWorkout =>
+  isObject(workout) &&
+  isString(workout.id) &&
+  isString(workout.routineId) &&
+  isString(workout.routineName) &&
+  isNumber(workout.startedAt) &&
+  isNumberOrNull(workout.finishedAt) &&
+  isString(workout.summary) &&
+  arrayOf(isWorkoutSection)(workout.sections)
 
-const isBackup = (v: unknown): v is Backup =>
-  isObject(v) &&
-  v.version === 1 &&
-  isNumber(v.exportedAt) &&
-  arrayOf(isRoutine)(v.routines) &&
-  arrayOf(isWorkout)(v.workouts)
+const isBackup = (backup: unknown): backup is LegacyBackup =>
+  isObject(backup) &&
+  backup.version === 1 &&
+  isNumber(backup.exportedAt) &&
+  arrayOf(isRoutine)(backup.routines) &&
+  arrayOf(isWorkout)(backup.workouts)
 
 export function parseBackup(json: unknown): Backup {
   if (!isBackup(json)) {
-    throw new Error('קובץ הגיבוי לא תקין')
+    throw new Error(APP_COPY.invalidBackup)
   }
 
-  return json
+  return { ...json, routines: json.routines.map(upgradeRoutine), workouts: json.workouts.map(upgradeWorkout) }
 }
 
 export async function exportBackup(now: number): Promise<Backup> {

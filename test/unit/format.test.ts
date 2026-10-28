@@ -10,9 +10,16 @@ import {
   formatWeekSummary,
   formatWeight,
   fromDisplayAmount,
+  isoDate,
   toDisplayAmount,
 } from '../../src/domain/format'
 import { done, oct, reps, seconds } from '../helpers/workouts'
+
+describe('isoDate', () => {
+  it('shows the local date as YYYY-MM-DD', () => {
+    expect(isoDate(oct(5, 23, 59))).toBe('2026-10-05')
+  })
+})
 
 describe('formatDay', () => {
   it('shows the Hebrew weekday letter and day.month', () => {

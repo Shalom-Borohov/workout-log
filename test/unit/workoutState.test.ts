@@ -4,7 +4,7 @@ import { done, exercise, oct, open, reps, seconds, workout } from '../helpers/wo
 
 describe('workoutProgress', () => {
   it('counts done sets out of all sets, leaving out skipped exercises', () => {
-    const w = workout({
+    const active = workout({
       id: 'w1',
       startedAt: oct(26),
       finishedAt: null,
@@ -15,19 +15,24 @@ describe('workoutProgress', () => {
       ],
     })
 
-    expect(workoutProgress(w)).toEqual({ done: 2, total: 4 })
+    expect(workoutProgress(active)).toEqual({ done: 2, total: 4 })
   })
 })
 
 describe('stepValue', () => {
   it('steps up and down without going below zero', () => {
-    expect(stepValue(20, 2.5)).toBe(22.5)
-    expect(stepValue(1, -2.5)).toBe(0)
+    expect(stepValue(20, 2.5, 500)).toBe(22.5)
+    expect(stepValue(1, -2.5, 500)).toBe(0)
   })
 
   it('starts an empty weight at one step', () => {
-    expect(stepValue(null, 2.5)).toBe(2.5)
-    expect(stepValue(null, -2.5)).toBe(0)
+    expect(stepValue(null, 2.5, 500)).toBe(2.5)
+    expect(stepValue(null, -2.5, 500)).toBe(0)
+  })
+
+  it('does not step past the max', () => {
+    expect(stepValue(499, 2.5, 500)).toBe(500)
+    expect(stepValue(500, 1, 500)).toBe(500)
   })
 })
 

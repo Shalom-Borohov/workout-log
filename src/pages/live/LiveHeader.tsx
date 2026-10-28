@@ -1,6 +1,8 @@
 import { IonButton, IonButtons, IonHeader, IonIcon, IonNote, IonProgressBar, IonTitle, IonToolbar } from '@ionic/react'
 import { ellipsisHorizontal } from 'ionicons/icons'
 import { ElapsedClock } from '../../components/ElapsedClock'
+import { COMMON_COPY } from '../../copy/common'
+import { LIVE_COPY } from './copy'
 
 interface LiveHeaderProps {
   title: string
@@ -15,7 +17,7 @@ export function LiveHeader({ title, startedAt, progress, onMenu, onFinish }: Liv
     <IonHeader>
       <IonToolbar>
         <IonButtons slot="start">
-          <IonButton aria-label="פעולות לתרגיל" onClick={onMenu}>
+          <IonButton aria-label={LIVE_COPY.exerciseActions} onClick={onMenu}>
             <IonIcon slot="icon-only" icon={ellipsisHorizontal} />
           </IonButton>
         </IonButtons>
@@ -29,13 +31,13 @@ export function LiveHeader({ title, startedAt, progress, onMenu, onFinish }: Liv
         </IonTitle>
         <IonButtons slot="end">
           <IonButton strong onClick={onFinish}>
-            סיום
+            {COMMON_COPY.done}
           </IonButton>
         </IonButtons>
       </IonToolbar>
       <IonProgressBar
         className="live-progress"
-        aria-label="התקדמות האימון"
+        aria-label={LIVE_COPY.workoutProgress}
         value={progress.total === 0 ? 0 : progress.done / progress.total}
       />
     </IonHeader>

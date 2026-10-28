@@ -36,8 +36,12 @@ export function activeWorkout(): Promise<Workout | undefined> {
   return db.workouts
     .orderBy('startedAt')
     .reverse()
-    .filter((w) => w.finishedAt === null)
+    .filter((workout) => workout.finishedAt === null)
     .first()
+}
+
+async function freshWorkout(routine: Routine, startedAt: number): Promise<Workout> {
+  return startWorkout(routine, await finishedWorkouts(), startedAt, () => crypto.randomUUID())
 }
 
 export function beginWorkout(routine: Routine): Promise<Workout> {
@@ -46,9 +50,17 @@ export function beginWorkout(routine: Routine): Promise<Workout> {
     if (active) {
       return active
     }
-    const workout = startWorkout(routine, await finishedWorkouts(), Date.now(), () => crypto.randomUUID())
+    const workout = await freshWorkout(routine, Date.now())
     await saveWorkout(workout)
 
     return workout
   })
+}
+
+export async function addPastWorkout(routine: Routine, startedAt: number, durationMs: number): Promise<Workout> {
+  const workout = { ...(await freshWorkout(routine, startedAt)), finishedAt: startedAt + durationMs }
+
+  await saveWorkout(workout)
+
+  return workout
 }

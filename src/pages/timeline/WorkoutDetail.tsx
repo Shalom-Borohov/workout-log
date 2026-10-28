@@ -11,12 +11,15 @@ import {
   IonToolbar,
   useIonRouter,
 } from '@ionic/react'
+import { COMMON_COPY } from '../../copy/common'
+import { TIMELINE_COPY } from './copy'
 import { useWorkout } from '../../data/hooks'
 import { deleteWorkout } from '../../data/repo'
 import { formatDay, formatSummary } from '../../domain/format'
 import { summarize } from '../../domain/timeline'
 import type { Workout } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
+import { TIMELINE_PATH, workoutPath } from '../../navigation/paths'
 import { SummaryEditor } from './SummaryEditor'
 import { WorkoutSections } from './WorkoutSections'
 import './timeline.css'
@@ -37,12 +40,16 @@ export function WorkoutDetail({ id }: { id: string }) {
     if (router.canGoBack()) {
       router.goBack()
     } else {
-      router.push('/tabs/timeline', 'back', 'replace')
+      router.push(TIMELINE_PATH, 'back', 'replace')
     }
   }
 
   function confirmRemove() {
-    confirmDelete({ header: 'למחוק את האימון?', message: 'אי אפשר לבטל את הפעולה.', onConfirm: () => void remove() })
+    confirmDelete({
+      header: COMMON_COPY.deleteWorkoutQuestion,
+      message: TIMELINE_COPY.irreversibleAction,
+      onConfirm: () => void remove(),
+    })
   }
 
   return (
@@ -50,11 +57,11 @@ export function WorkoutDetail({ id }: { id: string }) {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton text="חזרה" defaultHref="/tabs/timeline" />
+            <IonBackButton text={COMMON_COPY.back} defaultHref={TIMELINE_PATH} />
           </IonButtons>
           <IonTitle>{workout?.routineName}</IonTitle>
           <IonButtons slot="end">
-            <IonButton routerLink={`/workout/${id}`}>עריכה</IonButton>
+            <IonButton routerLink={workoutPath(id)}>{COMMON_COPY.edit}</IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -72,7 +79,7 @@ export function WorkoutDetail({ id }: { id: string }) {
             <IonList inset className="workout-delete">
               <IonItem button detail={false} onClick={confirmRemove}>
                 <IonLabel color="danger" className="ion-text-center">
-                  מחיקת אימון
+                  {COMMON_COPY.deleteWorkout}
                 </IonLabel>
               </IonItem>
             </IonList>

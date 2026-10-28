@@ -1,16 +1,21 @@
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react'
 import { barbell, listOutline, timeOutline } from 'ionicons/icons'
-import { Navigate, Route } from 'react-router-dom'
+import { Navigate, Route, useLocation } from 'react-router-dom'
+import { COMMON_COPY } from './copy/common'
+import { EXERCISES_PATH, isWorkoutPath, ROUTINES_PATH, TIMELINE_PATH } from './navigation/paths'
 import { ExerciseHistoryPage } from './pages/exercises/ExerciseHistoryPage'
 import { ExercisesPage } from './pages/exercises/ExercisesPage'
+import { LiveWorkoutPage } from './pages/live/LiveWorkoutPage'
 import { ImportNotePage } from './pages/routines/ImportNotePage'
 import { RoutineEditPage } from './pages/routines/RoutineEditPage'
 import { RoutinesPage } from './pages/routines/RoutinesPage'
-import { SettingsPage } from './pages/routines/SettingsPage'
+import { SettingsPage } from './pages/settings/SettingsPage'
 import { TimelinePage } from './pages/timeline/TimelinePage'
 import { WorkoutDetailPage } from './pages/timeline/WorkoutDetailPage'
 
 export function Tabs() {
+  const inWorkout = isWorkoutPath(useLocation().pathname)
+
   return (
     <IonTabs>
       <IonRouterOutlet>
@@ -22,20 +27,21 @@ export function Tabs() {
         <Route path="routines/:id" element={<RoutineEditPage />} />
         <Route path="exercises" element={<ExercisesPage />} />
         <Route path="exercises/:name" element={<ExerciseHistoryPage />} />
+        <Route path="workout/:id" element={<LiveWorkoutPage />} />
         <Route index element={<Navigate to="timeline" replace />} />
       </IonRouterOutlet>
-      <IonTabBar slot="bottom">
-        <IonTabButton tab="timeline" href="/tabs/timeline">
+      <IonTabBar slot="bottom" className={inWorkout ? 'ion-hide' : undefined}>
+        <IonTabButton tab="timeline" href={TIMELINE_PATH}>
           <IonIcon icon={timeOutline} />
-          <IonLabel>ציר זמן</IonLabel>
+          <IonLabel>{COMMON_COPY.timeline}</IonLabel>
         </IonTabButton>
-        <IonTabButton tab="routines" href="/tabs/routines">
+        <IonTabButton tab="routines" href={ROUTINES_PATH}>
           <IonIcon icon={listOutline} />
-          <IonLabel>אימונים</IonLabel>
+          <IonLabel>{COMMON_COPY.routines}</IonLabel>
         </IonTabButton>
-        <IonTabButton tab="exercises" href="/tabs/exercises">
+        <IonTabButton tab="exercises" href={EXERCISES_PATH}>
           <IonIcon icon={barbell} />
-          <IonLabel>תרגילים</IonLabel>
+          <IonLabel>{COMMON_COPY.exercises}</IonLabel>
         </IonTabButton>
       </IonTabBar>
     </IonTabs>

@@ -10,9 +10,12 @@ import {
   IonToolbar,
 } from '@ionic/react'
 import { ChangeBadge } from '../../components/ChangeBadge'
+import { COMMON_COPY } from '../../copy/common'
 import { useFinishedWorkouts } from '../../data/hooks'
 import { formatDay, formatSets } from '../../domain/format'
 import { exerciseHistory, recordSessionId, weightTrend } from '../../domain/progress'
+import { EXERCISES_PATH } from '../../navigation/paths'
+import { MIN_TREND_POINTS } from './trendGeometry'
 import { WeightChart } from './WeightChart'
 import './exercises.css'
 
@@ -27,7 +30,7 @@ export function ExerciseHistory({ name }: { name: string }) {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton text="חזרה" defaultHref="/tabs/exercises" />
+            <IonBackButton text={COMMON_COPY.back} defaultHref={EXERCISES_PATH} />
           </IonButtons>
           <IonTitle>{name}</IonTitle>
         </IonToolbar>
@@ -38,16 +41,16 @@ export function ExerciseHistory({ name }: { name: string }) {
             <IonTitle size="large">{name}</IonTitle>
           </IonToolbar>
         </IonHeader>
-        {trend.length >= 2 && <WeightChart points={trend} />}
+        {trend.length >= MIN_TREND_POINTS && <WeightChart points={trend} />}
         {sessions.length > 0 && (
           <IonList inset>
-            {sessions.map((s) => (
-              <IonItem key={s.workoutId}>
+            {sessions.map((session) => (
+              <IonItem key={session.workoutId}>
                 <IonLabel className="ion-text-wrap">
-                  <h2>{formatDay(s.startedAt)}</h2>
-                  <p>{formatSets(s.sets, s.target)}</p>
+                  <h2>{formatDay(session.startedAt)}</h2>
+                  <p>{formatSets(session.sets, session.target)}</p>
                 </IonLabel>
-                {s.workoutId === record && (
+                {session.workoutId === record && (
                   <span slot="end">
                     <ChangeBadge kind="record" />
                   </span>

@@ -1,6 +1,9 @@
 import { useIonActionSheet, useIonRouter } from '@ionic/react'
+import { APP_COPY } from '../copy/app'
+import { COMMON_COPY } from '../copy/common'
 import { activeWorkout, beginWorkout } from '../data/repo'
 import type { Routine } from '../domain/types'
+import { workoutPath } from '../navigation/paths'
 
 export function useStartWorkout() {
   const router = useIonRouter()
@@ -10,16 +13,16 @@ export function useStartWorkout() {
     const active = await activeWorkout()
     if (active && active.routineId !== routine.id) {
       presentSheet({
-        header: 'יש אימון בתהליך',
+        header: APP_COPY.workoutInProgress,
         buttons: [
-          { text: `המשך את ${active.routineName}`, handler: () => router.push(`/workout/${active.id}`) },
-          { text: 'ביטול', role: 'cancel' },
+          { text: APP_COPY.resumeWorkout(active.routineName), handler: () => router.push(workoutPath(active.id)) },
+          { text: COMMON_COPY.cancel, role: 'cancel' },
         ],
       })
 
       return
     }
     const workout = await beginWorkout(routine)
-    router.push(`/workout/${workout.id}`)
+    router.push(workoutPath(workout.id))
   }
 }

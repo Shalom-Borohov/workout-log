@@ -10,12 +10,12 @@ import { done, exercise, oct, open, reps, routine, seconds, workout } from '../h
 const squatOnly = [[{ name: 'סקוואט', target: reps(10) }]]
 
 async function startedWorkout() {
-  const w = await activeWorkout()
-  if (!w) {
+  const active = await activeWorkout()
+  if (!active) {
     throw new Error('no active workout')
   }
 
-  return w
+  return active
 }
 
 describe('timeline', () => {
@@ -26,7 +26,8 @@ describe('timeline', () => {
     renderAt('/tabs/timeline')
 
     expect(await screen.findByText('עוד אין אימונים')).toBeInTheDocument()
-    expect(screen.getByText('לוחצים על „התחל אימון” למעלה. כל אימון שמסיימים יופיע כאן, עם השיפורים והשיאים.')).toBeInTheDocument()
+    expect(screen.getByText('לוחצים על „התחל אימון” למטה. כל אימון שמסיימים יופיע כאן, עם השיפורים והשיאים.')).toBeInTheDocument()
+    expect((await screen.findByText('התחל אימון')).closest('ion-footer')).not.toBeNull()
   })
 
   it('shows workouts grouped by week with changes', async () => {
@@ -52,8 +53,8 @@ describe('timeline', () => {
 
   it('card shows at most three change badges', async () => {
     const names = ['סקוואט', 'לחיצה', 'חתירה', 'מתח']
-    await saveWorkout(workout({ id: 'w0', startedAt: oct(19), exercises: names.map((n) => exercise(n, [done(20, 10)])) }))
-    await saveWorkout(workout({ id: 'w1', startedAt: oct(26, 8), exercises: names.map((n) => exercise(n, [done(20, 12)])) }))
+    await saveWorkout(workout({ id: 'w0', startedAt: oct(19), exercises: names.map((name) => exercise(name, [done(20, 10)])) }))
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(26, 8), exercises: names.map((name) => exercise(name, [done(20, 12)])) }))
     renderAt('/tabs/timeline')
 
     expect(await screen.findAllByLabelText('שיפור')).toHaveLength(3)
@@ -88,7 +89,7 @@ describe('timeline', () => {
 
     const started = await waitFor(startedWorkout)
     expect(started.routineId).toBe('r1')
-    await waitFor(() => expect(currentPath()).toBe(`/workout/${started.id}`))
+    await waitFor(() => expect(currentPath()).toBe(`/tabs/workout/${started.id}`))
   })
 
   it('start skips routines without exercises', async () => {
@@ -120,7 +121,7 @@ describe('timeline', () => {
 
     const started = await waitFor(startedWorkout)
     expect(started.routineId).toBe('r2')
-    await waitFor(() => expect(currentPath()).toBe(`/workout/${started.id}`))
+    await waitFor(() => expect(currentPath()).toBe(`/tabs/workout/${started.id}`))
   })
 
   it('active workout shows resume banner', async () => {
@@ -131,9 +132,10 @@ describe('timeline', () => {
 
     fireEvent.click(await screen.findByText('אימון בתהליך'))
 
+    expect(screen.getByText('אימון בתהליך').closest('ion-footer')).not.toBeNull()
     expect(screen.getByText('30:00')).toBeInTheDocument()
     expect(screen.queryByText('התחל אימון')).not.toBeInTheDocument()
-    await waitFor(() => expect(currentPath()).toBe('/workout/live'))
+    await waitFor(() => expect(currentPath()).toBe('/tabs/workout/live'))
   })
 
   it('detail lists sets per exercise', async () => {
@@ -188,7 +190,7 @@ describe('timeline', () => {
     await saveWorkout(workout({ id: 'w1', startedAt: oct(26, 8), exercises: [exercise('סקוואט', [done(20, 10)])] }))
     renderAt('/tabs/timeline/w1')
 
-    fireEvent.click(await screen.findByText('מחיקת אימון'))
+    fireEvent.click(await screen.findByText('מחיקת האימון'))
     fireEvent.click(await screen.findByText('מחיקה', { selector: '.alert-button *' }))
 
     await waitFor(async () => expect(await finishedWorkouts()).toHaveLength(0))
@@ -201,6 +203,6 @@ describe('timeline', () => {
 
     fireEvent.click(await screen.findByText('עריכה'))
 
-    await waitFor(() => expect(currentPath()).toBe('/workout/w1'))
+    await waitFor(() => expect(currentPath()).toBe('/tabs/workout/w1'))
   })
 })

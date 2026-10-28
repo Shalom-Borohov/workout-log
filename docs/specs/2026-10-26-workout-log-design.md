@@ -24,6 +24,38 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 16. **Live workout UX (added 2026-10-27):** ticking the last set of an exercise auto-advances to the next after ~0.6 s (active workouts only, not on the last exercise); weight/reps have −/+ steppers (weight ±2.5 kg, reps ±1, time ±1 min or ±15 s) and the number can still be tapped to type; a "פעם קודמת" line shows the previous session's completed sets; a progress bar shows done sets / total sets (skipped exercises excluded).
 17. **Timeline + exercises (added 2026-10-27):** week headers show "N אימונים · M סטים"; exercise history pages show a small SVG line of the heaviest weight per session when there are ≥2 weighted sessions.
 
+18. **Post-launch feedback (added 2026-10-28):** decided after the first real session. One branch for all items. Connecting Claude to GitHub is out for now.
+19. **Starting weight (added 2026-10-28):** a routine exercise may have a starting weight. It prefills only while the exercise has no history; after that, the last session's weights prefill as before. It is shown in the routine row ("10 חזרות · 20 ק״ג").
+20. **Sets per exercise (added 2026-10-28):** an exercise (or pair) may override its section's set count. The override is stored only when it differs from the section, and the row shows "· N סטים".
+21. **Tips and next-time notes (added 2026-10-28):** two kinds of note.
+    - A tip (דגשים) on the routine exercise is copied into the workout and always shown under the exercise name.
+    - A "הערה לפעם הבאה", written from the exercise menu, is shown in the next session of that exercise under its "פעם קודמת" line (the same session the sets come from).
+22. **Duplicate routine (added 2026-10-28):** a "שכפול" swipe action creates "<name> (עותק)" with fresh ids and opens it in the editor.
+23. **Past workouts (added 2026-10-28):**
+    - "+" on the timeline opens "הוספת אימון קודם". You choose the routine, date, start time (in the past) and duration.
+    - The workout is created finished, with sets prefilled from sessions before that date, and opens in edit mode.
+24. **Start button (added 2026-10-28):** "התחל אימון", and the "אימון בתהליך" banner during a workout, are pinned at the bottom of the timeline, above the tab bar.
+25. **Weight fill-down (added 2026-10-28):** entering a weight on set N also sets it on later unticked sets of that exercise whose weight is empty or still equals set N's previous weight. Weight only.
+26. **Auto-advance (added 2026-10-28):** after the last set of an exercise, the workout moves to the next exercise that is neither skipped nor done. If there is none, it stays.
+27. **Limits (added 2026-10-28):** weight ≤ 500 kg, reps ≤ 100 (whole), time ≤ 3 h. Typed values are clamped on commit, and "+" is disabled at the max. This applies in the workout and in the routine editor.
+28. **Gestures and motion in a workout (added 2026-10-28):**
+    - A horizontal swipe on the exercise moves between exercises; skipped ones stay reachable. In RTL, dragging rightward goes to the next exercise.
+    - A swipe that starts within 50 px of the swipe-back edge is left to iOS swipe-back, which stays enabled.
+    - Swiping up on the footer opens the exercise list.
+    - Changing exercise slides the new card in from the direction of travel. There is no motion under reduce-motion.
+29. **Summary mid-workout (added 2026-10-28):** "הוספה לסיכום" in the exercise menu edits the workout's summary without finishing.
+30. **Overview editing (added 2026-10-28):**
+    - In the exercise list, "עריכה" lets you add, remove, reorder and edit exercises of the running workout.
+    - "עדכון <routine>" writes the exercises, targets, tips and set counts back to the routine.
+    - "שמירה כאימון חדש" saves them as a new routine.
+    - Starting weights are kept from the routine, and the workout stays attached to its original routine.
+31. **Background photo (added 2026-10-28):** a photo chosen in Settings is shown, dimmed, behind the live-workout screen. It is stored on the phone and not in the backup file.
+32. **History export (added 2026-10-28):** "ייצוא היסטוריה" in Settings shares finished workouts as readable text (`.txt`), newest first, in the format of the old notes.
+33. **Feedback (added 2026-10-28):** "דיווח על באג / הצעה" in Settings opens a prefilled GitHub issue (labels bug/enhancement) with the device and build date and no workout data. The repo is public, so the issue is too.
+34. **Navigation (added 2026-10-28):**
+    - The live workout lives inside the tabs at `/tabs/workout/:id`, with the tab bar hidden, so swiping back reveals the page underneath. Old `/workout/:id` links redirect.
+    - Taps are ignored while a page transition is still animating, as in UIKit. This fixed the white screen and the finished workout that wouldn't reopen after a quick swipe back.
+
 ## Assumptions (accepted by the user)
 
 1. React + TypeScript + Vite; `vite-plugin-pwa` for offline + Home Screen install.

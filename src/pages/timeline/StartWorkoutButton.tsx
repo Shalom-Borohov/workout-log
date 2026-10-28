@@ -1,8 +1,11 @@
 import { IonButton, IonIcon, useIonActionSheet, useIonRouter } from '@ionic/react'
 import { play } from 'ionicons/icons'
+import { COMMON_COPY } from '../../copy/common'
+import { TIMELINE_COPY } from './copy'
 import { useRoutines } from '../../data/hooks'
 import { hasExercises } from '../../domain/progress'
 import { useStartWorkout } from '../../hooks/useStartWorkout'
+import { IMPORT_PATH } from '../../navigation/paths'
 
 export function StartWorkoutButton() {
   const routines = useRoutines()
@@ -17,7 +20,7 @@ export function StartWorkoutButton() {
 
   function handleClick() {
     if (startable.length === 0) {
-      router.push('/tabs/routines/import')
+      router.push(IMPORT_PATH)
 
       return
     }
@@ -27,18 +30,18 @@ export function StartWorkoutButton() {
       return
     }
     presentSheet({
-      header: 'באיזה אימון?',
+      header: TIMELINE_COPY.whichRoutineQuestion,
       buttons: [
-        ...startable.map((r) => ({ text: r.name, handler: () => void start(r) })),
-        { text: 'ביטול', role: 'cancel' },
+        ...startable.map((routine) => ({ text: routine.name, handler: () => void start(routine) })),
+        { text: COMMON_COPY.cancel, role: 'cancel' },
       ],
     })
   }
 
   return (
-    <IonButton expand="block" className="start-workout" onClick={handleClick}>
+    <IonButton expand="block" color="primary" className="start-workout" onClick={handleClick}>
       <IonIcon slot="start" icon={play} aria-hidden="true" />
-      התחל אימון
+      {TIMELINE_COPY.startWorkout}
     </IonButton>
   )
 }

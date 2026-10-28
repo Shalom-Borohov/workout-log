@@ -16,12 +16,14 @@ import {
 import { addCircle } from 'ionicons/icons'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { COMMON_COPY } from '../../copy/common'
+import { ROUTINES_COPY } from './copy'
 import { useRoutine } from '../../data/hooks'
 import { deleteRoutine, updateRoutine } from '../../data/repo'
 import {
   type Change,
   findItem,
-  newExercise,
+  newItem,
   newSection,
   removeItem,
   removeSection,
@@ -30,7 +32,8 @@ import {
 } from '../../domain/routineEdit'
 import type { Routine } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
-import { ItemEditModal } from './ItemEditModal'
+import { ROUTINES_PATH } from '../../navigation/paths'
+import { ItemEditModal } from '../../components/itemEditor/ItemEditModal'
 import { SectionEditor } from './SectionEditor'
 import './routines.css'
 
@@ -45,28 +48,30 @@ function RoutineEditor({ routine }: { routine: Routine }) {
   function addItem(sectionId: string) {
     const id = crypto.randomUUID()
 
-    edit((r) => updateSection(r, sectionId, (s) => ({ ...s, items: [...s.items, { id, exercises: [newExercise()] }] })))
+    edit((current) =>
+      updateSection(current, sectionId, (section) => ({ ...section, items: [...section.items, newItem(id)] })),
+    )
     setEditingId(id)
   }
 
   function addSection() {
-    const section = newSection(crypto.randomUUID(), 'חלק חדש')
+    const section = newSection(crypto.randomUUID(), ROUTINES_COPY.newSection)
 
-    edit((r) => ({ ...r, sections: [...r.sections, section] }))
+    edit((current) => ({ ...current, sections: [...current.sections, section] }))
   }
 
   async function removeRoutine() {
     await deleteRoutine(routine.id)
-    router.push('/tabs/routines', 'back', 'pop')
+    router.push(ROUTINES_PATH, 'back', 'pop')
   }
 
   function rename(name: string) {
-    edit((r) => ({ ...r, name }))
+    edit((current) => ({ ...current, name }))
   }
 
   function removeEditing(id: string) {
     setEditingId(null)
-    edit((r) => removeItem(r, id))
+    edit((current) => removeItem(current, id))
   }
 
   return (
@@ -74,11 +79,11 @@ function RoutineEditor({ routine }: { routine: Routine }) {
       <IonList inset>
         <IonItem>
           <IonInput
-            label="שם האימון"
+            label={COMMON_COPY.routineName}
             labelPlacement="stacked"
-            placeholder="שם האימון"
+            placeholder={COMMON_COPY.routineName}
             value={routine.name}
-            onIonChange={(e) => typeof e.detail.value === 'string' && rename(e.detail.value)}
+            onIonChange={(event) => typeof event.detail.value === 'string' && rename(event.detail.value)}
           />
         </IonItem>
       </IonList>
@@ -86,14 +91,14 @@ function RoutineEditor({ routine }: { routine: Routine }) {
         <SectionEditor
           key={section.id}
           section={section}
-          onChange={(change) => edit((r) => updateSection(r, section.id, change))}
+          onChange={(change) => edit((current) => updateSection(current, section.id, change))}
           onEditItem={setEditingId}
           onAddItem={() => addItem(section.id)}
           onDelete={() =>
             confirmDelete({
-              header: 'למחוק את החלק?',
+              header: ROUTINES_COPY.deleteSectionQuestion,
               message: section.name,
-              onConfirm: () => edit((r) => removeSection(r, section.id)),
+              onConfirm: () => edit((current) => removeSection(current, section.id)),
             })
           }
         />
@@ -101,7 +106,7 @@ function RoutineEditor({ routine }: { routine: Routine }) {
       <IonList inset>
         <IonItem button detail={false} onClick={addSection}>
           <IonIcon slot="start" color="primary" icon={addCircle} />
-          <IonLabel color="primary">הוספת חלק</IonLabel>
+          <IonLabel color="primary">{ROUTINES_COPY.addSection}</IonLabel>
         </IonItem>
       </IonList>
       <IonList inset>
@@ -109,15 +114,19 @@ function RoutineEditor({ routine }: { routine: Routine }) {
           button
           detail={false}
           onClick={() =>
-            confirmDelete({ header: 'למחוק את האימון?', message: routine.name, onConfirm: () => void removeRoutine() })
+            confirmDelete({
+              header: COMMON_COPY.deleteWorkoutQuestion,
+              message: routine.name,
+              onConfirm: () => void removeRoutine(),
+            })
           }
         >
-          <IonLabel color="danger">מחיקת האימון</IonLabel>
+          <IonLabel color="danger">{COMMON_COPY.deleteWorkout}</IonLabel>
         </IonItem>
       </IonList>
       <ItemEditModal
-        item={editing}
-        onChange={(id, change) => edit((r) => updateItem(r, id, change))}
+        editing={editing}
+        onChange={(id, change) => edit((current) => updateItem(current, id, change))}
         onDelete={removeEditing}
         onClose={() => setEditingId(null)}
       />
@@ -133,9 +142,9 @@ function RoutineEditView({ id }: { id: string }) {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton defaultHref="/tabs/routines" text="חזרה" />
+            <IonBackButton defaultHref={ROUTINES_PATH} text={COMMON_COPY.back} />
           </IonButtons>
-          <IonTitle>{routine ? routine.name : 'עריכת אימון'}</IonTitle>
+          <IonTitle>{routine ? routine.name : ROUTINES_COPY.editRoutine}</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>{routine && <RoutineEditor routine={routine} />}</IonContent>

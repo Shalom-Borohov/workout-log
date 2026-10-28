@@ -1,33 +1,35 @@
-import { DEFAULT_ROUTINE_NAME, DEFAULT_SECTION_NAME, newSection } from './routineEdit'
+import { DEFAULT_ROUTINE_NAME, DEFAULT_SECTION_NAME, newItem, newSection, routineExercise } from './routineEdit'
+import { SECONDS_PER_MINUTE } from './time'
 import type { RoutineExercise, RoutineSection, Target } from './types'
 
 const AMOUNT = /^(.*?)\s*(\d+)\s*(דקות|דקה|דק[׳']|שניות|שנייה|שנ[׳'])?$/
 const SETS = /(\d+)\s*סטים?/
 const MINUTES = /^דק/
+const DEFAULT_NOTE_SETS = 1
 
 function toTarget(amount: number, unit: string | undefined): Target {
   if (unit === undefined) {
     return { kind: 'reps', reps: amount }
   }
 
-  return { kind: 'duration', seconds: MINUTES.test(unit) ? amount * 60 : amount }
+  return { kind: 'duration', seconds: MINUTES.test(unit) ? amount * SECONDS_PER_MINUTE : amount }
 }
 
 function parseExercise(text: string): RoutineExercise {
   const match = text.match(AMOUNT)
 
   if (!match) {
-    return { name: text.trim(), target: { kind: 'reps', reps: 0 } }
+    return routineExercise(text.trim(), { kind: 'reps', reps: 0 })
   }
 
-  return { name: match[1].trim(), target: toTarget(Number(match[2]), match[3]) }
+  return routineExercise(match[1].trim(), toTarget(Number(match[2]), match[3]))
 }
 
 function parseHeader(line: string, newId: () => string): RoutineSection {
   const sets = line.match(SETS)
   const name = line.slice(0, -1).replace(SETS, '').replace(/\s+/g, ' ').trim()
 
-  return newSection(newId(), name || DEFAULT_SECTION_NAME, sets ? Number(sets[1]) : 1)
+  return newSection(newId(), name || DEFAULT_SECTION_NAME, sets ? Number(sets[1]) : DEFAULT_NOTE_SETS)
 }
 
 export function parseNote(text: string, newId: () => string): { name: string; sections: RoutineSection[] } {
@@ -42,10 +44,10 @@ export function parseNote(text: string, newId: () => string): { name: string; se
     }
 
     if (sections.length === 0) {
-      sections.push(newSection(newId(), DEFAULT_SECTION_NAME, 1))
+      sections.push(newSection(newId(), DEFAULT_SECTION_NAME, DEFAULT_NOTE_SETS))
     }
 
-    sections[sections.length - 1].items.push({ id: newId(), exercises: line.split(/->|→/).map(parseExercise) })
+    sections[sections.length - 1].items.push(newItem(newId(), line.split(/->|→/).map(parseExercise)))
   }
 
   return {

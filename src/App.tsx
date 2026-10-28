@@ -1,15 +1,21 @@
 import { IonApp, IonRouterOutlet } from '@ionic/react'
 import { IonReactHashRouter } from '@ionic/react-router'
-import { Navigate, Route } from 'react-router-dom'
+import { Navigate, Route, useParams } from 'react-router-dom'
+import { TIMELINE_PATH, workoutPath } from './navigation/paths'
 import { Tabs } from './Tabs'
-import { LiveWorkoutPage } from './pages/live/LiveWorkoutPage'
+
+function LegacyWorkoutLink() {
+  const { id } = useParams()
+
+  return id && <Navigate to={workoutPath(id)} replace />
+}
 
 export function AppRoutes() {
   return (
     <IonRouterOutlet>
       <Route path="/tabs/*" element={<Tabs />} />
-      <Route path="/workout/:id" element={<LiveWorkoutPage />} />
-      <Route path="/" element={<Navigate to="/tabs/timeline" replace />} />
+      <Route path="/workout/:id" element={<LegacyWorkoutLink />} />
+      <Route path="/" element={<Navigate to={TIMELINE_PATH} replace />} />
     </IonRouterOutlet>
   )
 }

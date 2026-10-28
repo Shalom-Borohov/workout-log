@@ -1,6 +1,8 @@
 import { IonIcon, IonItem, IonLabel, IonList } from '@ionic/react'
 import { clipboardOutline, createOutline } from 'ionicons/icons'
 import { EmptyState } from '../../components/EmptyState'
+import { COMMON_COPY } from '../../copy/common'
+import { ROUTINES_COPY } from './copy'
 
 interface Props {
   onPaste: () => void
@@ -10,23 +12,20 @@ interface Props {
 export function EmptyRoutines({ onPaste, onEmpty }: Props) {
   return (
     <>
-      <EmptyState
-        title="אין עדיין אימונים"
-        body="מדביקים את הפתק של האימון, והאפליקציה מפרקת אותו לחלקים ולתרגילים. או בונים אימון מאפס."
-      />
+      <EmptyState title={ROUTINES_COPY.noRoutinesYet} body={ROUTINES_COPY.noRoutinesBody} />
       <IonList inset>
         <IonItem button detail onClick={onPaste}>
           <IonIcon slot="start" color="primary" className="option-icon" icon={clipboardOutline} />
           <IonLabel>
-            <h2>הדבקת פתק</h2>
-            <p>מהפתקים באייפון</p>
+            <h2>{COMMON_COPY.pasteNote}</h2>
+            <p>{ROUTINES_COPY.pasteNoteHint}</p>
           </IonLabel>
         </IonItem>
         <IonItem button detail onClick={onEmpty}>
           <IonIcon slot="start" color="primary" className="option-icon" icon={createOutline} />
           <IonLabel>
-            <h2>אימון ריק</h2>
-            <p>מוסיפים חלקים ותרגילים בעצמכם</p>
+            <h2>{COMMON_COPY.emptyRoutine}</h2>
+            <p>{ROUTINES_COPY.emptyRoutineHint}</p>
           </IonLabel>
         </IonItem>
       </IonList>

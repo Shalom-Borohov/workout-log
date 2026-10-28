@@ -1,0 +1,49 @@
+.count-stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.count-stepper-value {
+  min-inline-size: 2ch;
+  font-size: 1.0625rem;
+  text-align: center;
+  color: var(--app-label-secondary);
+}
+
+.count-stepper {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  background: var(--app-fill);
+}
+
+.count-stepper .count-stepper-half {
+  display: grid;
+  place-items: center;
+  inline-size: 48px;
+  block-size: 44px;
+  border-radius: 8px;
+  color: var(--app-label);
+  font-size: 1.375rem;
+  transition: background-color 150ms ease-out;
+}
+
+.count-stepper-half:active:not(:disabled) {
+  background: var(--app-fill);
+}
+
+.count-stepper-half:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -2px;
+}
+
+.count-stepper-half:disabled {
+  color: var(--app-label-tertiary);
+}
+
+.count-stepper-divider {
+  inline-size: 1px;
+  block-size: 18px;
+  background: var(--app-label-tertiary);
+}

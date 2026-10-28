@@ -1,0 +1,38 @@
+.live-content::part(scroll) {
+  overflow-x: hidden;
+}
+
+.item-enter-next {
+  --item-enter-from: 48px;
+}
+
+.item-enter-prev {
+  --item-enter-from: -48px;
+}
+
+[dir='rtl'] .item-enter-next {
+  --item-enter-from: -48px;
+}
+
+[dir='rtl'] .item-enter-prev {
+  --item-enter-from: 48px;
+}
+
+.item-enter-next,
+.item-enter-prev {
+  animation: item-enter 250ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes item-enter {
+  from {
+    opacity: 0;
+    transform: translateX(var(--item-enter-from));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item-enter-next,
+  .item-enter-prev {
+    animation: none;
+  }
+}
