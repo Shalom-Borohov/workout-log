@@ -24,10 +24,6 @@ dist-ssr
 *.sw?
 
 # impeccable-ignore-start
-# Ephemeral output, runtime state, and per-dev overrides.
-# The **/ prefix covers .impeccable at the repo root or in a nested workspace.
-# Shared artifacts stay tracked: config.json, live/config.json,
-# design.json, surfaces/*.md, critique/*.md.
 **/.impeccable/config.local.json
 **/.impeccable/hook.cache.json
 **/.impeccable/hook.pending.json
@@ -48,7 +44,6 @@ dist-ssr
 # impeccable-ignore-end
 
 .claude/settings.local.json
-
-# impeccable install (reinstall with: npx impeccable install --providers=claude --scope=project)
 .claude/skills/impeccable/
 .claude/agents/impeccable-*
+.claude/worktrees/
