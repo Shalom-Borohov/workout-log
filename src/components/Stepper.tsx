@@ -1,5 +1,6 @@
 import { IonIcon } from '@ionic/react'
 import { add, remove } from 'ionicons/icons'
+import './Stepper.css'
 
 interface Props {
   value: number

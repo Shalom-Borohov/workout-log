@@ -64,6 +64,40 @@ describe('routine editor', () => {
     expect(screen.getByText('?', { selector: 'p ion-text[color="danger"]' })).toBeInTheDocument()
   })
 
+  it('exercise rows show the starting weight when set', async () => {
+    await saveRoutine(
+      routine('r1', 'אימון גוף מלא', [
+        [{ name: 'סקוואט', target: reps(10), weight: 20 }],
+        [
+          { name: 'לחיצת חזה', target: reps(8), weight: 30 },
+          { name: 'פלאנק', target: seconds(30) },
+        ],
+      ]),
+    )
+    renderAt('/tabs/routines/r1')
+
+    expect(await screen.findByText('10 חזרות · 20 ק״ג', { selector: 'p' })).toBeInTheDocument()
+    expect(screen.getByText('8 חזרות · 30 ק״ג + 30 שנ׳', { selector: 'p' })).toBeInTheDocument()
+  })
+
+  it('a pair shows its own set count until the section matches it', async () => {
+    const pair = routine('r1', 'אימון גוף מלא', [
+      [
+        { name: 'לחיצת חזה', target: reps(8) },
+        { name: 'מתח', target: reps(6) },
+      ],
+    ])
+
+    await saveRoutine({ ...pair, sections: [{ ...pair.sections[0], items: [{ ...pair.sections[0].items[0], sets: 4 }] }] })
+    renderAt('/tabs/routines/r1')
+
+    expect(await screen.findByText('8 חזרות + 6 חזרות · 4 סטים', { selector: 'p' })).toBeInTheDocument()
+
+    fireEvent.click(stepButton('הוספת סט'))
+
+    expect(await screen.findByText('8 חזרות + 6 חזרות', { selector: 'p' })).toBeInTheDocument()
+  })
+
   it('whole-minute duration targets read in minutes', async () => {
     await saveRoutine(routine('r1', 'אימון ריצה', [[{ name: 'ריצה', target: seconds(900) }]]))
     renderAt('/tabs/routines/r1')

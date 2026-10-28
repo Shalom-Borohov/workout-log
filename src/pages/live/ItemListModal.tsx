@@ -1,74 +1,79 @@
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonListHeader,
-  IonModal,
-  IonNote,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/react'
-import { checkmarkCircle } from 'ionicons/icons'
-import { Fragment } from 'react'
+import { IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar } from '@ionic/react'
+import { useState } from 'react'
+import { HALF_SHEET } from '../../components/sheet'
+import { COMMON_COPY } from '../../copy/common'
+import type { PreviousSessionLookup } from '../../domain/progress'
 import type { Workout } from '../../domain/types'
-import { isDone, isSkipped, itemTitle } from '../../domain/workoutEdits'
+import { canRemoveItem, moveItem } from '../../domain/workoutStructure'
+import { ItemEditModal } from '../../components/itemEditor/ItemEditModal'
+import { OverviewSection } from './OverviewSection'
+import { RoutineActions } from './RoutineActions'
+import { useOverviewEditor, type WorkoutEdit } from './useOverviewEditor'
 
 interface ItemListModalProps {
   isOpen: boolean
   workout: Workout
   current: number
+  previous: PreviousSessionLookup | undefined
   onSelect: (index: number) => void
+  onEdit: WorkoutEdit
   onClose: () => void
 }
 
-export function ItemListModal({ isOpen, workout, current, onSelect, onClose }: ItemListModalProps) {
-  const offsets = workout.sections.map((_, si) =>
-    workout.sections.slice(0, si).reduce((count, s) => count + s.items.length, 0),
+export function ItemListModal({ isOpen, workout, current, previous, onSelect, onEdit, onClose }: ItemListModalProps) {
+  const [editing, setEditing] = useState(false)
+  const editor = useOverviewEditor(workout, previous, onEdit)
+  const canDelete = canRemoveItem(workout)
+
+  const offsets = workout.sections.map((_, sectionIndex) =>
+    workout.sections.slice(0, sectionIndex).reduce((count, section) => count + section.items.length, 0),
   )
 
+  function dismiss() {
+    setEditing(false)
+    onClose()
+  }
+
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose} initialBreakpoint={0.6} breakpoints={[0, 0.6, 1]}>
+    <IonModal isOpen={isOpen} onDidDismiss={dismiss} {...HALF_SHEET}>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>תרגילים</IonTitle>
+          <IonButtons slot="start">
+            <IonButton strong={editing} onClick={() => setEditing(!editing)}>
+              {editing ? COMMON_COPY.done : COMMON_COPY.edit}
+            </IonButton>
+          </IonButtons>
+          <IonTitle>{COMMON_COPY.exercises}</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={onClose}>סגירה</IonButton>
+            <IonButton onClick={onClose}>{COMMON_COPY.close}</IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        {workout.sections.map((section, si) => (
-          <Fragment key={si}>
-            <IonListHeader>
-              <IonLabel>{section.name}</IonLabel>
-            </IonListHeader>
-            <IonList inset>
-              {section.items.map((item, ii) => {
-                const index = offsets[si] + ii
-
-                return (
-                  <IonItem
-                    key={item.id}
-                    button
-                    detail={false}
-                    className={index === current ? 'list-current' : undefined}
-                    onClick={() => onSelect(index)}
-                  >
-                    <IonLabel>{itemTitle(item)}</IonLabel>
-                    {isDone(item) && <IonIcon slot="end" color="success" icon={checkmarkCircle} aria-label="הושלם" />}
-                    {isSkipped(item) && <IonNote slot="end">דילגת</IonNote>}
-                  </IonItem>
-                )
-              })}
-            </IonList>
-          </Fragment>
+        {workout.sections.map((section, sectionIndex) => (
+          <OverviewSection
+            key={sectionIndex}
+            section={section}
+            offset={offsets[sectionIndex]}
+            current={current}
+            editing={editing}
+            canDelete={canDelete}
+            onSelect={onSelect}
+            onEditItem={editor.open}
+            onDeleteItem={editor.remove}
+            onReorder={(from, to) => onEdit((current) => moveItem(current, sectionIndex, from, to))}
+            onAdd={() => editor.add(sectionIndex)}
+          />
         ))}
+        {editing && <RoutineActions workout={workout} />}
       </IonContent>
+      <ItemEditModal
+        editing={editor.editing}
+        showStartWeight={false}
+        onChange={editor.change}
+        onDelete={editor.remove}
+        onClose={editor.close}
+      />
     </IonModal>
   )
 }

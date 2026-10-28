@@ -1,102 +1,152 @@
 import { durationUnit } from './format'
 import { exercisesOf } from './progress'
+import { SECONDS_PER_MINUTE } from './time'
 import type { SetLog, Target, Workout, WorkoutItem } from './types'
 
 export type ItemRef = { section: number; item: number }
 
-export function itemRefs(w: Workout): ItemRef[] {
-  return w.sections.flatMap((s, section) => s.items.map((_, item) => ({ section, item })))
+export function itemRefs(workout: Workout): ItemRef[] {
+  return workout.sections.flatMap((workoutSection, section) => workoutSection.items.map((_, item) => ({ section, item })))
 }
 
-export function itemAt(w: Workout, ref: ItemRef): WorkoutItem {
-  return w.sections[ref.section].items[ref.item]
+export function itemAt(workout: Workout, ref: ItemRef): WorkoutItem {
+  return workout.sections[ref.section].items[ref.item]
 }
 
 export function itemTitle(item: { exercises: { name: string }[] }): string {
-  return item.exercises.map((e) => e.name).join(' + ')
+  return item.exercises.map((exercise) => exercise.name).join(' + ')
 }
 
 function isUnfinished(item: WorkoutItem): boolean {
-  return item.exercises.some((e) => !e.skipped && e.sets.some((s) => !s.done))
+  return item.exercises.some((exercise) => !exercise.skipped && exercise.sets.some((set) => !set.done))
 }
 
-export function firstUnfinished(w: Workout): number {
-  const refs = itemRefs(w)
-  const index = refs.findIndex((ref) => isUnfinished(itemAt(w, ref)))
+export function firstUnfinished(workout: Workout): number {
+  const refs = itemRefs(workout)
+  const index = refs.findIndex((ref) => isUnfinished(itemAt(workout, ref)))
 
   return index === -1 ? refs.length - 1 : index
 }
 
-function mapItem(w: Workout, ref: ItemRef, edit: (item: WorkoutItem) => WorkoutItem): Workout {
+export function nextUnfinished(workout: Workout, current: number): number | null {
+  const index = itemRefs(workout).findIndex((ref, refIndex) => refIndex > current && isUnfinished(itemAt(workout, ref)))
+
+  return index === -1 ? null : index
+}
+
+function mapItem(workout: Workout, ref: ItemRef, edit: (item: WorkoutItem) => WorkoutItem): Workout {
   return {
-    ...w,
-    sections: w.sections.map((s, si) =>
-      si === ref.section ? { ...s, items: s.items.map((it, ii) => (ii === ref.item ? edit(it) : it)) } : s,
+    ...workout,
+    sections: workout.sections.map((section, sectionIndex) =>
+      sectionIndex === ref.section
+        ? { ...section, items: section.items.map((item, itemIndex) => (itemIndex === ref.item ? edit(item) : item)) }
+        : section,
     ),
   }
 }
 
-export function updateSet(w: Workout, ref: ItemRef, exercise: number, set: number, patch: Partial<SetLog>): Workout {
-  return mapItem(w, ref, (item) => ({
+export function updateSet(workout: Workout, ref: ItemRef, exercise: number, set: number, patch: Partial<SetLog>): Workout {
+  return mapItem(workout, ref, (item) => ({
     ...item,
-    exercises: item.exercises.map((e, ei) =>
-      ei === exercise ? { ...e, sets: e.sets.map((s, si) => (si === set ? { ...s, ...patch } : s)) } : e,
+    exercises: item.exercises.map((workoutExercise, exerciseIndex) =>
+      exerciseIndex === exercise
+        ? {
+            ...workoutExercise,
+            sets: workoutExercise.sets.map((setLog, setIndex) => (setIndex === set ? { ...setLog, ...patch } : setLog)),
+          }
+        : workoutExercise,
     ),
   }))
 }
 
-export function addSet(w: Workout, ref: ItemRef): Workout {
-  return mapItem(w, ref, (item) => ({
+export function fillWeight(workout: Workout, ref: ItemRef, exercise: number, set: number, weight: number | null): Workout {
+  return mapItem(workout, ref, (item) => ({
     ...item,
-    exercises: item.exercises.map((e) => {
-      const last = e.sets[e.sets.length - 1]
+    exercises: item.exercises.map((workoutExercise, exerciseIndex) => {
+      if (exerciseIndex !== exercise) {
+        return workoutExercise
+      }
+      const old = workoutExercise.sets[set].weight
 
-      return { ...e, sets: [...e.sets, { ...last, done: false }] }
+      const sets = workoutExercise.sets.map((setLog, setIndex) =>
+        setIndex === set || (setIndex > set && !setLog.done && (setLog.weight === null || setLog.weight === old))
+          ? { ...setLog, weight }
+          : setLog,
+      )
+
+      return { ...workoutExercise, sets }
+    }),
+  }))
+}
+
+export function editSet(workout: Workout, ref: ItemRef, exercise: number, set: number, patch: Partial<SetLog>): Workout {
+  const { weight, ...rest } = patch
+  const filled = weight === undefined ? workout : fillWeight(workout, ref, exercise, set, weight)
+
+  return updateSet(filled, ref, exercise, set, rest)
+}
+
+export function addSet(workout: Workout, ref: ItemRef): Workout {
+  return mapItem(workout, ref, (item) => ({
+    ...item,
+    exercises: item.exercises.map((exercise) => {
+      const last = exercise.sets[exercise.sets.length - 1]
+
+      return { ...exercise, sets: [...exercise.sets, { ...last, done: false }] }
     }),
   }))
 }
 
 export function isSkipped(item: WorkoutItem): boolean {
-  return item.exercises.every((e) => e.skipped)
+  return item.exercises.every((exercise) => exercise.skipped)
 }
 
 export function isDone(item: WorkoutItem): boolean {
-  return !isSkipped(item) && item.exercises.every((e) => e.sets.every((s) => s.done))
+  return !isSkipped(item) && item.exercises.every((exercise) => exercise.sets.every((set) => set.done))
 }
 
-export function workoutProgress(w: Workout): { done: number; total: number } {
-  const sets = exercisesOf(w)
-    .filter((e) => !e.skipped)
-    .flatMap((e) => e.sets)
+export function workoutProgress(workout: Workout): { done: number; total: number } {
+  const sets = exercisesOf(workout)
+    .filter((exercise) => !exercise.skipped)
+    .flatMap((exercise) => exercise.sets)
 
-  return { done: sets.filter((s) => s.done).length, total: sets.length }
+  return { done: sets.filter((set) => set.done).length, total: sets.length }
 }
 
-export function stepValue(value: number | null, delta: number): number {
-  return Math.max(value === null ? delta : value + delta, 0)
+export function stepValue(current: number | null, delta: number, max: number): number {
+  return Math.min(Math.max(current === null ? delta : current + delta, 0), max)
 }
 
 export const WEIGHT_STEP = 2.5
+
+const SECONDS_STEP = 15
 
 export function amountStep(target: Target): number {
   if (target.kind === 'reps') {
     return 1
   }
 
-  return durationUnit(target) === 'minutes' ? 60 : 15
+  return durationUnit(target) === 'minutes' ? SECONDS_PER_MINUTE : SECONDS_STEP
 }
 
-export function toggleSkip(w: Workout, ref: ItemRef): Workout {
-  return mapItem(w, ref, (item) => {
+export function toggleSkip(workout: Workout, ref: ItemRef): Workout {
+  return mapItem(workout, ref, (item) => {
     const skipped = !isSkipped(item)
 
-    return { ...item, exercises: item.exercises.map((e) => ({ ...e, skipped })) }
+    return { ...item, exercises: item.exercises.map((exercise) => ({ ...exercise, skipped })) }
   })
 }
 
-export function removeSet(w: Workout, ref: ItemRef): Workout {
-  return mapItem(w, ref, (item) => ({
+export function setNotes(workout: Workout, ref: ItemRef, notes: string[]): Workout {
+  return mapItem(workout, ref, (item) => ({
     ...item,
-    exercises: item.exercises.map((e) => (e.sets.length > 1 ? { ...e, sets: e.sets.slice(0, -1) } : e)),
+    exercises: item.exercises.map((exercise, exerciseIndex) => ({ ...exercise, note: notes[exerciseIndex] })),
+  }))
+}
+
+export function removeSet(workout: Workout, ref: ItemRef): Workout {
+  return mapItem(workout, ref, (item) => ({
+    ...item,
+    exercises: item.exercises.map((exercise) => (exercise.sets.length > 1 ? { ...exercise, sets: exercise.sets.slice(0, -1) } : exercise)),
   }))
 }

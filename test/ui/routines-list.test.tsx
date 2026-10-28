@@ -5,14 +5,14 @@ import { saveRoutine } from '../../src/data/repo'
 import type { Routine } from '../../src/domain/types'
 import { resetDb } from '../helpers/db'
 import { currentPath, renderAt } from '../helpers/renderAt'
-import { reps, routine } from '../helpers/workouts'
+import { reps, routine, routineExercise } from '../helpers/workouts'
 
 const base = routine('r1', 'אימון רגליים', [[{ name: 'סקוואט', target: reps(12) }]])
 
 const twoSections: Routine = {
   ...base,
   sections: [
-    { id: 's1', name: 'חימום', sets: 2, items: [{ id: 'i1', exercises: [{ name: 'אופניים', target: reps(5) }] }] },
+    { id: 's1', name: 'חימום', sets: 2, items: [{ id: 'i1', sets: null, exercises: [routineExercise({ name: 'אופניים', target: reps(5) })] }] },
     {
       id: 's2',
       name: 'עיקרי',
@@ -20,9 +20,10 @@ const twoSections: Routine = {
       items: [
         {
           id: 'i2',
+          sets: null,
           exercises: [
-            { name: 'סקוואט', target: reps(12) },
-            { name: 'מתח', target: reps(8) },
+            routineExercise({ name: 'סקוואט', target: reps(12) }),
+            routineExercise({ name: 'מתח', target: reps(8) }),
           ],
         },
       ],
@@ -40,6 +41,26 @@ describe('routines list', () => {
 
     expect(await screen.findByText('3 תרגילים · 2 חלקים')).toBeInTheDocument()
     expect(screen.getByText('תרגיל אחד · חלק אחד')).toBeInTheDocument()
+  })
+
+  it('swipe duplicate saves a copy and opens its editor', async () => {
+    await saveRoutine(twoSections)
+    renderAt('/tabs/routines')
+
+    fireEvent.click(await screen.findByText('שכפול', { selector: 'ion-item-option' }))
+
+    await waitFor(async () => expect(await db.routines.count()).toBe(2))
+
+    const copy = (await db.routines.toArray()).find((saved) => saved.id !== 'r1')
+
+    expect(copy).toMatchObject({
+      name: 'אימון רגליים (עותק)',
+      sections: [
+        { name: 'חימום', items: [{ exercises: [{ name: 'אופניים' }] }] },
+        { name: 'עיקרי', items: [{ exercises: [{ name: 'סקוואט' }, { name: 'מתח' }] }] },
+      ],
+    })
+    await waitFor(() => expect(currentPath()).toBe(`/tabs/routines/${copy?.id}`))
   })
 
   it('empty state offers pasting a note', async () => {

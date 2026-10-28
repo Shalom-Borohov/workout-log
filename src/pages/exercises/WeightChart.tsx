@@ -1,4 +1,5 @@
 import { IonLabel, IonList, IonListHeader } from '@ionic/react'
+import { EXERCISES_COPY } from './copy'
 import { dayMonth, formatWeight } from '../../domain/format'
 import type { TrendPoint } from '../../domain/progress'
 import { CHART_HEIGHT, CHART_WIDTH, trendGeometry } from './trendGeometry'
@@ -11,12 +12,17 @@ export function WeightChart({ points }: { points: TrendPoint[] }) {
   const { path, dots } = trendGeometry(points)
   const end = dots[dots.length - 1]
   const shown = dots.length <= MAX_DOTS ? dots : [end]
-  const label = `משקל מרבי: מ־${formatWeight(first.weight)} ב־${dayMonth(first.startedAt)} ל־${formatWeight(last.weight)} ב־${dayMonth(last.startedAt)}`
+  const label = EXERCISES_COPY.maxWeightTrend(
+    formatWeight(first.weight),
+    dayMonth(first.startedAt),
+    formatWeight(last.weight),
+    dayMonth(last.startedAt),
+  )
 
   return (
     <section>
       <IonListHeader>
-        <IonLabel>משקל מרבי</IonLabel>
+        <IonLabel>{EXERCISES_COPY.maxWeight}</IonLabel>
       </IonListHeader>
       <IonList inset>
         <div className="weight-chart" dir="ltr" role="img" aria-label={label}>
@@ -31,8 +37,8 @@ export function WeightChart({ points }: { points: TrendPoint[] }) {
                 vectorEffect="non-scaling-stroke"
               />
               <path className="weight-chart-line" d={path} vectorEffect="non-scaling-stroke" />
-              {shown.map((d, i) => (
-                <circle key={i}className="weight-chart-dot" cx={d.x} cy={d.y} r="4" />
+              {shown.map((dot, index) => (
+                <circle key={index} className="weight-chart-dot" cx={dot.x} cy={dot.y} r="4" />
               ))}
             </svg>
             <span

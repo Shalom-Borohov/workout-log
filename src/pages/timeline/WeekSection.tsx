@@ -5,7 +5,7 @@ import { summarize } from '../../domain/timeline'
 import { WorkoutCard } from './WorkoutCard'
 
 export function WeekSection({ title, workouts }: { title: string; workouts: WorkoutWithChanges[] }) {
-  const doneSets = workouts.reduce((sum, w) => sum + summarize(w).doneSets, 0)
+  const doneSets = workouts.reduce((sum, workout) => sum + summarize(workout).doneSets, 0)
 
   return (
     <section>
@@ -16,8 +16,8 @@ export function WeekSection({ title, workouts }: { title: string; workouts: Work
         </IonLabel>
       </IonListHeader>
       <IonList inset>
-        {workouts.map((w) => (
-          <WorkoutCard key={w.id} workout={w} />
+        {workouts.map((workout) => (
+          <WorkoutCard key={workout.id} workout={workout} />
         ))}
       </IonList>
     </section>

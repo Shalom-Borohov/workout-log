@@ -3,6 +3,9 @@ import { ChangeBadge } from '../../components/ChangeBadge'
 import { formatAmount, formatDay, formatSummary, formatWeight } from '../../domain/format'
 import type { Change, WorkoutWithChanges } from '../../domain/progress'
 import { summarize } from '../../domain/timeline'
+import { workoutDetailPath } from '../../navigation/paths'
+
+const MAX_CARD_CHANGES = 3
 
 function changeLabel({ name, set, target }: Change): string {
   const value = set.weight === null ? formatAmount(set.amount, target) : formatWeight(set.weight)
@@ -15,7 +18,7 @@ export function WorkoutCard({ workout }: { workout: WorkoutWithChanges }) {
   const [summaryLine] = workout.summary.trim().split('\n')
 
   return (
-    <IonItem button detail routerLink={`/tabs/timeline/${workout.id}`}>
+    <IonItem button detail routerLink={workoutDetailPath(workout.id)}>
       <IonLabel className="workout-card">
         <div className="workout-card-heading">
           <h2 className="workout-card-title">{workout.routineName}</h2>
@@ -24,7 +27,7 @@ export function WorkoutCard({ workout }: { workout: WorkoutWithChanges }) {
         <p className="workout-card-meta">{formatSummary(minutes, doneSets)}</p>
         {workout.changes.length > 0 && (
           <div className="workout-card-changes">
-            {workout.changes.slice(0, 3).map((change) => (
+            {workout.changes.slice(0, MAX_CARD_CHANGES).map((change) => (
               <ChangeBadge key={change.name} kind={change.kind} label={changeLabel(change)} />
             ))}
           </div>

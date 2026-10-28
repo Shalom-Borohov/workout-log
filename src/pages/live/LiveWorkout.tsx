@@ -1,115 +1,98 @@
 import { IonContent, useIonRouter } from '@ionic/react'
-import { useMemo, useRef, useState } from 'react'
-import { useFinishedWorkouts } from '../../data/hooks'
-import { deleteWorkout, saveWorkout } from '../../data/repo'
-import { previousSetsLookup } from '../../domain/progress'
-import type { SetLog, Workout } from '../../domain/types'
-import { FinishSheet } from './FinishSheet'
+import { useRef, useState } from 'react'
+import { LIVE_COPY } from './copy'
+import { useBackgroundUrl } from '../../data/hooks'
+import { deleteWorkout } from '../../data/repo'
+import type { Workout } from '../../domain/types'
+import { addSet, removeSet, setNotes, toggleSkip, workoutProgress } from '../../domain/workoutEdits'
+import { TIMELINE_PATH, workoutDetailPath } from '../../navigation/paths'
+import { FinishSheet, type SheetMode } from './FinishSheet'
 import { ItemCard } from './ItemCard'
 import { ItemListModal } from './ItemListModal'
 import { LiveFooter } from './LiveFooter'
 import { LiveHeader } from './LiveHeader'
-import { useAutoAdvance } from './useAutoAdvance'
 import { useItemMenu } from './useItemMenu'
+import { useLiveWorkout } from './useLiveWorkout'
+import { useNoteAlert } from './useNoteAlert'
+import { useItemSwipe } from './useSwipe'
 import { useWakeLock } from './useWakeLock'
-import {
-  addSet,
-  firstUnfinished,
-  isDone,
-  itemAt,
-  itemRefs,
-  removeSet,
-  toggleSkip,
-  updateSet,
-  workoutProgress,
-} from '../../domain/workoutEdits'
 import './live.css'
+import './photo.css'
 
 export function LiveWorkout({ initial }: { initial: Workout }) {
   const router = useIonRouter()
-  const [workout, setWorkout] = useState(initial)
-  const latest = useRef(initial)
-  const [index, setIndex] = useState(() => firstUnfinished(initial))
-  const [finishing, setFinishing] = useState(false)
-  const [listing, setListing] = useState(false)
-  const refs = itemRefs(workout)
-  const ref = refs[index]
-  const item = itemAt(workout, ref)
-  const active = workout.finishedAt === null
-  const advance = useAutoAdvance(setIndex)
-  const history = useFinishedWorkouts()
 
-  const previous = useMemo(
-    () => history && previousSetsLookup(history, workout.startedAt),
-    [history, workout.startedAt],
-  )
+  const { workout, index, travel, total, ref, item, active, previous, apply, move, step, changeSet, finish } =
+    useLiveWorkout(initial)
+
+  const [sheet, setSheet] = useState<SheetMode | null>(null)
+  const [listing, setListing] = useState(false)
+  const content = useRef<HTMLIonContentElement>(null)
+  const photo = useBackgroundUrl()
 
   useWakeLock(active)
+  useItemSwipe(content, step)
 
-  function apply(edit: (w: Workout) => Workout) {
-    const next = edit(latest.current)
-
-    advance.cancel()
-    latest.current = next
-    setWorkout(next)
-    void saveWorkout(next)
-  }
-
-  function move(next: number) {
-    advance.cancel()
-    setIndex(next)
-  }
-
-  function changeSet(exercise: number, set: number, patch: Partial<SetLog>) {
-    apply((w) => updateSet(w, ref, exercise, set, patch))
-    if (patch.done === true && active && index < refs.length - 1 && isDone(itemAt(latest.current, ref))) {
-      advance.schedule(index + 1)
-    }
-  }
+  const openNote = useNoteAlert(item, (notes) => apply((current) => setNotes(current, ref, notes)))
 
   const openMenu = useItemMenu(item, {
-    onToggleSkip: () => apply((w) => toggleSkip(w, ref)),
-    onAddSet: () => apply((w) => addSet(w, ref)),
-    onRemoveSet: () => apply((w) => removeSet(w, ref)),
+    onToggleSkip: () => apply((current) => toggleSkip(current, ref)),
+    onAddSet: () => apply((current) => addSet(current, ref)),
+    onRemoveSet: () => apply((current) => removeSet(current, ref)),
+    onNote: () => void openNote(),
+    onSummary: () => setSheet('summary'),
   })
 
   async function save(summary: string) {
-    setFinishing(false)
-    await saveWorkout({ ...latest.current, summary, finishedAt: Date.now() })
-    router.push(`/tabs/timeline/${workout.id}`, 'root', 'replace')
+    setSheet(null)
+
+    if (sheet === 'summary') {
+      apply((current) => ({ ...current, summary }))
+
+      return
+    }
+    await finish(summary)
+    router.push(workoutDetailPath(workout.id), 'root', 'replace')
   }
 
   async function remove() {
-    setFinishing(false)
+    setSheet(null)
     await deleteWorkout(workout.id)
-    router.push('/tabs/timeline', 'root', 'replace')
+    router.push(TIMELINE_PATH, 'root', 'replace')
   }
 
   return (
     <>
       <LiveHeader
-        title={active ? workout.routineName : 'עריכת אימון'}
+        title={active ? workout.routineName : LIVE_COPY.editWorkout}
         startedAt={active ? workout.startedAt : null}
         progress={workoutProgress(workout)}
         onMenu={openMenu}
-        onFinish={() => (active ? setFinishing(true) : router.goBack())}
+        onFinish={() => (active ? setSheet('finish') : router.goBack())}
       />
-      <IonContent>
+      <IonContent
+        ref={content}
+        className={photo ? 'live-content live-photo' : 'live-content'}
+        style={photo ? { backgroundImage: `url("${photo}")` } : undefined}
+      >
         <ItemCard
-          key={index}
+          key={item.id}
+          travel={travel}
           item={item}
           sectionName={workout.sections[ref.section].name}
           position={index + 1}
-          total={refs.length}
+          total={total}
           previous={previous}
           onSetChange={changeSet}
         />
       </IonContent>
-      <LiveFooter index={index} total={refs.length} onMove={move} onList={() => setListing(true)} />
+      <LiveFooter index={index} total={total} onMove={move} onList={() => setListing(true)} />
       <ItemListModal
         isOpen={listing}
         workout={workout}
         current={index}
+        previous={previous}
+        onEdit={apply}
         onSelect={(next) => {
           move(next)
           setListing(false)
@@ -117,9 +100,9 @@ export function LiveWorkout({ initial }: { initial: Workout }) {
         onClose={() => setListing(false)}
       />
       <FinishSheet
-        isOpen={finishing}
+        mode={sheet}
         initialSummary={workout.summary}
-        onCancel={() => setFinishing(false)}
+        onCancel={() => setSheet(null)}
         onSave={save}
         onDelete={remove}
       />

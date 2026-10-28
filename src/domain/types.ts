@@ -3,10 +3,13 @@ export type Target = { kind: 'reps'; reps: number } | { kind: 'duration'; second
 export interface RoutineExercise {
   name: string
   target: Target
+  weight: number | null
+  tip: string
 }
 
 export interface RoutineItem {
   id: string
+  sets: number | null
   exercises: RoutineExercise[]
 }
 
@@ -35,6 +38,8 @@ export interface WorkoutExercise {
   target: Target
   sets: SetLog[]
   skipped: boolean
+  tip: string
+  note: string
 }
 
 export interface WorkoutItem {
@@ -55,4 +60,9 @@ export interface Workout {
   finishedAt: number | null
   summary: string
   sections: WorkoutSection[]
+}
+
+export interface BackgroundSetting {
+  key: 'background'
+  image: Blob
 }

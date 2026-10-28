@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { bestSet, exerciseHistory, exerciseNames, previousSetsLookup, startWorkout, targetAmount } from '../../src/domain/progress'
+import {
+  bestSet,
+  exerciseHistory,
+  exerciseNames,
+  previousSessionLookup,
+  previousSetsLookup,
+  startWorkout,
+  targetAmount,
+} from '../../src/domain/progress'
 import { done, exercise, oct, open, reps, routine, seconds, workout } from '../helpers/workouts'
 
 const fullBody = routine('r1', 'אימון גוף מלא', [
@@ -8,16 +16,16 @@ const fullBody = routine('r1', 'אימון גוף מלא', [
 ])
 
 const ids = () => {
-  let n = 0
+  let next = 0
 
-  return () => `w${++n}`
+  return () => `w${++next}`
 }
 
 describe('startWorkout', () => {
   it('prefills from target when no history', () => {
-    const w = startWorkout(fullBody, [], oct(26), ids())
+    const started = startWorkout(fullBody, [], oct(26), ids())
 
-    expect(w).toEqual({
+    expect(started).toEqual({
       id: 'w1',
       routineId: 'r1',
       routineName: 'אימון גוף מלא',
@@ -35,6 +43,8 @@ describe('startWorkout', () => {
                   name: 'סקוואט',
                   target: { kind: 'reps', reps: 12 },
                   skipped: false,
+                  tip: '',
+                  note: '',
                   sets: [
                     { weight: null, amount: 12, done: false },
                     { weight: null, amount: 12, done: false },
@@ -50,6 +60,8 @@ describe('startWorkout', () => {
                   name: 'פלאנק',
                   target: { kind: 'duration', seconds: 30 },
                   skipped: false,
+                  tip: '',
+                  note: '',
                   sets: [
                     { weight: null, amount: 30, done: false },
                     { weight: null, amount: 30, done: false },
@@ -64,15 +76,46 @@ describe('startWorkout', () => {
     })
   })
 
+  it('uses the exercise set count over the section count', () => {
+    const plan = routine('r1', 'אימון גוף מלא', [[{ name: 'סקוואט', target: reps(12) }], [{ name: 'מתח', target: reps(8) }]])
+    plan.sections[0].items[1].sets = 5
+
+    const started = startWorkout(plan, [], oct(26), ids())
+
+    expect(started.sections[0].items.map((item) => item.exercises[0].sets.length)).toEqual([3, 5])
+  })
+
+  it('prefills the starting weight only while the exercise has no history', () => {
+    const plan = routine('r1', 'אימון גוף מלא', [
+      [{ name: 'סקוואט', target: reps(12), weight: 20 }],
+      [{ name: 'מתח', target: reps(8), weight: 10 }],
+    ])
+    const history = [workout({ id: 'last', startedAt: oct(19), exercises: [exercise('מתח', [done(15, 8)])] })]
+
+    const started = startWorkout(plan, history, oct(26), ids())
+
+    expect(started.sections[0].items[0].exercises[0].sets.map((set) => set.weight)).toEqual([20, 20, 20])
+    expect(started.sections[0].items[1].exercises[0].sets.map((set) => set.weight)).toEqual([15, 15, 15])
+  })
+
+  it('copies the exercise tip and starts with an empty note', () => {
+    const plan = routine('r1', 'אימון גוף מלא', [[{ name: 'סקוואט', target: reps(12), tip: 'מושב על 4' }]])
+
+    const [squat] = startWorkout(plan, [], oct(26), ids()).sections[0].items[0].exercises
+
+    expect(squat.tip).toBe('מושב על 4')
+    expect(squat.note).toBe('')
+  })
+
   it('prefills from last session', () => {
     const history = [
       workout({ id: 'old', startedAt: oct(12), exercises: [exercise('סקוואט', [done(30, 12), done(30, 12), done(30, 12)])] }),
       workout({ id: 'last', startedAt: oct(19), exercises: [exercise('סקוואט', [done(40, 12), done(45, 10), done(45, 8)])] }),
     ]
 
-    const w = startWorkout(fullBody, history, oct(26), ids())
+    const started = startWorkout(fullBody, history, oct(26), ids())
 
-    expect(w.sections[0].items[0].exercises[0].sets).toEqual([
+    expect(started.sections[0].items[0].exercises[0].sets).toEqual([
       { weight: 40, amount: 12, done: false },
       { weight: 45, amount: 10, done: false },
       { weight: 45, amount: 8, done: false },
@@ -83,9 +126,9 @@ describe('startWorkout', () => {
     const history = [workout({ id: 'last', startedAt: oct(19), exercises: [exercise('פלאנק', [done(5, 12)], reps(12))] })]
     const timed = routine('r1', 'ליבה', [[{ name: 'פלאנק', target: seconds(30) }]], 2)
 
-    const w = startWorkout(timed, history, oct(26), ids())
+    const started = startWorkout(timed, history, oct(26), ids())
 
-    expect(w.sections[0].items[0].exercises[0].sets).toEqual([
+    expect(started.sections[0].items[0].exercises[0].sets).toEqual([
       { weight: null, amount: 30, done: false },
       { weight: null, amount: 30, done: false },
     ])
@@ -94,9 +137,9 @@ describe('startWorkout', () => {
   it('extra sets reuse the last logged set', () => {
     const history = [workout({ id: 'last', startedAt: oct(19), exercises: [exercise('סקוואט', [done(40, 12), done(42.5, 10)])] })]
 
-    const w = startWorkout(fullBody, history, oct(26), ids())
+    const started = startWorkout(fullBody, history, oct(26), ids())
 
-    expect(w.sections[0].items[0].exercises[0].sets).toEqual([
+    expect(started.sections[0].items[0].exercises[0].sets).toEqual([
       { weight: 40, amount: 12, done: false },
       { weight: 42.5, amount: 10, done: false },
       { weight: 42.5, amount: 10, done: false },
@@ -121,7 +164,7 @@ describe('startWorkout', () => {
     const pair = startWorkout(pairRoutine, history, oct(26), ids()).sections[0].items[0]
 
     expect(pair.id).toBe('r2-i0')
-    expect(pair.exercises.map((e) => e.sets)).toEqual([
+    expect(pair.exercises.map((pairExercise) => pairExercise.sets)).toEqual([
       [
         { weight: 25, amount: 12, done: false },
         { weight: 25, amount: 11, done: false },
@@ -164,6 +207,15 @@ describe('previousSets as history lookup', () => {
     expect(previousSetsLookup(history, oct(26))({ name: 'סקוואט', target: reps(10) })).toEqual([{ weight: 40, amount: 12, done: true }])
   })
 
+  it('carries the note of the session the previous sets come from', () => {
+    const history = [
+      workout({ id: 'a', startedAt: oct(12), exercises: [{ ...exercise('סקוואט', [done(40, 12)]), note: 'לעלות ל-42.5' }] }),
+      workout({ id: 'b', startedAt: oct(19), exercises: [{ ...exercise('סקוואט', [open(45, 12)]), note: 'כאב בברך' }] }),
+    ]
+
+    expect(previousSessionLookup(history, oct(26))({ name: 'סקוואט', target: reps(10) })?.note).toBe('לעלות ל-42.5')
+  })
+
   it('returns null for a never-done exercise', () => {
     const history = [workout({ id: 'a', startedAt: oct(19), exercises: [exercise('סקוואט', [done(40, 12)])] })]
 
@@ -201,8 +253,20 @@ describe('exerciseHistory', () => {
     ]
 
     expect(exerciseHistory(history, 'פלאנק')).toEqual([
-      { workoutId: 'b', startedAt: oct(19), target: { kind: 'duration', seconds: 45 }, sets: [{ weight: null, amount: 45, done: true }] },
-      { workoutId: 'a', startedAt: oct(12), target: { kind: 'duration', seconds: 30 }, sets: [{ weight: null, amount: 30, done: true }] },
+      {
+        workoutId: 'b',
+        startedAt: oct(19),
+        target: { kind: 'duration', seconds: 45 },
+        sets: [{ weight: null, amount: 45, done: true }],
+        note: '',
+      },
+      {
+        workoutId: 'a',
+        startedAt: oct(12),
+        target: { kind: 'duration', seconds: 30 },
+        sets: [{ weight: null, amount: 30, done: true }],
+        note: '',
+      },
     ])
   })
 })

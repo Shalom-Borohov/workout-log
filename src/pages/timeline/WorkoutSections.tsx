@@ -1,16 +1,6 @@
 import { IonItem, IonLabel, IonList, IonListHeader } from '@ionic/react'
-import { formatSets } from '../../domain/format'
-import { completedSets } from '../../domain/progress'
-import type { WorkoutExercise, WorkoutSection } from '../../domain/types'
-
-function setsText(e: WorkoutExercise): string {
-  if (e.skipped) {
-    return 'דילגת'
-  }
-  const sets = completedSets(e)
-
-  return sets.length > 0 ? formatSets(sets, e.target) : 'לא בוצע'
-}
+import { exerciseResult, formatSets } from '../../domain/format'
+import type { WorkoutSection } from '../../domain/types'
 
 export function WorkoutSections({ sections }: { sections: WorkoutSection[] }) {
   return sections.map((section, index) => (
@@ -20,11 +10,11 @@ export function WorkoutSections({ sections }: { sections: WorkoutSection[] }) {
       </IonListHeader>
       <IonList inset>
         {section.items.flatMap((item) =>
-          item.exercises.map((e) => (
-            <IonItem key={`${item.id}-${e.name}`}>
+          item.exercises.map((exercise) => (
+            <IonItem key={`${item.id}-${exercise.name}`}>
               <IonLabel className="ion-text-wrap workout-exercise">
-                <h3 className="workout-exercise-name">{e.name}</h3>
-                <p className="workout-exercise-sets">{setsText(e)}</p>
+                <h3 className="workout-exercise-name">{exercise.name}</h3>
+                <p className="workout-exercise-sets">{exerciseResult(exercise, formatSets)}</p>
               </IonLabel>
             </IonItem>
           )),

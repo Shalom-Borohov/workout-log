@@ -54,7 +54,7 @@ describe('routines', () => {
 
     const active = await activeWorkout()
 
-    await waitFor(() => expect(currentPath()).toBe(`/workout/${active?.id}`))
+    await waitFor(() => expect(currentPath()).toBe(`/tabs/workout/${active?.id}`))
   })
 
   it('start is disabled for a routine without exercises', async () => {
@@ -71,7 +71,7 @@ describe('routines', () => {
 
     fireEvent.click(startButton(await screen.findByText('אימון גוף מלא')))
 
-    await waitFor(() => expect(currentPath()).toBe('/workout/w-active'))
+    await waitFor(() => expect(currentPath()).toBe('/tabs/workout/w-active'))
     expect(await db.workouts.count()).toBe(1)
   })
 
@@ -88,7 +88,7 @@ describe('routines', () => {
     expect(screen.getByText('יש אימון בתהליך', { selector: '.action-sheet-title' })).toBeInTheDocument()
     fireEvent.click(screen.getByText('המשך את אימון גוף מלא', { selector: '.action-sheet-button-label' }))
 
-    await waitFor(() => expect(currentPath()).toBe('/workout/w-active'))
+    await waitFor(() => expect(currentPath()).toBe('/tabs/workout/w-active'))
     expect(await db.workouts.count()).toBe(1)
   })
 
@@ -201,7 +201,7 @@ describe('routines', () => {
 
     fireEvent.click(await screen.findByText('סקוואט', { selector: 'h2' }))
     ionChange(await ionField('שם התרגיל'), 'סקוואט גביע')
-    await waitFor(async () => expect(await exerciseAt(0)).toEqual({ name: 'סקוואט גביע', target: reps(12) }))
+    await waitFor(async () => expect(await exerciseAt(0)).toEqual({ name: 'סקוואט גביע', target: reps(12), weight: null, tip: '' }))
 
     ionChange(await screen.findByText('דקות', { selector: 'ion-segment-button ion-label' }), 'minutes')
     await waitFor(async () => expect((await exerciseAt(0))?.target).toEqual(seconds(720)))
@@ -226,7 +226,7 @@ describe('routines', () => {
     await saveRoutine(fullBody)
 
     renderAt('/tabs/routines/r1')
-    const names = async () => (await db.routines.get('r1'))?.sections.map((s) => s.items.map((i) => i.exercises[0].name))
+    const names = async () => (await db.routines.get('r1'))?.sections.map((section) => section.items.map((item) => item.exercises[0].name))
 
     await screen.findByText('סקוואט', { selector: 'h2' })
     ionEvent(await ionElement('ion-reorder-group'), 'ionReorderEnd', { from: 0, to: 1, complete: () => {} })

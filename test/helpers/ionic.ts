@@ -1,13 +1,13 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { expect } from 'vitest'
 
-export function ionEvent(el: Element, name: 'ionChange' | 'ionInput' | 'ionReorderEnd', detail: object) {
-  fireEvent(el, new CustomEvent(name, { detail, bubbles: true }))
+export function ionEvent(element: Element, name: 'ionChange' | 'ionInput' | 'ionReorderEnd', detail: object) {
+  fireEvent(element, new CustomEvent(name, { detail, bubbles: true }))
 }
 
-export const ionChange = (el: Element, value: string) => ionEvent(el, 'ionChange', { value })
+export const ionChange = (element: Element, value: string) => ionEvent(element, 'ionChange', { value })
 
-export const ionInput = (el: Element, value: string) => ionEvent(el, 'ionInput', { value })
+export const ionInput = (element: Element, value: string) => ionEvent(element, 'ionInput', { value })
 
 export async function ionField(label: string) {
   const native = await screen.findByLabelText(label)
@@ -26,15 +26,19 @@ export function visibleAll(selector: string) {
   return Array.from(document.querySelectorAll(`${VISIBLE_PAGE} ${selector}`))
 }
 
-export function actionSheetPresented() {
+function presented(event: 'ionActionSheetDidPresent' | 'ionAlertDidPresent') {
   return new Promise((resolve) => {
-    document.addEventListener('ionActionSheetDidPresent', resolve, { once: true })
+    document.addEventListener(event, resolve, { once: true })
   })
 }
 
-export function ionElement(selector: string) {
+export const actionSheetPresented = () => presented('ionActionSheetDidPresent')
+
+export const alertPresented = () => presented('ionAlertDidPresent')
+
+export function ionElement(selector: string, scope = VISIBLE_PAGE) {
   return waitFor(() => {
-    const element = document.querySelector(`${VISIBLE_PAGE} ${selector}`)
+    const element = document.querySelector(`${scope} ${selector}`)
 
     if (!element) {
       throw new Error(`no element ${selector}`)
@@ -47,9 +51,9 @@ export function ionElement(selector: string) {
 export const buttonByLabel = (label: string) => ionElement(`ion-button[aria-label="${label}"]`)
 
 export async function expectInOrder(texts: string[]) {
-  const elements = await Promise.all(texts.map((t) => screen.findByText(t)))
+  const elements = await Promise.all(texts.map((text) => screen.findByText(text)))
 
-  elements.slice(1).forEach((el, i) => {
-    expect(elements[i].compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  elements.slice(1).forEach((element, index) => {
+    expect(elements[index].compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 }

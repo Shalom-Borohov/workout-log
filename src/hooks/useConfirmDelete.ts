@@ -1,4 +1,5 @@
 import { useIonAlert } from '@ionic/react'
+import { COMMON_COPY } from '../copy/common'
 
 interface ConfirmDelete {
   header: string
@@ -15,8 +16,8 @@ export function useConfirmDelete() {
       header,
       message,
       buttons: [
-        { text: 'ביטול', role: 'cancel', handler: onCancel },
-        { text: 'מחיקה', role: 'destructive', handler: onConfirm },
+        { text: COMMON_COPY.cancel, role: 'cancel', handler: onCancel },
+        { text: COMMON_COPY.delete, role: 'destructive', handler: onConfirm },
       ],
     })
 }

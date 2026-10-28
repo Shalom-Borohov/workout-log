@@ -16,33 +16,31 @@ import {
   useIonRouter,
 } from '@ionic/react'
 import { useMemo, useState } from 'react'
+import { COMMON_COPY } from '../../copy/common'
+import { ROUTINES_COPY } from './copy'
 import { saveRoutine } from '../../data/repo'
 import { parseNote } from '../../domain/parseNote'
 import { exercisesOf } from '../../domain/progress'
+import { ROUTINES_PATH, routinePath } from '../../navigation/paths'
 import { NotePreview } from './NotePreview'
 import './routines.css'
 
 const newId = () => crypto.randomUUID()
 
-const PLACEHOLDER = `הדביקו כאן את הפתק, למשל:
-אימון רגליים
-חימום 2 סטים:
-אופניים 5 דקות
-
-עיקרי 3 סטים:
-סקוואט 12 -> מתח 8`
-
 export function ImportNotePage() {
   const router = useIonRouter()
   const [text, setText] = useState('')
   const parsed = useMemo(() => parseNote(text, newId), [text])
-  const missingReps = exercisesOf(parsed).some((e) => e.target.kind === 'reps' && e.target.reps === 0)
+
+  const missingReps = exercisesOf(parsed).some(
+    (exercise) => exercise.target.kind === 'reps' && exercise.target.reps === 0,
+  )
 
   async function save() {
     const id = newId()
 
     await saveRoutine({ id, name: parsed.name, sections: parsed.sections, updatedAt: Date.now() })
-    router.push(`/tabs/routines/${id}`, 'forward', 'replace')
+    router.push(routinePath(id), 'forward', 'replace')
   }
 
   return (
@@ -50,12 +48,12 @@ export function ImportNotePage() {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton defaultHref="/tabs/routines" text="חזרה" />
+            <IonBackButton defaultHref={ROUTINES_PATH} text={COMMON_COPY.back} />
           </IonButtons>
-          <IonTitle>הדבקת פתק</IonTitle>
+          <IonTitle>{COMMON_COPY.pasteNote}</IonTitle>
           <IonButtons slot="end">
             <IonButton strong disabled={parsed.sections.length === 0} onClick={save}>
-              שמירה
+              {COMMON_COPY.save}
             </IonButton>
           </IonButtons>
         </IonToolbar>
@@ -64,20 +62,20 @@ export function ImportNotePage() {
         <IonList inset>
           <IonItem>
             <IonTextarea
-              aria-label="פתק"
+              aria-label={ROUTINES_COPY.note}
               autoGrow
               rows={8}
-              placeholder={PLACEHOLDER}
+              placeholder={ROUTINES_COPY.notePlaceholder}
               value={text}
-              onIonInput={(e) => typeof e.detail.value === 'string' && setText(e.detail.value)}
+              onIonInput={(event) => typeof event.detail.value === 'string' && setText(event.detail.value)}
             />
           </IonItem>
         </IonList>
-        <IonNote className="list-footer">שורה שמסתיימת ב״סטים:״ פותחת חלק, ו־{'->'} מחבר שני תרגילים לזוג.</IonNote>
+        <IonNote className="list-footer">{ROUTINES_COPY.noteSyntaxHint}</IonNote>
         {parsed.sections.length > 0 && (
           <>
             <IonListHeader>
-              <IonLabel>שם האימון</IonLabel>
+              <IonLabel>{COMMON_COPY.routineName}</IonLabel>
             </IonListHeader>
             <IonList inset>
               <IonItem>
@@ -85,9 +83,7 @@ export function ImportNotePage() {
               </IonItem>
             </IonList>
             <IonNote className="list-footer">
-              {missingReps
-                ? 'תרגיל עם ? חסר בו מספר חזרות. אפשר לתקן אחרי השמירה.'
-                : 'בדקו את התוצאה. אפשר לתקן אחרי השמירה.'}
+              {missingReps ? ROUTINES_COPY.missingRepsHint : ROUTINES_COPY.checkResultHint}
             </IonNote>
             <NotePreview sections={parsed.sections} />
           </>

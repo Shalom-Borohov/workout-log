@@ -4,7 +4,7 @@ import { done, exercise, oct, open, workout } from '../helpers/workouts'
 
 describe('summarize', () => {
   it('summary counts done sets only', () => {
-    const w = workout({
+    const finished =workout({
       id: 'a',
       startedAt: oct(26, 10, 0),
       finishedAt: oct(26, 10, 47) + 30000,
@@ -15,22 +15,22 @@ describe('summarize', () => {
       ],
     })
 
-    expect(summarize(w)).toEqual({ minutes: 48, doneSets: 3 })
+    expect(summarize(finished)).toEqual({ minutes: 48, doneSets: 3 })
   })
 
   it('does not count ticked sets of a skipped exercise', () => {
-    const w = workout({
+    const finished =workout({
       id: 'a',
       startedAt: oct(26),
       exercises: [exercise('סקוואט', [done(40, 12)]), { ...exercise('לחיצת חזה', [done(30, 10)]), skipped: true }],
     })
 
-    expect(summarize(w).doneSets).toBe(1)
+    expect(summarize(finished).doneSets).toBe(1)
   })
 })
 
 const titlesAndIds = (groups: { title: string; workouts: { id: string }[] }[]) =>
-  groups.map((g) => [g.title, g.workouts.map((w) => w.id)])
+  groups.map((group) => [group.title, group.workouts.map((entry) => entry.id)])
 
 describe('groupByWeek', () => {
   it('week starts on Sunday', () => {

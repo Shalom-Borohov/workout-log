@@ -1,10 +1,11 @@
 import { IonIcon } from '@ionic/react'
 import { arrowUp, star } from 'ionicons/icons'
+import { APP_COPY } from '../copy/app'
 import './ChangeBadge.css'
 
 const BADGES = {
-  up: { icon: arrowUp, label: 'שיפור' },
-  record: { icon: star, label: 'שיא חדש' },
+  up: { icon: arrowUp, label: APP_COPY.improvement },
+  record: { icon: star, label: APP_COPY.newRecord },
 } as const
 
 export function ChangeBadge({ kind, label }: { kind: keyof typeof BADGES; label?: string }) {
