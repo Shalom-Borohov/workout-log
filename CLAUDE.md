@@ -57,7 +57,8 @@ Routing:
 
 - The app uses `IonReactHashRouter` because it is hosted on GitHub Pages.
 - The root `IonRouterOutlet` holds `/tabs/*` (`Tabs.tsx`, with its own outlet and tab bar) and a redirect from the old `/workout/:id`.
-- The live workout page is `/tabs/workout/:id`. It sits inside the tabs outlet, and the tab bar is hidden on it.
+- The live workout page sits under the tab it was opened from: `/tabs/timeline/workout/:id` or `/tabs/routines/workout/:id` (`workoutPath(tab, id)`). The tab bar is hidden on it.
+  - Ionic React assigns a page to a tab only if its URL is under that tab's path. A page outside every tab makes going back count as a tab switch, which has no animation.
   - Keep it there. Ionic unmounts a nested outlet's pages while you're in a sibling root route, so a swipe-back would reveal a blank shell.
 - The same live page edits a finished workout (edit mode, entered via the detail page's "עריכה").
 - `src/navigation/tapGuard.ts` ignores taps while an Ionic page transition is still animating.

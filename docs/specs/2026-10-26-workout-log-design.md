@@ -54,7 +54,7 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 32. **History export (added 2026-10-28):** "ייצוא היסטוריה" in Settings shares finished workouts as readable text (`.txt`), newest first, in the format of the old notes.
 33. **Feedback (added 2026-10-28):** "דיווח על באג / הצעה" in Settings opens a prefilled GitHub issue (labels bug/enhancement) with the device and build date and no workout data. The repo is public, so the issue is too.
 34. **Navigation (added 2026-10-28):**
-    - The live workout lives inside the tabs at `/tabs/workout/:id`, with the tab bar hidden, so swiping back reveals the page underneath. Old `/workout/:id` links redirect.
+    - The live workout opens under the tab it was started from (`/tabs/timeline/workout/:id` or `/tabs/routines/workout/:id`), with the tab bar hidden, so swiping back reveals the page underneath. Ionic only animates a back step between pages of the same tab (updated 2026-10-29). Old `/workout/:id` and `/tabs/workout/:id` links redirect to the timeline version.
     - Taps are ignored while a page transition is still animating, as in UIKit. This fixed the white screen and the finished workout that wouldn't reopen after a quick swipe back.
 
 ## Assumptions (accepted by the user)

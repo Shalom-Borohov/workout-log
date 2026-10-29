@@ -20,7 +20,7 @@ import { duplicateRoutine } from '../../domain/routineEdit'
 import type { Routine } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import { useStartWorkout } from '../../hooks/useStartWorkout'
-import { routinePath } from '../../navigation/paths'
+import { ROUTINES_PATH, routinePath } from '../../navigation/paths'
 
 function counts(routine: Routine): string {
   return [
@@ -32,7 +32,7 @@ function counts(routine: Routine): string {
 export function RoutineRow({ routine }: { routine: Routine }) {
   const router = useIonRouter()
   const confirmDelete = useConfirmDelete()
-  const startWorkout = useStartWorkout()
+  const startWorkout = useStartWorkout(ROUTINES_PATH)
   const sliding = useRef<HTMLIonItemSlidingElement>(null)
 
   function start(event: MouseEvent) {

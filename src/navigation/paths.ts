@@ -1,7 +1,5 @@
 const TABS_PATH = '/tabs'
 
-const WORKOUT_PREFIX = `${TABS_PATH}/workout/`
-
 export const TIMELINE_PATH = `${TABS_PATH}/timeline`
 
 export const ROUTINES_PATH = `${TABS_PATH}/routines`
@@ -12,9 +10,13 @@ export const SETTINGS_PATH = `${ROUTINES_PATH}/settings`
 
 export const IMPORT_PATH = `${ROUTINES_PATH}/import`
 
-export const workoutPath = (id: string) => `${WORKOUT_PREFIX}${id}`
+export type WorkoutTab = typeof TIMELINE_PATH | typeof ROUTINES_PATH
 
-export const isWorkoutPath = (pathname: string) => pathname.startsWith(WORKOUT_PREFIX)
+const WORKOUT_TABS: WorkoutTab[] = [TIMELINE_PATH, ROUTINES_PATH]
+
+export const workoutPath = (tab: WorkoutTab, id: string) => `${tab}/workout/${id}`
+
+export const isWorkoutPath = (pathname: string) => WORKOUT_TABS.some((tab) => pathname.startsWith(workoutPath(tab, '')))
 
 export const workoutDetailPath = (id: string) => `${TIMELINE_PATH}/${id}`
 

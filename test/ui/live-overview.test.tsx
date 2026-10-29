@@ -27,7 +27,7 @@ const modalElement = (selector: string) => ionElement(selector, 'ion-modal')
 async function openOverviewEditing() {
   const user = userEvent.setup()
 
-  renderAt('/tabs/workout/w1')
+  renderAt('/tabs/timeline/workout/w1')
   await user.click(await screen.findByLabelText('כל התרגילים'))
   await user.click(await screen.findByText('עריכה', { selector: 'ion-modal ion-button' }))
 
@@ -95,7 +95,7 @@ describe('overview editing', () => {
         ],
       }),
     )
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
     fireEvent.click((await screen.findAllByText('סט 2', { selector: '.set-select .set-title' }))[0])
     fireEvent.click(await screen.findByLabelText('כל התרגילים'))
     fireEvent.click(await screen.findByText('עריכה', { selector: 'ion-modal ion-button' }))

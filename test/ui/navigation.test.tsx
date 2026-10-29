@@ -48,13 +48,13 @@ describe('navigation round trips', () => {
     }
   })
 
-  it('a workout link from the previous version still opens the workout', async () => {
+  it.each(['/workout/live', '/tabs/workout/live'])('a workout link from a previous version (%s) still opens the workout', async (link) => {
     await saveWorkout(
       workout({ id: 'live', startedAt: oct(26, 11), finishedAt: null, exercises: [exercise('סקוואט', [open(20, 10)])] }),
     )
-    renderApp('/workout/live')
+    renderApp(link)
 
-    await waitFor(() => expect(path()).toBe('/tabs/workout/live'))
+    await waitFor(() => expect(path()).toBe('/tabs/timeline/workout/live'))
     await expectVisible('תרגיל 1 מתוך 1')
   })
 
@@ -66,7 +66,7 @@ describe('navigation round trips', () => {
 
     for (let round = 0; round < 3; round++) {
       fireEvent.click(await screen.findByText('אימון בתהליך'))
-      await waitFor(() => expect(path()).toBe('/tabs/workout/live'))
+      await waitFor(() => expect(path()).toBe('/tabs/timeline/workout/live'))
       await expectVisible('תרגיל 1 מתוך 1')
 
       fireEvent.click(screen.getByTestId('swipe-back'))

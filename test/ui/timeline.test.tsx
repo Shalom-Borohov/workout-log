@@ -89,7 +89,7 @@ describe('timeline', () => {
 
     const started = await waitFor(startedWorkout)
     expect(started.routineId).toBe('r1')
-    await waitFor(() => expect(currentPath()).toBe(`/tabs/workout/${started.id}`))
+    await waitFor(() => expect(currentPath()).toBe(`/tabs/timeline/workout/${started.id}`))
   })
 
   it('start skips routines without exercises', async () => {
@@ -121,7 +121,7 @@ describe('timeline', () => {
 
     const started = await waitFor(startedWorkout)
     expect(started.routineId).toBe('r2')
-    await waitFor(() => expect(currentPath()).toBe(`/tabs/workout/${started.id}`))
+    await waitFor(() => expect(currentPath()).toBe(`/tabs/timeline/workout/${started.id}`))
   })
 
   it('active workout shows resume banner', async () => {
@@ -135,7 +135,7 @@ describe('timeline', () => {
     expect(screen.getByText('אימון בתהליך').closest('ion-footer')).not.toBeNull()
     expect(screen.getByText('30:00')).toBeInTheDocument()
     expect(screen.queryByText('התחל אימון')).not.toBeInTheDocument()
-    await waitFor(() => expect(currentPath()).toBe('/tabs/workout/live'))
+    await waitFor(() => expect(currentPath()).toBe('/tabs/timeline/workout/live'))
   })
 
   it('detail lists sets per exercise', async () => {
@@ -203,6 +203,6 @@ describe('timeline', () => {
 
     fireEvent.click(await screen.findByText('עריכה'))
 
-    await waitFor(() => expect(currentPath()).toBe('/tabs/workout/w1'))
+    await waitFor(() => expect(currentPath()).toBe('/tabs/timeline/workout/w1'))
   })
 })

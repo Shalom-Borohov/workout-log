@@ -20,7 +20,7 @@ describe('live previous session', () => {
       workout({ id: 'prev', startedAt: oct(22), exercises: [exercise('סקוואט', [done(57.5, 10), done(57.5, 8), open(57.5, 8)])] }),
     )
     await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10)])] }))
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await waitFor(() => expect(previousLines()).toEqual(['פעם קודמת: 57.5 ק״ג × 10, 8']))
   })
@@ -37,7 +37,7 @@ describe('live previous session', () => {
         exercises: [exercise('סקוואט', [open(60, 10)]), exercise('חתירה', [open(30, 12)])],
       }),
     )
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await waitFor(() => expect(visibleAll('.item-note').map((line) => line.textContent)).toEqual(['הערה: לעלות במשקל']))
   })
@@ -45,7 +45,7 @@ describe('live previous session', () => {
   it('shows no note line when the previous note is empty', async () => {
     await saveWorkout(workout({ id: 'prev', startedAt: oct(22), exercises: [exercise('סקוואט', [done(57.5, 10)])] }))
     await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10)])] }))
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await waitFor(() => expect(previousLines()).toHaveLength(1))
     expect(visibleAll('.item-note')).toEqual([])
@@ -53,7 +53,7 @@ describe('live previous session', () => {
 
   it('is hidden the first time an exercise is done', async () => {
     await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10)])] }))
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     expect(await screen.findByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
     expect(previousLines()).toEqual([])
@@ -66,7 +66,7 @@ describe('live previous session', () => {
     const base = workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [] })
     const pair = { id: 'p', exercises: [exercise('מתח', [open(null, 8)]), exercise('מקבילים', [open(10, 10)])] }
     await saveWorkout({ ...base, sections: [{ name: 'סופר סט', items: [pair] }] })
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await waitFor(() => expect(previousLines()).toEqual(['פעם קודמת · מתח: 8, 7 חזרות', 'פעם קודמת · מקבילים: 10 ק״ג × 10']))
   })

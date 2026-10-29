@@ -39,7 +39,7 @@ describe('live card motion', () => {
   it('slides the new card in from the direction of travel, not on first load', async () => {
     await saveWorkout(threeItems)
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await heading('סקוואט')
     expect(await cardClass()).toBe('item-card')
@@ -57,7 +57,7 @@ describe('live card motion', () => {
 describe('live swipe up on the footer', () => {
   it('opens the exercise list', async () => {
     await saveWorkout(threeItems)
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     const footer = (await screen.findByText('הבא', { selector: 'ion-button' })).closest('ion-footer')
 
@@ -71,7 +71,7 @@ describe('live swipe up on the footer', () => {
 
   it('ignores a downward or short drag', async () => {
     await saveWorkout(threeItems)
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     const footer = (await screen.findByText('הבא', { selector: 'ion-button' })).closest('ion-footer')
 
@@ -89,7 +89,7 @@ describe('live swipe up on the footer', () => {
 describe('live swipe between exercises', () => {
   it('dragging toward the start side (right in RTL) moves to the next exercise, even a skipped one', async () => {
     await saveWorkout(threeItems)
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     drag(await heading('סקוואט'), { x: 300, y: 200 }, { x: 450, y: 205 })
 
@@ -100,7 +100,7 @@ describe('live swipe between exercises', () => {
   it('dragging toward the end side (left in RTL) moves to the previous exercise', async () => {
     await saveWorkout(threeItems)
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByText('הבא', { selector: 'ion-button' }))
     drag(await heading('לחיצת חזה'), { x: 450, y: 200 }, { x: 300, y: 205 })
@@ -111,7 +111,7 @@ describe('live swipe between exercises', () => {
   it('ignores a drag that starts at the swipe-back edge', async () => {
     await saveWorkout(threeItems)
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByText('הבא', { selector: 'ion-button' }))
     drag(await heading('לחיצת חזה'), { x: right - 20, y: 200 }, { x: right - 200, y: 205 })
@@ -122,7 +122,7 @@ describe('live swipe between exercises', () => {
 
   it('ignores a short or mostly vertical drag', async () => {
     await saveWorkout(threeItems)
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     drag(await heading('סקוואט'), { x: 300, y: 200 }, { x: 330, y: 202 })
     drag(screen.getByText('סקוואט', { selector: 'h1' }), { x: 300, y: 200 }, { x: 360, y: 400 })
@@ -133,7 +133,7 @@ describe('live swipe between exercises', () => {
 
   it('does nothing past the first or last exercise', async () => {
     await saveWorkout(threeItems)
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     drag(await heading('סקוואט'), { x: 450, y: 200 }, { x: 300, y: 205 })
     await pause(100)

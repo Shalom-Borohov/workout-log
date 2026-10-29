@@ -3,9 +3,9 @@ import { APP_COPY } from '../copy/app'
 import { COMMON_COPY } from '../copy/common'
 import { activeWorkout, beginWorkout } from '../data/repo'
 import type { Routine } from '../domain/types'
-import { workoutPath } from '../navigation/paths'
+import { type WorkoutTab, workoutPath } from '../navigation/paths'
 
-export function useStartWorkout() {
+export function useStartWorkout(tab: WorkoutTab) {
   const router = useIonRouter()
   const [presentSheet] = useIonActionSheet()
 
@@ -15,7 +15,7 @@ export function useStartWorkout() {
       presentSheet({
         header: APP_COPY.workoutInProgress,
         buttons: [
-          { text: APP_COPY.resumeWorkout(active.routineName), handler: () => router.push(workoutPath(active.id)) },
+          { text: APP_COPY.resumeWorkout(active.routineName), handler: () => router.push(workoutPath(tab, active.id)) },
           { text: COMMON_COPY.cancel, role: 'cancel' },
         ],
       })
@@ -23,6 +23,6 @@ export function useStartWorkout() {
       return
     }
     const workout = await beginWorkout(routine)
-    router.push(workoutPath(workout.id))
+    router.push(workoutPath(tab, workout.id))
   }
 }
