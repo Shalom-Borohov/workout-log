@@ -21,6 +21,7 @@ import { TOAST_OPTIONS } from '../../components/toast'
 import { COMMON_COPY } from '../../copy/common'
 import { SETTINGS_COPY } from './copy'
 import { type Backup, exportBackup, restoreBackup } from '../../data/backup'
+import { formatDateTime } from '../../domain/format'
 import { ROUTINES_PATH } from '../../navigation/paths'
 import { isShareCancel, readBackup, shareBackup } from './backupFile'
 import { BackgroundSettings } from './BackgroundSettings'
@@ -122,6 +123,7 @@ export function SettingsPage() {
         <IonNote className="list-footer">{SETTINGS_COPY.historyFooter}</IonNote>
         <BackgroundSettings onError={(error) => void toast(errorMessage(error))} />
         <FeedbackSettings />
+        <IonNote className="list-footer">{SETTINGS_COPY.version(formatDateTime(Date.parse(__BUILD_TIME__)))}</IonNote>
         <input
           ref={fileInput}
           type="file"

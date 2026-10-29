@@ -123,8 +123,14 @@ describe('settings', () => {
     expect(searchParams.get('title')).toBe('הכפתור לא עובד')
     expect(searchParams.get('labels')).toBe('bug')
     expect(searchParams.get('body')).toBe(
-      `הכפתור לא עובד\nלחצתי פעמיים\n\n### מכשיר\n${navigator.userAgent}\nגרסה: ${__BUILD_DATE__}`,
+      `הכפתור לא עובד\nלחצתי פעמיים\n\n### מכשיר\n${navigator.userAgent}\nגרסה: ${__BUILD_TIME__}`,
     )
+  })
+
+  it('shows when the running version was built', async () => {
+    renderAt('/tabs/routines/settings')
+
+    expect(await screen.findByText(/^גרסה \d{4}-\d{2}-\d{2} \d{2}:\d{2}$/)).toBeInTheDocument()
   })
 
   it('opens a suggestion with a shortened title, only once there is text', async () => {

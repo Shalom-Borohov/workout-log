@@ -61,7 +61,9 @@ Routing:
   - Ionic React assigns a page to a tab only if its URL is under that tab's path. A page outside every tab makes going back count as a tab switch, which has no animation.
   - Keep it there. Ionic unmounts a nested outlet's pages while you're in a sibling root route, so a swipe-back would reveal a blank shell.
 - The same live page edits a finished workout (edit mode, entered via the detail page's "עריכה").
-- `src/navigation/tapGuard.ts` ignores taps while an Ionic page transition is still animating.
+- Ionic's own swipe-back is off (`swipeBackEnabled: false` in `main.tsx`). In a Home Screen app, iOS already provides an edge swipe that goes back in history. On a Hebrew iPhone it uses the right edge, the same edge as Ionic's RTL swipe, so both fired on every swipe. The result was a jump and frozen taps (ionic-framework#29733, #22299).
+  - iOS's swipe slides the page itself, and then Ionic plays its own back transition. `src/navigation/swipeBack.ts` (`navAnimation`) makes a back step with no tap in the last second instant: 1 ms, because Ionic treats 0 as its default 540 ms. In-app backs always follow a tap, so they keep the slide.
+- `src/navigation/tapGuard.ts` ignores taps while an Ionic page transition is still animating, for at most 1 s per transition, so a stuck animation can't freeze the app.
   - Without it, a tap during the end of a swipe-back reuses a page that Ionic then hides with `display: none`.
 
 Live page state:

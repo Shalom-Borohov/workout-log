@@ -18,6 +18,10 @@ function animationsAre(animations: object[]) {
   Object.defineProperty(document, 'getAnimations', { configurable: true, value: () => animations })
 }
 
+function timelineAt(currentTime: number) {
+  Object.defineProperty(document, 'timeline', { configurable: true, value: { currentTime } })
+}
+
 describe('taps during page transitions', () => {
   let release = () => {}
 
@@ -31,11 +35,41 @@ describe('taps during page transitions', () => {
     const tapped = vi.fn()
     button.addEventListener('click', tapped)
     release = guardTapsDuringTransitions(document)
-    animationsAre([{ playState: 'running', effect: { target: content } }])
+    timelineAt(1000)
+    animationsAre([{ playState: 'running', startTime: 900, effect: { target: content } }])
 
     button.click()
 
     expect(tapped).not.toHaveBeenCalled()
+  })
+
+  it('lets taps through when a transition has been "running" longer than any transition lasts', () => {
+    const { content, button } = page()
+    const tapped = vi.fn()
+    button.addEventListener('click', tapped)
+    release = guardTapsDuringTransitions(document)
+    timelineAt(60_000)
+    animationsAre([{ playState: 'running', startTime: 1000, effect: { target: content } }])
+
+    button.click()
+
+    expect(tapped).toHaveBeenCalledOnce()
+  })
+
+  it('blocks taps only briefly for a transition that never gets a start time', () => {
+    const { content, button } = page()
+    const tapped = vi.fn()
+    button.addEventListener('click', tapped)
+    release = guardTapsDuringTransitions(document)
+    const clock = vi.spyOn(performance, 'now').mockReturnValue(1000)
+    animationsAre([{ playState: 'running', startTime: null, effect: { target: content } }])
+
+    button.click()
+    clock.mockReturnValue(61_000)
+    button.click()
+
+    expect(tapped).toHaveBeenCalledOnce()
+    clock.mockRestore()
   })
 
   it('lets taps through once the transition finished', () => {
