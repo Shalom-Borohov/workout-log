@@ -1,10 +1,14 @@
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import { defineConfig } from 'vitest/config'
+import packageJson from './package.json' with { type: 'json' }
 
 export default defineConfig(({ mode }) => ({
   base: '/workout-log/',
-  define: { __BUILD_TIME__: JSON.stringify(new Date().toISOString()) },
+  define: {
+    __APP_VERSION__: JSON.stringify(packageJson.version),
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
   resolve: mode === 'test' ? { conditions: ['browser'] } : {},
   plugins: [
     react(),

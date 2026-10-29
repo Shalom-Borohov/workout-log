@@ -13,6 +13,7 @@ const fullBody = {
       { name: 'פלאנק', target: seconds(30) },
     ],
   ]),
+  createdAt: 3,
   updatedAt: 5,
 }
 
@@ -59,6 +60,7 @@ describe('backup', () => {
       [],
       { ...valid, version: 2 },
       { ...valid, routines: undefined },
+      { ...valid, routines: [{ ...fullBody, createdAt: '2026-10-29' }] },
       { ...valid, routines: [{ ...fullBody, sections: [{ id: 's1', name: 'עיקרי', sets: '3', items: [] }] }] },
       { ...valid, workouts: [noSummary] },
       { ...valid, workouts: [{ ...past, finishedAt: undefined }] },
@@ -136,6 +138,14 @@ describe('backup', () => {
       tip: '',
       note: '',
     })
+  })
+
+  it('a backup from before creation dates dates each routine from its last edit', async () => {
+    const { createdAt: _createdAt, ...undated } = fullBody
+
+    await restoreBackup(parseBackup({ version: 1, exportedAt: oct(26), routines: [undated], workouts: [] }))
+
+    expect(await db.routines.toArray()).toEqual([{ ...fullBody, createdAt: 5 }])
   })
 
   it('the background photo stays out of the backup and survives a restore', async () => {

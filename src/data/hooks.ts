@@ -6,7 +6,9 @@ import { db } from './db'
 import { activeWorkout, finishedWorkouts } from './repo'
 
 export function useRoutines() {
-  return useLiveQuery(() => db.routines.orderBy('name').toArray())
+  return useLiveQuery(async () =>
+    (await db.routines.toArray()).sort((first, second) => second.createdAt - first.createdAt),
+  )
 }
 
 export function useRoutine(id: string) {

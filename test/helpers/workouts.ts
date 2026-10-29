@@ -51,6 +51,7 @@ export function routine(id: string, name: string, exercises: ExerciseInput[][], 
   return {
     id,
     name,
+    createdAt: 0,
     updatedAt: 0,
     sections: [
       {

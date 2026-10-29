@@ -12,6 +12,7 @@ import {
   formatWeight,
   fromDisplayAmount,
   isoDate,
+  shortDate,
   toDisplayAmount,
 } from '../../src/domain/format'
 import { done, oct, reps, seconds } from '../helpers/workouts'
@@ -23,8 +24,19 @@ describe('isoDate', () => {
 })
 
 describe('formatDateTime', () => {
-  it('shows the local date and time to the minute', () => {
-    expect(formatDateTime(oct(5, 9, 7))).toBe('2026-10-05 09:07')
+  it('shows the local date as dd.mm.yyyy and the time to the minute', () => {
+    expect(formatDateTime(oct(5, 9, 7))).toBe('5.10.2026 09:07')
+  })
+})
+
+describe('shortDate', () => {
+  it('shows day.month within the current year', () => {
+    expect(shortDate(new Date(2026, 0, 3).getTime(), oct(29))).toBe('3.1')
+  })
+
+  it('adds the two-digit year outside the current year', () => {
+    expect(shortDate(new Date(2025, 9, 29).getTime(), oct(29))).toBe('29.10.25')
+    expect(shortDate(new Date(2009, 2, 1).getTime(), oct(29))).toBe('1.3.09')
   })
 })
 

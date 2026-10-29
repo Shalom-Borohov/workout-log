@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { activeWorkout, finishedWorkouts, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
-import { expectInOrder, ionChange, ionField } from '../helpers/ionic'
+import { buttonByLabel, expectInOrder, ionChange, ionElement, ionField } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, open, reps, routine, seconds, workout } from '../helpers/workouts'
 
@@ -204,5 +204,18 @@ describe('timeline', () => {
     fireEvent.click(await screen.findByText('עריכה'))
 
     await waitFor(() => expect(currentPath()).toBe('/tabs/timeline/workout/w1'))
+  })
+
+  it('opens settings from the timeline and goes back to it', async () => {
+    renderAt('/tabs/timeline')
+
+    fireEvent.click(await buttonByLabel('הגדרות'))
+
+    await waitFor(() => expect(currentPath()).toBe('/tabs/timeline/settings'))
+    expect(await screen.findByText('ייצוא גיבוי')).toBeInTheDocument()
+
+    fireEvent.click(await ionElement('ion-back-button'))
+
+    await waitFor(() => expect(currentPath()).toBe('/tabs/timeline'))
   })
 })

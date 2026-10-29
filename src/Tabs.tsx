@@ -23,10 +23,11 @@ export function Tabs() {
         <Route path="timeline" element={<TimelinePage />} />
         <Route path="timeline/:id" element={<WorkoutDetailPage />} />
         <Route path="timeline/workout/:id" element={<LiveWorkoutPage />} />
+        <Route path="timeline/settings" element={<SettingsPage tab={TIMELINE_PATH} />} />
         <Route path="routines" element={<RoutinesPage />} />
         <Route path="routines/workout/:id" element={<LiveWorkoutPage />} />
         <Route path="routines/import" element={<ImportNotePage />} />
-        <Route path="routines/settings" element={<SettingsPage />} />
+        <Route path="routines/settings" element={<SettingsPage tab={ROUTINES_PATH} />} />
         <Route path="routines/:id" element={<RoutineEditPage />} />
         <Route path="exercises" element={<ExercisesPage />} />
         <Route path="exercises/:name" element={<ExerciseHistoryPage />} />

@@ -12,6 +12,7 @@ import {
 import { add } from 'ionicons/icons'
 import { useMemo, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
+import { SettingsButton } from '../../components/SettingsButton'
 import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
 import { useActiveWorkout, useFinishedWorkouts } from '../../data/hooks'
@@ -19,6 +20,7 @@ import { useNow } from '../../hooks/useNow'
 import { withChanges } from '../../domain/progress'
 import { MINUTE_MS } from '../../domain/time'
 import { groupByWeek } from '../../domain/timeline'
+import { TIMELINE_PATH } from '../../navigation/paths'
 import { ActiveWorkoutBanner } from './ActiveWorkoutBanner'
 import { PastWorkoutModal } from './PastWorkoutModal'
 import { StartWorkoutButton } from './StartWorkoutButton'
@@ -39,6 +41,7 @@ export function TimelinePage() {
         <IonToolbar>
           <IonTitle>{COMMON_COPY.timeline}</IonTitle>
           <IonButtons slot="end">
+            <SettingsButton tab={TIMELINE_PATH} />
             <IonButton aria-label={TIMELINE_COPY.addPastWorkout} onClick={() => setAddingPast(true)}>
               <IonIcon slot="icon-only" icon={add} />
             </IonButton>

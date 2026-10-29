@@ -102,19 +102,22 @@ export function copyName(name: string): string {
   return APP_COPY.copyName(name)
 }
 
+export function createRoutine(id: string, name: string, sections: RoutineSection[], now: number): Routine {
+  return { id, name, sections, createdAt: now, updatedAt: now }
+}
+
 export function duplicateRoutine(routine: Routine, newId: () => string, now: number): Routine {
-  return {
+  const id = newId()
+
+  const sections = routine.sections.map((section) => ({
+    ...section,
     id: newId(),
-    name: copyName(routine.name),
-    updatedAt: now,
-    sections: routine.sections.map((section) => ({
-      ...section,
-      id: newId(),
-      items: section.items.map((item) => ({ ...item, id: newId() })),
-    })),
-  }
+    items: section.items.map((item) => ({ ...item, id: newId() })),
+  }))
+
+  return createRoutine(id, copyName(routine.name), sections, now)
 }
 
 export function newRoutine(id: string, sectionId: string, now: number): Routine {
-  return { id, name: DEFAULT_ROUTINE_NAME, updatedAt: now, sections: [newSection(sectionId, DEFAULT_SECTION_NAME)] }
+  return createRoutine(id, DEFAULT_ROUTINE_NAME, [newSection(sectionId, DEFAULT_SECTION_NAME)], now)
 }

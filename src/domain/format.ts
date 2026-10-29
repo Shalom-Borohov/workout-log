@@ -17,13 +17,25 @@ export function isoDate(timestamp: number): string {
 export function formatDateTime(timestamp: number): string {
   const date = new Date(timestamp)
 
-  return `${isoDate(timestamp)} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+  return `${dayMonth(timestamp)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
 export function dayMonth(timestamp: number): string {
   const date = new Date(timestamp)
 
   return `${date.getDate()}.${date.getMonth() + 1}`
+}
+
+const YEARS_PER_CENTURY = 100
+
+export function shortDate(timestamp: number, now: number): string {
+  const year = new Date(timestamp).getFullYear()
+
+  if (year === new Date(now).getFullYear()) {
+    return dayMonth(timestamp)
+  }
+
+  return `${dayMonth(timestamp)}.${pad(year % YEARS_PER_CENTURY)}`
 }
 
 export function formatDay(timestamp: number): string {

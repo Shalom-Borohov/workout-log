@@ -53,8 +53,8 @@ describe('past workout', () => {
   })
 
   it('picks among routines with exercises and defaults to an hour ending now', async () => {
-    await saveRoutine(legs)
-    await saveRoutine(routine('r2', 'אימון גב', [[{ name: 'חתירה', target: reps(12) }]]))
+    await saveRoutine({ ...legs, createdAt: oct(1) })
+    await saveRoutine({ ...routine('r2', 'אימון גב', [[{ name: 'חתירה', target: reps(12) }]]), createdAt: oct(2) })
     await saveRoutine({ ...routine('r3', 'אימון ריק', []), sections: [] })
     await openModal()
 

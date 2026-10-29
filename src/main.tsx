@@ -13,13 +13,13 @@ import '@ionic/react/css/palettes/dark.system.css'
 import './theme.css'
 
 import { App } from './App'
-import { pageTransition, trackTaps } from './navigation/swipeBack'
+import { blockSystemEdgeSwipe } from './navigation/edgeSwipe'
 import { guardTapsDuringTransitions } from './navigation/tapGuard'
 
-setupIonicReact({ mode: 'ios', swipeBackEnabled: false, navAnimation: pageTransition })
+setupIonicReact({ mode: 'ios' })
 
 guardTapsDuringTransitions(document)
-trackTaps(document)
+blockSystemEdgeSwipe(document)
 
 navigator.storage?.persist?.()
 

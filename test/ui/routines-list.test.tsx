@@ -3,11 +3,17 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveRoutine } from '../../src/data/repo'
 import type { Routine } from '../../src/domain/types'
+import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
+import { expectInOrder } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
-import { reps, routine, routineExercise } from '../helpers/workouts'
+import { oct, reps, routine, routineExercise } from '../helpers/workouts'
 
-const base = routine('r1', 'אימון רגליים', [[{ name: 'סקוואט', target: reps(12) }]])
+const base = { ...routine('r1', 'אימון רגליים', [[{ name: 'סקוואט', target: reps(12) }]]), createdAt: oct(20) }
+
+const short = routine('r2', 'אימון קצר', [[{ name: 'מתח', target: reps(8) }]])
+
+const lastYear = new Date(2025, 9, 29).getTime()
 
 const twoSections: Routine = {
   ...base,
@@ -33,14 +39,33 @@ const twoSections: Routine = {
 
 describe('routines list', () => {
   beforeEach(resetDb)
+  freezeDate(oct(29, 12))
 
-  it('routine row shows exercise and section counts', async () => {
+  it('routine row shows exercise and section counts and the creation date', async () => {
     await saveRoutine(twoSections)
-    await saveRoutine(routine('r2', 'אימון קצר', [[{ name: 'מתח', target: reps(8) }]]))
+    await saveRoutine({ ...short, createdAt: lastYear })
     renderAt('/tabs/routines')
 
-    expect(await screen.findByText('3 תרגילים · 2 חלקים')).toBeInTheDocument()
-    expect(screen.getByText('תרגיל אחד · חלק אחד')).toBeInTheDocument()
+    expect(await screen.findByText('3 תרגילים · 2 חלקים · נוצר 20.10')).toBeInTheDocument()
+    expect(screen.getByText('תרגיל אחד · חלק אחד · נוצר 29.10.25')).toBeInTheDocument()
+  })
+
+  it('lists the newest routine first', async () => {
+    await saveRoutine({ ...short, createdAt: oct(20) })
+    await saveRoutine({ ...base, id: 'r3', createdAt: oct(28) })
+    renderAt('/tabs/routines')
+
+    await expectInOrder(['אימון רגליים', 'אימון קצר'])
+  })
+
+  it('still lists a routine stored without a creation date', async () => {
+    const { createdAt: _createdAt, ...withoutDate } = short
+    await saveRoutine(base)
+    await db.table('routines').put(withoutDate)
+
+    renderAt('/tabs/routines')
+
+    await expectInOrder(['אימון רגליים', 'אימון קצר'])
   })
 
   it('swipe duplicate saves a copy and opens its editor', async () => {

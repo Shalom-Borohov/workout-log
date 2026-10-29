@@ -17,7 +17,7 @@ export type LegacyRoutineItem = Omit<Legacy<RoutineItem, 'sets'>, 'exercises'> &
 
 export type LegacyRoutineSection = Omit<RoutineSection, 'items'> & { items: LegacyRoutineItem[] }
 
-export type LegacyRoutine = Omit<Routine, 'sections'> & { sections: LegacyRoutineSection[] }
+export type LegacyRoutine = Omit<Legacy<Routine, 'createdAt'>, 'sections'> & { sections: LegacyRoutineSection[] }
 
 export type LegacyWorkoutExercise = Legacy<WorkoutExercise, 'tip' | 'note'>
 
@@ -30,6 +30,7 @@ export type LegacyWorkout = Omit<Workout, 'sections'> & { sections: LegacyWorkou
 export function upgradeRoutine(routine: LegacyRoutine): Routine {
   return {
     ...routine,
+    createdAt: routine.createdAt ?? routine.updatedAt,
     sections: routine.sections.map((section) => ({
       ...section,
       items: section.items.map((item) => ({
