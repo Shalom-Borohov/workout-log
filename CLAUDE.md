@@ -61,8 +61,8 @@ Routing:
   - Ionic React assigns a page to a tab only if its URL is under that tab's path. A page outside every tab makes going back count as a tab switch, which has no animation.
   - Keep it there. Ionic unmounts a nested outlet's pages while you're in a sibling root route, so a swipe-back would reveal a blank shell.
 - The same live page edits a finished workout (edit mode, entered via the detail page's "עריכה").
-- Ionic's own swipe-back is off (`swipeBackEnabled: false` in `main.tsx`). In a Home Screen app, iOS already provides an edge swipe that goes back in history. On a Hebrew iPhone it uses the right edge, the same edge as Ionic's RTL swipe, so both fired on every swipe. The result was a jump and frozen taps (ionic-framework#29733, #22299).
-  - iOS's swipe slides the page itself, and then Ionic plays its own back transition. `src/navigation/swipeBack.ts` (`navAnimation`) makes a back step with no tap in the last second instant: 1 ms, because Ionic treats 0 as its default 540 ms. In-app backs always follow a tap, so they keep the slide.
+- Swipe-back is Ionic's own gesture (right edge in RTL). `src/navigation/edgeSwipe.ts` blocks iOS's built-in edge swipe by calling `preventDefault()` on `touchstart` within 20 px of either edge, unless the touch starts on a control. A scroll that starts in that strip therefore does not scroll.
+  - In a Home Screen app on a Hebrew iPhone, iOS's swipe also uses the right edge. When both ran, the app jumped and froze taps (ionic-framework#29733, #22299). With only iOS's swipe, it slid a snapshot and then flashed the old page.
 - `src/navigation/tapGuard.ts` ignores taps while an Ionic page transition is still animating, for at most 1 s per transition, so a stuck animation can't freeze the app.
   - Without it, a tap during the end of a swipe-back reuses a page that Ionic then hides with `display: none`.
 
@@ -95,4 +95,5 @@ Schema changes:
 - Ionic is forced to iOS mode, and the look follows native iOS. Colour tokens are in `src/theme.css`: system orange tint, ✓ in iOS green, light/dark follow the phone.
 - No `as` casts (`as const` is fine) and no `?? ''`/`?? 0` fallbacks to satisfy types. Narrow parsed JSON with type guards.
 - Durations are stored in seconds. Minutes are a display unit only.
+- Every PR that ships raises `version` in `package.json`: the minor number for features, the patch number for fixes. Settings shows it with the build time.
 - Keep files under about 250 lines, split by responsibility.

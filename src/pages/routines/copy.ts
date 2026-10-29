@@ -9,6 +9,7 @@ export const ROUTINES_COPY = {
   oneExercise: 'תרגיל אחד',
   oneSection: 'חלק אחד',
   sections: 'חלקים',
+  created: (date: string) => `נוצר ${date}`,
   editRoutine: 'עריכת אימון',
   newSection: 'חלק חדש',
   addSection: 'הוספת חלק',

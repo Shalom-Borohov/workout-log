@@ -25,9 +25,9 @@ export const SETTINGS_COPY = {
   description: 'תיאור',
   bugPlaceholder: 'מה קרה, ומה ציפית שיקרה?',
   ideaPlaceholder: 'מה היה עוזר לך?',
-  feedbackFooter: 'הדיווח נפתח ב-GitHub, עם סוג הדפדפן ותאריך הגרסה. נתוני האימונים לא נשלחים.',
+  feedbackFooter: 'הדיווח נפתח ב-GitHub, עם סוג הדפדפן והגרסה. נתוני האימונים לא נשלחים.',
   openInGitHub: 'פתיחה ב-GitHub',
-  issueBody: (text: string, userAgent: string, buildTime: string) =>
-    `${text}\n\n### מכשיר\n${userAgent}\nגרסה: ${buildTime}`,
-  version: (buildTime: string) => `גרסה ${buildTime}`,
+  issueBody: (text: string, userAgent: string, version: string, buildTime: string) =>
+    `${text}\n\n### מכשיר\n${userAgent}\nגרסה: ${version} (${buildTime})`,
+  version: (version: string, updated: string) => `גרסה ${version} · עודכן ${updated}`,
 } as const

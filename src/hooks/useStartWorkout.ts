@@ -3,9 +3,9 @@ import { APP_COPY } from '../copy/app'
 import { COMMON_COPY } from '../copy/common'
 import { activeWorkout, beginWorkout } from '../data/repo'
 import type { Routine } from '../domain/types'
-import { type WorkoutTab, workoutPath } from '../navigation/paths'
+import { type HostTabPath, workoutPath } from '../navigation/paths'
 
-export function useStartWorkout(tab: WorkoutTab) {
+export function useStartWorkout(tab: HostTabPath) {
   const router = useIonRouter()
   const [presentSheet] = useIonActionSheet()
 

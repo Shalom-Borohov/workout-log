@@ -46,7 +46,7 @@ describe('routines', () => {
     renderAt('/tabs/routines')
 
     expect(await screen.findByText('אימון גוף מלא')).toBeInTheDocument()
-    expect(screen.getByText('3 תרגילים · חלק אחד')).toBeInTheDocument()
+    expect(screen.getByText(/^3 תרגילים · חלק אחד · נוצר /)).toBeInTheDocument()
 
     fireEvent.click(startButton(screen.getByText('אימון גוף מלא')))
 

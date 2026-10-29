@@ -24,6 +24,7 @@ export interface Routine {
   id: string
   name: string
   sections: RoutineSection[]
+  createdAt: number
   updatedAt: number
 }
 

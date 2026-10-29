@@ -20,6 +20,7 @@ import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import { saveRoutine } from '../../data/repo'
 import { parseNote } from '../../domain/parseNote'
+import { createRoutine } from '../../domain/routineEdit'
 import { exercisesOf } from '../../domain/progress'
 import { ROUTINES_PATH, routinePath } from '../../navigation/paths'
 import { NotePreview } from './NotePreview'
@@ -39,7 +40,7 @@ export function ImportNotePage() {
   async function save() {
     const id = newId()
 
-    await saveRoutine({ id, name: parsed.name, sections: parsed.sections, updatedAt: Date.now() })
+    await saveRoutine(createRoutine(id, parsed.name, parsed.sections, Date.now()))
     router.push(routinePath(id), 'forward', 'replace')
   }
 

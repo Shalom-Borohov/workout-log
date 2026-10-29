@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { duplicateRoutine, setSectionSets } from '../../src/domain/routineEdit'
+import { duplicateRoutine, newRoutine, setSectionSets } from '../../src/domain/routineEdit'
 import type { Routine } from '../../src/domain/types'
 import { counter } from '../helpers/ids'
 import { reps, routineExercise } from '../helpers/workouts'
@@ -9,6 +9,7 @@ const squat = routineExercise({ name: 'סקוואט', target: reps(12), weight: 
 const legs: Routine = {
   id: 'r1',
   name: 'אימון רגליים',
+  createdAt: 50,
   updatedAt: 100,
   sections: [
     { id: 's1', name: 'חימום', sets: 2, items: [{ id: 'i1', sets: null, exercises: [squat] }] },
@@ -17,10 +18,11 @@ const legs: Routine = {
 }
 
 describe('duplicateRoutine', () => {
-  it('copies the routine under fresh ids and a copy name', () => {
+  it('copies the routine under fresh ids, a copy name and a new creation date', () => {
     expect(duplicateRoutine(legs, counter(), 500)).toEqual({
       id: 'n1',
       name: 'אימון רגליים (עותק)',
+      createdAt: 500,
       updatedAt: 500,
       sections: [
         { id: 'n2', name: 'חימום', sets: 2, items: [{ id: 'n3', sets: null, exercises: [squat] }] },
@@ -35,6 +37,12 @@ describe('duplicateRoutine', () => {
     duplicateRoutine(legs, counter(), 500)
 
     expect(legs).toEqual(before)
+  })
+})
+
+describe('newRoutine', () => {
+  it('is created now', () => {
+    expect(newRoutine('r2', 's1', 700)).toMatchObject({ id: 'r2', createdAt: 700, updatedAt: 700 })
   })
 })
 

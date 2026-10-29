@@ -32,6 +32,7 @@ const session: Workout = {
 const base: Routine = {
   id: 'r1',
   name: 'גוף מלא',
+  createdAt: 3,
   updatedAt: 5,
   sections: [
     {
@@ -44,10 +45,11 @@ const base: Routine = {
 }
 
 describe('routineFromWorkout', () => {
-  it('rebuilds the routine from the workout, keeping its id, name, section ids and starting weights', () => {
+  it('rebuilds the routine from the workout, keeping its id, name, creation date, section ids and starting weights', () => {
     expect(routineFromWorkout(session, base, counter(), 900)).toEqual({
       id: 'r1',
       name: 'גוף מלא',
+      createdAt: 3,
       updatedAt: 900,
       sections: [
         {
@@ -79,10 +81,10 @@ describe('routineFromWorkout', () => {
     })
   })
 
-  it('without a base, names the routine after the workout under fresh ids and no starting weights', () => {
+  it('without a base, names the routine after the workout under fresh ids, created now, with no starting weights', () => {
     const routine = routineFromWorkout(session, undefined, counter(), 900)
 
-    expect([routine.id, routine.name]).toEqual(['n3', 'אימון גוף מלא'])
+    expect([routine.id, routine.name, routine.createdAt]).toEqual(['n3', 'אימון גוף מלא', 900])
     expect(routine.sections.map((section) => section.id)).toEqual(['n1', 'n2'])
     expect(routine.sections[1].items[0].exercises[0].weight).toBeNull()
   })

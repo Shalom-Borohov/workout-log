@@ -41,7 +41,7 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 27. **Limits (added 2026-10-28):** weight ≤ 500 kg, reps ≤ 100 (whole), time ≤ 3 h. Typed values are clamped on commit, and "+" is disabled at the max. This applies in the workout and in the routine editor.
 28. **Gestures and motion in a workout (added 2026-10-28):**
     - A horizontal swipe on the exercise moves between exercises; skipped ones stay reachable. In RTL, dragging rightward goes to the next exercise.
-    - A swipe that starts within 50 px of the swipe-back edge is left to iOS swipe-back, which stays enabled.
+    - A swipe that starts within 50 px of the swipe-back edge is left to the app's swipe-back (updated 2026-10-29).
     - Swiping up on the footer opens the exercise list.
     - Changing exercise slides the new card in from the direction of travel. There is no motion under reduce-motion.
 29. **Summary mid-workout (added 2026-10-28):** "הוספה לסיכום" in the exercise menu edits the workout's summary without finishing.
@@ -56,8 +56,10 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 34. **Navigation (added 2026-10-28):**
     - The live workout opens under the tab it was started from (`/tabs/timeline/workout/:id` or `/tabs/routines/workout/:id`), with the tab bar hidden, so swiping back reveals the page underneath. Ionic only animates a back step between pages of the same tab (updated 2026-10-29). Old `/workout/:id` and `/tabs/workout/:id` links redirect to the timeline version.
     - Taps are ignored while a page transition is still animating, as in UIKit, but never for more than 1 s per transition (updated 2026-10-29).
-    - Swipe-back is iOS's own edge swipe. Ionic's swipe is off because both fired together on a Hebrew iPhone. After iOS's swipe the page switches instantly, with no second slide. Back buttons still slide (updated 2026-10-29).
-35. **Version (added 2026-10-29):** the bottom of Settings shows when the running build was made ("גרסה YYYY-MM-DD HH:MM"), so a test can confirm the phone has the latest deploy.
+    - Swipe-back is the app's own gesture, so the real previous page follows the finger. iOS's built-in edge swipe is blocked for touches that start within 20 px of either edge, except on tap targets (buttons, rows, controls, an overlay's backdrop). Both ran together on a Hebrew iPhone, and iOS's alone flashed the old page. A vertical scroll that starts in that 20 px strip does not scroll (updated 2026-10-29).
+35. **Version (added 2026-10-29):** the bottom of Settings shows the version and when it was built ("גרסה 1.2.0 · עודכן 29.10.2026 14:05"), so a test can confirm the phone has the latest deploy. Bug reports include both. The version goes up with every release.
+36. **Routine order (added 2026-10-29):** each routine has a creation date, set when it is created, duplicated, imported or saved as new from a workout, and never changed by editing. Routines are listed newest first everywhere, and the row shows "נוצר 29.10" (with the year when it is not the current one). Routines from before this change take their last-edited date.
+37. **Settings from the timeline (added 2026-10-29):** ⚙️ also sits on ציר זמן, before "+". Settings opens inside the tab it came from, and back returns there.
 
 ## Assumptions (accepted by the user)
 

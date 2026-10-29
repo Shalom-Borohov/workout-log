@@ -1,5 +1,5 @@
 import { exercisesOf } from './progress'
-import { newItem, withSets } from './routineEdit'
+import { createRoutine, newItem, withSets } from './routineEdit'
 import type { Routine, RoutineExercise, RoutineSection, Workout, WorkoutExercise } from './types'
 import { commonSets, setCount } from './workoutStructure'
 
@@ -34,6 +34,6 @@ export function routineFromWorkout(
   })
 
   return base
-    ? { id: base.id, name: base.name, updatedAt: now, sections }
-    : { id: ids(), name: workout.routineName, updatedAt: now, sections }
+    ? { id: base.id, name: base.name, createdAt: base.createdAt, updatedAt: now, sections }
+    : createRoutine(ids(), workout.routineName, sections, now)
 }

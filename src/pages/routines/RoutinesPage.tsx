@@ -11,19 +11,23 @@ import {
   useIonActionSheet,
   useIonRouter,
 } from '@ionic/react'
-import { add, settingsOutline } from 'ionicons/icons'
+import { add } from 'ionicons/icons'
+import { SettingsButton } from '../../components/SettingsButton'
 import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import { useRoutines } from '../../data/hooks'
 import { saveRoutine } from '../../data/repo'
 import { newRoutine } from '../../domain/routineEdit'
-import { IMPORT_PATH, routinePath, SETTINGS_PATH } from '../../navigation/paths'
+import { HOUR_MS } from '../../domain/time'
+import { useNow } from '../../hooks/useNow'
+import { IMPORT_PATH, ROUTINES_PATH, routinePath } from '../../navigation/paths'
 import { EmptyRoutines } from './EmptyRoutines'
 import { RoutineRow } from './RoutineRow'
 import './routines.css'
 
 export function RoutinesPage() {
   const routines = useRoutines()
+  const now = useNow(HOUR_MS)
   const router = useIonRouter()
   const [presentActionSheet] = useIonActionSheet()
 
@@ -53,9 +57,7 @@ export function RoutinesPage() {
         <IonToolbar>
           <IonTitle>{COMMON_COPY.routines}</IonTitle>
           <IonButtons slot="end">
-            <IonButton routerLink={SETTINGS_PATH} aria-label={COMMON_COPY.settings}>
-              <IonIcon slot="icon-only" icon={settingsOutline} />
-            </IonButton>
+            <SettingsButton tab={ROUTINES_PATH} />
             <IonButton onClick={openAddMenu} aria-label={ROUTINES_COPY.addRoutine}>
               <IonIcon slot="icon-only" icon={add} />
             </IonButton>
@@ -72,7 +74,7 @@ export function RoutinesPage() {
         {routines !== undefined && routines.length > 0 && (
           <IonList inset>
             {routines.map((routine) => (
-              <RoutineRow key={routine.id} routine={routine} />
+              <RoutineRow key={routine.id} routine={routine} now={now} />
             ))}
           </IonList>
         )}

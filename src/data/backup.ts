@@ -72,6 +72,7 @@ const isRoutine = (routine: unknown): routine is LegacyRoutine =>
   isObject(routine) &&
   isString(routine.id) &&
   isString(routine.name) &&
+  optional(isNumber)(routine.createdAt) &&
   isNumber(routine.updatedAt) &&
   arrayOf(isRoutineSection)(routine.sections)
 

@@ -22,7 +22,7 @@ import { COMMON_COPY } from '../../copy/common'
 import { SETTINGS_COPY } from './copy'
 import { type Backup, exportBackup, restoreBackup } from '../../data/backup'
 import { formatDateTime } from '../../domain/format'
-import { ROUTINES_PATH } from '../../navigation/paths'
+import type { HostTabPath } from '../../navigation/paths'
 import { isShareCancel, readBackup, shareBackup } from './backupFile'
 import { BackgroundSettings } from './BackgroundSettings'
 import { FeedbackSettings } from './FeedbackSettings'
@@ -30,7 +30,7 @@ import { shareHistory } from './historyFile'
 
 const errorMessage = (error: unknown) => (error instanceof Error ? error.message : SETTINGS_COPY.actionFailed)
 
-export function SettingsPage() {
+export function SettingsPage({ tab }: { tab: HostTabPath }) {
   const fileInput = useRef<HTMLInputElement>(null)
   const [presentAlert] = useIonAlert()
   const [presentToast] = useIonToast()
@@ -87,7 +87,7 @@ export function SettingsPage() {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton defaultHref={ROUTINES_PATH} text={COMMON_COPY.back} />
+            <IonBackButton defaultHref={tab} text={COMMON_COPY.back} />
           </IonButtons>
           <IonTitle>{COMMON_COPY.settings}</IonTitle>
         </IonToolbar>
@@ -123,7 +123,7 @@ export function SettingsPage() {
         <IonNote className="list-footer">{SETTINGS_COPY.historyFooter}</IonNote>
         <BackgroundSettings onError={(error) => void toast(errorMessage(error))} />
         <FeedbackSettings />
-        <IonNote className="list-footer">{SETTINGS_COPY.version(formatDateTime(Date.parse(__BUILD_TIME__)))}</IonNote>
+        <IonNote className="list-footer">{SETTINGS_COPY.version(__APP_VERSION__, formatDateTime(Date.parse(__BUILD_TIME__)))}</IonNote>
         <input
           ref={fileInput}
           type="file"

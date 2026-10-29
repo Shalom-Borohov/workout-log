@@ -14,7 +14,7 @@ import { useRef } from 'react'
 import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import { deleteRoutine, saveRoutine } from '../../data/repo'
-import { countLabel, LIST_SEPARATOR } from '../../domain/format'
+import { countLabel, LIST_SEPARATOR, shortDate } from '../../domain/format'
 import { exercisesOf, hasExercises } from '../../domain/progress'
 import { duplicateRoutine } from '../../domain/routineEdit'
 import type { Routine } from '../../domain/types'
@@ -22,14 +22,15 @@ import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import { useStartWorkout } from '../../hooks/useStartWorkout'
 import { ROUTINES_PATH, routinePath } from '../../navigation/paths'
 
-function counts(routine: Routine): string {
+function counts(routine: Routine, now: number): string {
   return [
     countLabel(exercisesOf(routine).length, ROUTINES_COPY.oneExercise, COMMON_COPY.exercises),
     countLabel(routine.sections.length, ROUTINES_COPY.oneSection, ROUTINES_COPY.sections),
+    ROUTINES_COPY.created(shortDate(routine.createdAt, now)),
   ].join(LIST_SEPARATOR)
 }
 
-export function RoutineRow({ routine }: { routine: Routine }) {
+export function RoutineRow({ routine, now }: { routine: Routine; now: number }) {
   const router = useIonRouter()
   const confirmDelete = useConfirmDelete()
   const startWorkout = useStartWorkout(ROUTINES_PATH)
@@ -62,7 +63,7 @@ export function RoutineRow({ routine }: { routine: Routine }) {
       <IonItem button detail onClick={() => router.push(routinePath(routine.id))}>
         <IonLabel>
           <h2>{routine.name}</h2>
-          <p>{counts(routine)}</p>
+          <p>{counts(routine, now)}</p>
         </IonLabel>
         <IonButton
           slot="end"
