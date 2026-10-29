@@ -34,7 +34,7 @@ describe('live next-time note', () => {
     }
 
     await saveWorkout({ ...base, sections: [{ name: 'סופר סט', items: [pair] }] })
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     const presented = alertPresented()
 
@@ -54,7 +54,7 @@ describe('live summary mid-workout', () => {
   it('saves the summary from the item menu without finishing, and the finish sheet shows it', async () => {
     await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10)])] }))
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await chooseFromMenu('הוספה לסיכום')
 
@@ -65,7 +65,7 @@ describe('live summary mid-workout', () => {
 
     await waitFor(async () => expect((await db.workouts.get('w1'))?.summary).toBe('כתף כואבת'))
     expect((await db.workouts.get('w1'))?.finishedAt).toBeNull()
-    expect(currentPath()).toBe('/tabs/workout/w1')
+    expect(currentPath()).toBe('/tabs/timeline/workout/w1')
 
     await waitFor(() => expect(document.querySelector('ion-modal.show-modal')).toBeNull())
     await user.click(screen.getByText('סיום', { selector: 'ion-button' }))
@@ -79,7 +79,7 @@ describe('live exercise tips', () => {
   it('shows the tip under the title', async () => {
     const squat = { ...exercise('סקוואט', [open(60, 10)]), tip: 'גב ישר' }
     await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [squat] }))
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await waitFor(() => expect(tips()).toEqual(['גב ישר']))
   })
@@ -93,7 +93,7 @@ describe('live exercise tips', () => {
     }
 
     await saveWorkout({ ...base, sections: [{ name: 'סופר סט', items: [pair] }] })
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     expect(await screen.findByText('מתח + מקבילים', { selector: 'h1' })).toBeInTheDocument()
     expect(tips()).toEqual(['מתח: אחיזה רחבה'])

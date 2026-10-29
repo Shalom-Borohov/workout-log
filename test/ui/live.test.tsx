@@ -34,13 +34,13 @@ describe('live workout', () => {
   it('ticking a set persists', async () => {
     await saveWorkout(active)
     const user = userEvent.setup()
-    const view = renderAt('/tabs/workout/w1')
+    const view = renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 1', pressed: false }))
 
     await waitFor(async () => expect((await db.workouts.get('w1'))?.sections[0].items[0].exercises[0].sets[0].done).toBe(true))
     view.unmount()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     expect(await screen.findByRole('button', { name: 'סקוואט סט 1', pressed: true })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'סקוואט סט 2', pressed: false })).toBeInTheDocument()
@@ -49,7 +49,7 @@ describe('live workout', () => {
   it('resumes at first unfinished item', async () => {
     await saveWorkout(halfDone)
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     expect(await screen.findByText('חתירה', { selector: 'h1' })).toBeInTheDocument()
     expect(screen.getByText('תרגיל 3 מתוך 3')).toBeInTheDocument()
@@ -74,7 +74,7 @@ describe('live workout', () => {
       }),
     )
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
     const firstSet = async () => (await db.workouts.get('w1'))?.sections[0].items.map((item) => item.exercises[0].sets[0])
 
     ionChange(await screen.findByLabelText('סקוואט סט 1 משקל'), '62.5')
@@ -95,7 +95,7 @@ describe('live workout', () => {
   it('item list shows progress and jumps to an item', async () => {
     await saveWorkout(halfDone)
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByLabelText('כל התרגילים'))
     const rows = await screen.findAllByText(/סקוואט|לחיצת חזה|חתירה/, { selector: 'ion-modal ion-item ion-label' })
@@ -112,7 +112,7 @@ describe('live workout', () => {
   it('item menu skips and adds and removes sets', async () => {
     await saveWorkout(active)
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
     const squat = async () => (await db.workouts.get('w1'))?.sections[0].items[0].exercises[0]
     const choose = async (text: string) => {
       const presented = actionSheetPresented()
@@ -142,7 +142,7 @@ describe('live workout', () => {
     const before = Date.now()
     await saveWorkout(active)
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByText('סיום', { selector: 'ion-button' }))
     expect(await screen.findByText('סיכום האימון', { selector: 'ion-title' })).toBeInTheDocument()
@@ -160,7 +160,7 @@ describe('live workout', () => {
     const before = Date.now()
     await saveWorkout(active)
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByText('סיום', { selector: 'ion-button' }))
     await user.click(await screen.findByText('שמירה', { selector: 'ion-button' }))
@@ -175,7 +175,7 @@ describe('live workout', () => {
   it('deleting from the finish sheet removes the workout', async () => {
     await saveWorkout(active)
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByText('סיום', { selector: 'ion-button' }))
     await user.click(await screen.findByText('מחיקת האימון'))
@@ -189,7 +189,7 @@ describe('live workout', () => {
     const finished = { ...active, finishedAt: oct(26, 11), summary: 'טוב' }
     await saveWorkout(finished)
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     expect(await screen.findByText('עריכת אימון', { selector: 'ion-title div' })).toBeInTheDocument()
     expect(screen.queryByText(/^\d+:\d\d$/)).not.toBeInTheDocument()
@@ -207,7 +207,7 @@ describe('live workout', () => {
     const pair = { id: 'p', exercises: [exercise('מתח', [open(null, 8), open(null, 8)]), exercise('מקבילים', [open(null, 10), open(null, 10)])] }
     await saveWorkout({ ...base, sections: [{ name: 'סופר סט', items: [pair] }] })
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     const checks = await screen.findAllByRole('button', { name: /סט \d$/ })
 
@@ -224,7 +224,7 @@ describe('live workout', () => {
     const request = vi.fn(() => Promise.resolve({ release }))
     Object.defineProperty(navigator, 'wakeLock', { configurable: true, value: { request } })
     await saveWorkout(active)
-    const view = renderAt('/tabs/workout/w1')
+    const view = renderAt('/tabs/timeline/workout/w1')
 
     await waitFor(() => expect(request).toHaveBeenCalledWith('screen'))
     view.unmount()

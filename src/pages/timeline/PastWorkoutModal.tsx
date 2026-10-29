@@ -24,7 +24,7 @@ import { MAX_SECONDS } from '../../domain/limits'
 import { hasExercises } from '../../domain/progress'
 import { HOUR_MS, MINUTE_MS, SECONDS_PER_MINUTE } from '../../domain/time'
 import { useNow } from '../../hooks/useNow'
-import { workoutPath } from '../../navigation/paths'
+import { TIMELINE_PATH, workoutPath } from '../../navigation/paths'
 
 const DEFAULT_DURATION_MINUTES = 60
 
@@ -66,7 +66,7 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
     const workout = await addPastWorkout(routine, startedAt, minutes * MINUTE_MS)
 
     onClose()
-    router.push(workoutPath(workout.id))
+    router.push(workoutPath(TIMELINE_PATH, workout.id))
   }
 
   return (

@@ -43,11 +43,11 @@ describe('past workout', () => {
     ionInput(await ionField('משך (דקות)'), '45')
     fireEvent.click(await screen.findByText('שמירה'))
 
-    await waitFor(() => expect(currentPath()).toMatch(/^\/tabs\/workout\//))
+    await waitFor(() => expect(currentPath()).toMatch(/^\/tabs\/timeline\/workout\//))
 
     const [added] = (await db.workouts.toArray()).filter((saved) => saved.id !== 'prev')
 
-    expect(currentPath()).toBe(`/tabs/workout/${added.id}`)
+    expect(currentPath()).toBe(`/tabs/timeline/workout/${added.id}`)
     expect(added).toMatchObject({ routineId: 'r1', startedAt: oct(24, 18, 30), finishedAt: oct(24, 19, 15) })
     expect(added.sections[0].items[0].exercises[0].sets).toEqual([{ weight: 20, amount: 10, done: false }])
   })
@@ -62,7 +62,7 @@ describe('past workout', () => {
     ionChange(selectField(), 'r1')
     fireEvent.click(screen.getByText('שמירה'))
 
-    await waitFor(() => expect(currentPath()).toMatch(/^\/tabs\/workout\//))
+    await waitFor(() => expect(currentPath()).toMatch(/^\/tabs\/timeline\/workout\//))
     expect(await db.workouts.toArray()).toMatchObject([{ routineId: 'r1', startedAt: oct(26, 11), finishedAt: oct(26, 12) }])
   })
 

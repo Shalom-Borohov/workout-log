@@ -61,7 +61,7 @@ export function WorkoutDetail({ id }: { id: string }) {
           </IonButtons>
           <IonTitle>{workout?.routineName}</IonTitle>
           <IonButtons slot="end">
-            <IonButton routerLink={workoutPath(id)}>{COMMON_COPY.edit}</IonButton>
+            <IonButton routerLink={workoutPath(TIMELINE_PATH, id)}>{COMMON_COPY.edit}</IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>

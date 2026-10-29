@@ -5,13 +5,13 @@ import { TIMELINE_COPY } from './copy'
 import { useRoutines } from '../../data/hooks'
 import { hasExercises } from '../../domain/progress'
 import { useStartWorkout } from '../../hooks/useStartWorkout'
-import { IMPORT_PATH } from '../../navigation/paths'
+import { IMPORT_PATH, TIMELINE_PATH } from '../../navigation/paths'
 
 export function StartWorkoutButton() {
   const routines = useRoutines()
   const router = useIonRouter()
   const [presentSheet] = useIonActionSheet()
-  const start = useStartWorkout()
+  const start = useStartWorkout(TIMELINE_PATH)
 
   if (!routines) {
     return null

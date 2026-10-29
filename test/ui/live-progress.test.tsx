@@ -28,7 +28,7 @@ describe('live progress', () => {
       }),
     )
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     expect(await screen.findByRole('progressbar', { name: 'התקדמות האימון' })).toBeInTheDocument()
     await waitFor(() => expect(progressValue()).toBe('0.25'))

@@ -27,7 +27,7 @@ describe('live background photo', () => {
   it('shows the chosen photo behind the live page', async () => {
     await setBackground(new Blob(['photo'], { type: 'image/jpeg' }))
     await saveWorkout(active)
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await waitFor(async () => expect((await content()).getAttribute('style')).toContain('blob:photo'))
     expect((await content()).classList).toContain('live-photo')
@@ -36,7 +36,7 @@ describe('live background photo', () => {
   it('releases the photo URL when the page closes', async () => {
     await setBackground(new Blob(['photo'], { type: 'image/jpeg' }))
     await saveWorkout(active)
-    const view = renderAt('/tabs/workout/w1')
+    const view = renderAt('/tabs/timeline/workout/w1')
 
     await waitFor(async () => expect((await content()).getAttribute('style')).toContain('blob:photo'))
     view.unmount()
@@ -46,7 +46,7 @@ describe('live background photo', () => {
 
   it('has no photo when none is set', async () => {
     await saveWorkout(active)
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     expect(await screen.findByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
     expect((await content()).classList).not.toContain('live-photo')

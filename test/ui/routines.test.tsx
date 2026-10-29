@@ -54,7 +54,7 @@ describe('routines', () => {
 
     const active = await activeWorkout()
 
-    await waitFor(() => expect(currentPath()).toBe(`/tabs/workout/${active?.id}`))
+    await waitFor(() => expect(currentPath()).toBe(`/tabs/routines/workout/${active?.id}`))
   })
 
   it('start is disabled for a routine without exercises', async () => {
@@ -71,7 +71,7 @@ describe('routines', () => {
 
     fireEvent.click(startButton(await screen.findByText('אימון גוף מלא')))
 
-    await waitFor(() => expect(currentPath()).toBe('/tabs/workout/w-active'))
+    await waitFor(() => expect(currentPath()).toBe('/tabs/routines/workout/w-active'))
     expect(await db.workouts.count()).toBe(1)
   })
 
@@ -88,7 +88,7 @@ describe('routines', () => {
     expect(screen.getByText('יש אימון בתהליך', { selector: '.action-sheet-title' })).toBeInTheDocument()
     fireEvent.click(screen.getByText('המשך את אימון גוף מלא', { selector: '.action-sheet-button-label' }))
 
-    await waitFor(() => expect(currentPath()).toBe('/tabs/workout/w-active'))
+    await waitFor(() => expect(currentPath()).toBe('/tabs/routines/workout/w-active'))
     expect(await db.workouts.count()).toBe(1)
   })
 

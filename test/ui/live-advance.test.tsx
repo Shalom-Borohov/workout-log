@@ -28,7 +28,7 @@ describe('live auto-advance', () => {
   it('moves to the next item shortly after its last set is ticked', async () => {
     await saveWorkout(threeItems(null))
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 2', pressed: false }))
 
@@ -51,7 +51,7 @@ describe('live auto-advance', () => {
       }),
     )
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 1', pressed: false }))
 
@@ -68,7 +68,7 @@ describe('live auto-advance', () => {
       }),
     )
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 1', pressed: false }))
     await pause(900)
@@ -79,7 +79,7 @@ describe('live auto-advance', () => {
   it('does not advance from the last item', async () => {
     await saveWorkout(threeItems(null))
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByLabelText('כל התרגילים'))
     await user.click((await screen.findAllByText('חתירה', { selector: 'ion-modal ion-item ion-label' }))[0])
@@ -93,7 +93,7 @@ describe('live auto-advance', () => {
   it('does not advance when editing a finished workout', async () => {
     await saveWorkout(threeItems(oct(26, 11)))
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 2', pressed: false }))
     await pause(900)
@@ -104,7 +104,7 @@ describe('live auto-advance', () => {
   it('un-ticking within the delay cancels the advance', async () => {
     await saveWorkout(threeItems(null))
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 2', pressed: false }))
     await user.click(screen.getByRole('button', { name: 'סקוואט סט 2', pressed: true }))
@@ -116,7 +116,7 @@ describe('live auto-advance', () => {
   it('adding a set within the delay cancels the advance', async () => {
     await saveWorkout(threeItems(null))
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     const presented = actionSheetPresented()
 
@@ -132,7 +132,7 @@ describe('live auto-advance', () => {
   it('navigating manually within the delay cancels the advance', async () => {
     await saveWorkout(threeItems(null))
     const user = userEvent.setup()
-    renderAt('/tabs/workout/w1')
+    renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 2', pressed: false }))
     await user.click(screen.getByLabelText('כל התרגילים'))
