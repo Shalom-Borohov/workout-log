@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig(({ mode }) => ({
   base: '/workout-log/',
-  define: { __BUILD_DATE__: JSON.stringify(new Date().toISOString().slice(0, 10)) },
+  define: { __BUILD_TIME__: JSON.stringify(new Date().toISOString()) },
   resolve: mode === 'test' ? { conditions: ['browser'] } : {},
   plugins: [
     react(),

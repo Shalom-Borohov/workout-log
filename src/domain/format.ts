@@ -14,6 +14,12 @@ export function isoDate(timestamp: number): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
+export function formatDateTime(timestamp: number): string {
+  const date = new Date(timestamp)
+
+  return `${isoDate(timestamp)} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
 export function dayMonth(timestamp: number): string {
   const date = new Date(timestamp)
 

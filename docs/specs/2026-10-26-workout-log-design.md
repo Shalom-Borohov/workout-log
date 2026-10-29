@@ -55,7 +55,9 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 33. **Feedback (added 2026-10-28):** "דיווח על באג / הצעה" in Settings opens a prefilled GitHub issue (labels bug/enhancement) with the device and build date and no workout data. The repo is public, so the issue is too.
 34. **Navigation (added 2026-10-28):**
     - The live workout opens under the tab it was started from (`/tabs/timeline/workout/:id` or `/tabs/routines/workout/:id`), with the tab bar hidden, so swiping back reveals the page underneath. Ionic only animates a back step between pages of the same tab (updated 2026-10-29). Old `/workout/:id` and `/tabs/workout/:id` links redirect to the timeline version.
-    - Taps are ignored while a page transition is still animating, as in UIKit. This fixed the white screen and the finished workout that wouldn't reopen after a quick swipe back.
+    - Taps are ignored while a page transition is still animating, as in UIKit, but never for more than 1 s per transition (updated 2026-10-29).
+    - Swipe-back is iOS's own edge swipe. Ionic's swipe is off because both fired together on a Hebrew iPhone. After iOS's swipe the page switches instantly, with no second slide. Back buttons still slide (updated 2026-10-29).
+35. **Version (added 2026-10-29):** the bottom of Settings shows when the running build was made ("גרסה YYYY-MM-DD HH:MM"), so a test can confirm the phone has the latest deploy.
 
 ## Assumptions (accepted by the user)
 

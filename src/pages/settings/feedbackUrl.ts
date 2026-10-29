@@ -17,7 +17,7 @@ function title(text: string): string {
 export function feedbackUrl(kind: FeedbackKind, text: string): string {
   const params = new URLSearchParams({
     title: title(text),
-    body: SETTINGS_COPY.issueBody(text.trim(), navigator.userAgent, __BUILD_DATE__),
+    body: SETTINGS_COPY.issueBody(text.trim(), navigator.userAgent, __BUILD_TIME__),
     labels: ISSUE_LABELS[kind],
   })
 

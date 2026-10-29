@@ -4,6 +4,7 @@ import {
   countLabel,
   formatAmount,
   formatClock,
+  formatDateTime,
   formatDay,
   formatSet,
   formatSets,
@@ -18,6 +19,12 @@ import { done, oct, reps, seconds } from '../helpers/workouts'
 describe('isoDate', () => {
   it('shows the local date as YYYY-MM-DD', () => {
     expect(isoDate(oct(5, 23, 59))).toBe('2026-10-05')
+  })
+})
+
+describe('formatDateTime', () => {
+  it('shows the local date and time to the minute', () => {
+    expect(formatDateTime(oct(5, 9, 7))).toBe('2026-10-05 09:07')
   })
 })
 
