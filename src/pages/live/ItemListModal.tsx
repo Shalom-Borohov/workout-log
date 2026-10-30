@@ -3,8 +3,9 @@ import { useState } from 'react'
 import { HALF_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
 import type { PreviousSessionLookup } from '../../domain/progress'
-import type { Workout } from '../../domain/types'
+import type { RoutineExercise, Workout } from '../../domain/types'
 import { canRemoveItem, moveItem } from '../../domain/workoutStructure'
+import { ExercisePicker } from '../../components/itemEditor/ExercisePicker'
 import { ItemEditModal } from '../../components/itemEditor/ItemEditModal'
 import { OverviewSection } from './OverviewSection'
 import { RoutineActions } from './RoutineActions'
@@ -22,6 +23,7 @@ interface ItemListModalProps {
 
 export function ItemListModal({ isOpen, workout, current, previous, onSelect, onEdit, onClose }: ItemListModalProps) {
   const [editing, setEditing] = useState(false)
+  const [addingTo, setAddingTo] = useState<number | null>(null)
   const editor = useOverviewEditor(workout, previous, onEdit)
   const canDelete = canRemoveItem(workout)
 
@@ -32,6 +34,13 @@ export function ItemListModal({ isOpen, workout, current, previous, onSelect, on
   function dismiss() {
     setEditing(false)
     onClose()
+  }
+
+  function pick(exercise?: RoutineExercise) {
+    if (addingTo !== null) {
+      editor.add(addingTo, exercise)
+    }
+    setAddingTo(null)
   }
 
   return (
@@ -62,11 +71,16 @@ export function ItemListModal({ isOpen, workout, current, previous, onSelect, on
             onEditItem={editor.open}
             onDeleteItem={editor.remove}
             onReorder={(from, to) => onEdit((current) => moveItem(current, sectionIndex, from, to))}
-            onAdd={() => editor.add(sectionIndex)}
+            onAdd={() => setAddingTo(sectionIndex)}
           />
         ))}
         {editing && <RoutineActions workout={workout} />}
       </IonContent>
+      <ExercisePicker
+        isOpen={addingTo !== null}
+        onPick={pick}
+        onClose={() => setAddingTo(null)}
+      />
       <ItemEditModal
         editing={editor.editing}
         showStartWeight={false}

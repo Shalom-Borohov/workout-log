@@ -22,6 +22,8 @@ export async function ionField(label: string) {
 
 const VISIBLE_PAGE = '.ion-page:not(.ion-page-hidden)'
 
+export const OPEN_MODAL = 'ion-modal.show-modal'
+
 export function visibleAll(selector: string) {
   return Array.from(document.querySelectorAll(`${VISIBLE_PAGE} ${selector}`))
 }

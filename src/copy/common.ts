@@ -5,6 +5,7 @@ export const COMMON_COPY = {
   delete: 'מחיקה',
   done: 'סיום',
   close: 'סגירה',
+  search: 'חיפוש',
   back: 'חזרה',
   timeline: 'ציר זמן',
   routines: 'אימונים',

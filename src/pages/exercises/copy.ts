@@ -1,5 +1,4 @@
 export const EXERCISES_COPY = {
-  search: 'חיפוש',
   emptyTitle: 'עוד אין תרגילים',
   emptyBody: 'תרגילים יופיעו כאן אחרי שתוסיפו אימון בלשונית אימונים או תסיימו אימון.',
   noResultsTitle: (query: string) => `אין תוצאות עבור ״${query}״`,

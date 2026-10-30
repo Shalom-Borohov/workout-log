@@ -57,9 +57,19 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
     - The live workout opens under the tab it was started from (`/tabs/timeline/workout/:id` or `/tabs/routines/workout/:id`), with the tab bar hidden, so swiping back reveals the page underneath. Ionic only animates a back step between pages of the same tab (updated 2026-10-29). Old `/workout/:id` and `/tabs/workout/:id` links redirect to the timeline version.
     - Taps are ignored while a page transition is still animating, as in UIKit, but never for more than 1 s per transition (updated 2026-10-29).
     - Swipe-back is the app's own gesture, so the real previous page follows the finger. iOS's built-in edge swipe is blocked for touches that start within 20 px of either edge, except on tap targets (buttons, rows, controls, an overlay's backdrop). Both ran together on a Hebrew iPhone, and iOS's alone flashed the old page. A vertical scroll that starts in that 20 px strip does not scroll (updated 2026-10-29).
-35. **Version (added 2026-10-29):** the bottom of Settings shows the version and when it was built ("גרסה 1.2.0 · עודכן 29.10.2026 14:05"), so a test can confirm the phone has the latest deploy. Bug reports include both. The version goes up with every release.
+35. **Version (added 2026-10-29):** the bottom of Settings shows the version and when it was built ("גרסה 1.2.0 · עודכן 29.10.2026 14:05"), so a test can confirm the phone has the latest deploy. Bug reports include both. The version goes up with every release. Tapping the version line opens "מה חדש" with every release (updated 2026-10-30).
 36. **Routine order (added 2026-10-29):** each routine has a creation date, set when it is created, duplicated, imported or saved as new from a workout, and never changed by editing. Routines are listed newest first everywhere, and the row shows "נוצר 29.10" (with the year when it is not the current one). Routines from before this change take their last-edited date.
 37. **Settings from the timeline (added 2026-10-29):** ⚙️ also sits on ציר זמן, before "+". Settings opens inside the tab it came from, and back returns there.
+38. **Updates (added 2026-10-30):**
+    - The app checks for a new version when it opens, when it comes back from the background, and every hour while open. It skips the check while offline.
+    - A downloaded version waits. A "גרסה חדשה זמינה · עדכון" bar sits above the tab bar, never inside a workout. "עדכון" reloads into the new version. × hides the bar until the app comes back from the background. An ignored update applies the next time the app is fully closed and reopened.
+    - After an update, "מה חדש" opens once with every release since the last one this phone saw: "חדש" and "תיקונים" for each. With no release seen before, it shows only the current one. It waits until you leave a workout. The last seen version is kept on the phone and is not in the backup.
+39. **Picking an existing exercise (added 2026-10-30):**
+    - "הוספת תרגיל", in a workout's "עריכה" and in the routine editor, opens a list with a search box.
+    - "+ תרגיל חדש" comes first and works as before: it adds "תרגיל חדש" and opens the editor.
+    - Then come the names from routines and finished workouts, without "תרגיל חדש". Exercises you've done come first, most recent first, with their last date. Exercises only in routines follow, A–Z. Search matches part of a name.
+    - Picking one adds it to that section right away, without the editor. It brings the target and tip from the last finished workout that has it, otherwise from the most recently edited routine. Weight is not copied: in a workout it prefills from history, as for any exercise.
+    - Exercises already in the workout or routine stay in the list. A pair's second exercise is still named in the editor.
 
 ## Assumptions (accepted by the user)
 

@@ -30,9 +30,10 @@ import {
   updateItem,
   updateSection,
 } from '../../domain/routineEdit'
-import type { Routine } from '../../domain/types'
+import type { Routine, RoutineExercise } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import { ROUTINES_PATH } from '../../navigation/paths'
+import { ExercisePicker } from '../../components/itemEditor/ExercisePicker'
 import { ItemEditModal } from '../../components/itemEditor/ItemEditModal'
 import { SectionEditor } from './SectionEditor'
 import './routines.css'
@@ -41,17 +42,23 @@ function RoutineEditor({ routine }: { routine: Routine }) {
   const router = useIonRouter()
   const confirmDelete = useConfirmDelete()
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [addingTo, setAddingTo] = useState<string | null>(null)
   const editing = editingId === null ? undefined : findItem(routine, editingId)
 
   const edit = (change: Change<Routine>) => void updateRoutine(routine.id, change)
 
-  function addItem(sectionId: string) {
+  function pick(exercise?: RoutineExercise) {
     const id = crypto.randomUUID()
+    const item = exercise ? newItem(id, [exercise]) : newItem(id)
 
-    edit((current) =>
-      updateSection(current, sectionId, (section) => ({ ...section, items: [...section.items, newItem(id)] })),
-    )
-    setEditingId(id)
+    if (addingTo !== null) {
+      edit((current) => updateSection(current, addingTo, (section) => ({ ...section, items: [...section.items, item] })))
+
+      if (!exercise) {
+        setEditingId(id)
+      }
+    }
+    setAddingTo(null)
   }
 
   function addSection() {
@@ -93,7 +100,7 @@ function RoutineEditor({ routine }: { routine: Routine }) {
           section={section}
           onChange={(change) => edit((current) => updateSection(current, section.id, change))}
           onEditItem={setEditingId}
-          onAddItem={() => addItem(section.id)}
+          onAddItem={() => setAddingTo(section.id)}
           onDelete={() =>
             confirmDelete({
               header: ROUTINES_COPY.deleteSectionQuestion,
@@ -129,6 +136,11 @@ function RoutineEditor({ routine }: { routine: Routine }) {
         onChange={(id, change) => edit((current) => updateItem(current, id, change))}
         onDelete={removeEditing}
         onClose={() => setEditingId(null)}
+      />
+      <ExercisePicker
+        isOpen={addingTo !== null}
+        onPick={pick}
+        onClose={() => setAddingTo(null)}
       />
     </>
   )

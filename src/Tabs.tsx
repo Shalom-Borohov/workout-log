@@ -1,6 +1,9 @@
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react'
 import { barbell, listOutline, timeOutline } from 'ionicons/icons'
 import { Navigate, Route, useLocation } from 'react-router-dom'
+import { UpdateBar } from './appUpdate/UpdateBar'
+import { useWhatsNew } from './appUpdate/useWhatsNew'
+import { WhatsNewSheet } from './appUpdate/WhatsNewSheet'
 import { COMMON_COPY } from './copy/common'
 import { LegacyWorkoutLink } from './navigation/LegacyWorkoutLink'
 import { EXERCISES_PATH, isWorkoutPath, ROUTINES_PATH, TIMELINE_PATH } from './navigation/paths'
@@ -16,6 +19,7 @@ import { WorkoutDetailPage } from './pages/timeline/WorkoutDetailPage'
 
 export function Tabs() {
   const inWorkout = isWorkoutPath(useLocation().pathname)
+  const whatsNew = useWhatsNew(inWorkout)
 
   return (
     <IonTabs>
@@ -34,6 +38,7 @@ export function Tabs() {
         <Route path="workout/:id" element={<LegacyWorkoutLink />} />
         <Route index element={<Navigate to="timeline" replace />} />
       </IonRouterOutlet>
+      <UpdateBar inWorkout={inWorkout} />
       <IonTabBar slot="bottom" className={inWorkout ? 'ion-hide' : undefined}>
         <IonTabButton tab="timeline" href={TIMELINE_PATH}>
           <IonIcon icon={timeOutline} />
@@ -48,6 +53,7 @@ export function Tabs() {
           <IonLabel>{COMMON_COPY.exercises}</IonLabel>
         </IonTabButton>
       </IonTabBar>
+      <WhatsNewSheet isOpen={whatsNew.isOpen} releases={whatsNew.releases} onClose={whatsNew.close} />
     </IonTabs>
   )
 }

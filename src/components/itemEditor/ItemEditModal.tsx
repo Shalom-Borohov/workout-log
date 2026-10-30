@@ -24,9 +24,8 @@ import {
   setPair,
   withSets,
 } from '../../domain/routineEdit'
+import { FULL_SHEET } from '../sheet'
 import { Stepper } from '../Stepper'
-
-const FULL_SHEET = { initialBreakpoint: 1, breakpoints: [0, 1] }
 
 interface Props {
   editing: ItemInSection | undefined

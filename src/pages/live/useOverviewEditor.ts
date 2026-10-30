@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { type PreviousLookup, type PreviousSessionLookup, setsOf } from '../../domain/progress'
 import { type Change, newItem } from '../../domain/routineEdit'
-import type { RoutineItem, Workout } from '../../domain/types'
+import type { RoutineExercise, RoutineItem, Workout } from '../../domain/types'
 import { addItem, asRoutineItem, editItem, locateItem, removeItem } from '../../domain/workoutStructure'
 
 export type WorkoutEdit = (edit: (current: Workout) => Workout) => void
@@ -17,11 +17,15 @@ export function useOverviewEditor(workout: Workout, previous: PreviousSessionLoo
 
   const previousSets: PreviousLookup = previous ? setsOf(previous) : () => null
 
-  function add(sectionIndex: number) {
+  function add(sectionIndex: number, exercise?: RoutineExercise) {
     const id = crypto.randomUUID()
+    const item = exercise ? newItem(id, [exercise]) : newItem(id)
 
-    onEdit((current) => addItem(current, sectionIndex, newItem(id), previousSets))
-    setEditingId(id)
+    onEdit((current) => addItem(current, sectionIndex, item, previousSets))
+
+    if (!exercise) {
+      setEditingId(id)
+    }
   }
 
   function change(id: string, edit: Change<RoutineItem>) {
