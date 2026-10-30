@@ -4,8 +4,9 @@ import { db } from '../../src/data/db'
 import { activeWorkout, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
 import { actionSheetPresented, buttonByLabel, ionChange, ionElement, ionEvent, ionField, ionInput } from '../helpers/ionic'
+import { exercisePicker } from '../helpers/picker'
 import { currentPath, renderAt } from '../helpers/renderAt'
-import { oct, reps, routine, seconds, workout } from '../helpers/workouts'
+import { done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
 
 const fullBody = routine('r1', 'אימון גוף מלא', [
   [{ name: 'סקוואט', target: reps(12) }],
@@ -232,7 +233,8 @@ describe('routines', () => {
     ionEvent(await ionElement('ion-reorder-group'), 'ionReorderEnd', { from: 0, to: 1, complete: () => {} })
     await waitFor(async () => expect(await names()).toEqual([['לחיצת חזה', 'סקוואט']]))
 
-    fireEvent.click(screen.getByText('הוספת תרגיל'))
+    fireEvent.click(screen.getByText('הוספת תרגיל', { selector: 'ion-label' }))
+    fireEvent.click(await (await exercisePicker()).findByText('תרגיל חדש'))
     await waitFor(async () => expect(await names()).toEqual([['לחיצת חזה', 'סקוואט', 'תרגיל חדש']]))
     fireEvent.click(await screen.findByText('מחיקת התרגיל'))
     await waitFor(async () => expect(await names()).toEqual([['לחיצת חזה', 'סקוואט']]))
@@ -244,6 +246,24 @@ describe('routines', () => {
     fireEvent.click(await screen.findByText('מחיקה', { selector: '.alert-button *' }))
     await waitFor(async () => expect(await names()).toEqual([[]]))
     expect((await db.routines.get('r1'))?.sections[0].name).toBe('חלק חדש')
+  })
+
+  it('editor adds an exercise picked from history with its target and tip, without opening it', async () => {
+    await saveRoutine(fullBody)
+    await saveWorkout(workout({ id: 'prev', startedAt: oct(22), exercises: [{ ...exercise('דדליפט', [done(80, 8)], reps(8)), tip: 'גב ישר' }] }))
+    renderAt('/tabs/routines/r1')
+
+    fireEvent.click(await screen.findByText('הוספת תרגיל', { selector: 'ion-label' }))
+    fireEvent.click(await (await exercisePicker()).findByText('דדליפט'))
+
+    await waitFor(async () =>
+      expect((await db.routines.get('r1'))?.sections[0].items[2]).toMatchObject({
+        sets: null,
+        exercises: [{ name: 'דדליפט', target: reps(8), weight: null, tip: 'גב ישר' }],
+      }),
+    )
+    await waitFor(() => expect(document.querySelector('ion-modal ion-searchbar')).toBeNull())
+    expect(screen.queryByText('מחיקת התרגיל')).not.toBeInTheDocument()
   })
 
   it('editor deletes the routine', async () => {

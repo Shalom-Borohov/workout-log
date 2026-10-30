@@ -16,12 +16,15 @@ import {
   useIonToast,
 } from '@ionic/react'
 import { documentTextOutline, downloadOutline, shareOutline } from 'ionicons/icons'
-import { type ChangeEvent, useRef } from 'react'
+import { type ChangeEvent, useRef, useState } from 'react'
+import { CHANGELOG } from '../../appUpdate/changelog'
+import { WhatsNewSheet } from '../../appUpdate/WhatsNewSheet'
 import { TOAST_OPTIONS } from '../../components/toast'
 import { COMMON_COPY } from '../../copy/common'
 import { SETTINGS_COPY } from './copy'
 import { type Backup, exportBackup, restoreBackup } from '../../data/backup'
 import { formatDateTime } from '../../domain/format'
+import { newestFirst } from '../../domain/releases'
 import type { HostTabPath } from '../../navigation/paths'
 import { isShareCancel, readBackup, shareBackup } from './backupFile'
 import { BackgroundSettings } from './BackgroundSettings'
@@ -30,8 +33,11 @@ import { shareHistory } from './historyFile'
 
 const errorMessage = (error: unknown) => (error instanceof Error ? error.message : SETTINGS_COPY.actionFailed)
 
+const ALL_RELEASES = newestFirst(CHANGELOG)
+
 export function SettingsPage({ tab }: { tab: HostTabPath }) {
   const fileInput = useRef<HTMLInputElement>(null)
+  const [showingChangelog, setShowingChangelog] = useState(false)
   const [presentAlert] = useIonAlert()
   const [presentToast] = useIonToast()
 
@@ -123,7 +129,12 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
         <IonNote className="list-footer">{SETTINGS_COPY.historyFooter}</IonNote>
         <BackgroundSettings onError={(error) => void toast(errorMessage(error))} />
         <FeedbackSettings />
-        <IonNote className="list-footer">{SETTINGS_COPY.version(__APP_VERSION__, formatDateTime(Date.parse(__BUILD_TIME__)))}</IonNote>
+        <IonList inset>
+          <IonItem button onClick={() => setShowingChangelog(true)}>
+            <IonLabel>{SETTINGS_COPY.version(__APP_VERSION__, formatDateTime(Date.parse(__BUILD_TIME__)))}</IonLabel>
+          </IonItem>
+        </IonList>
+        <WhatsNewSheet isOpen={showingChangelog} releases={ALL_RELEASES} onClose={() => setShowingChangelog(false)} />
         <input
           ref={fileInput}
           type="file"

@@ -3,10 +3,12 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
+import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
-import { alertPresented, ionChange, ionElement, ionEvent, ionField } from '../helpers/ionic'
+import { alertPresented, ionChange, ionElement, ionEvent, ionField, ionInput, OPEN_MODAL, visibleAll } from '../helpers/ionic'
+import { exercisePicker, pickerRows, pickerSearch } from '../helpers/picker'
 import { renderAt } from '../helpers/renderAt'
-import { done, exercise, oct, open, reps, routine, workout } from '../helpers/workouts'
+import { done, exercise, oct, open, reps, routine, seconds, workout } from '../helpers/workouts'
 
 const session = workout({
   id: 'w1',
@@ -22,7 +24,7 @@ const session = workout({
 const savedNames = async () =>
   (await db.workouts.get('w1'))?.sections.map((section) => section.items.map((item) => item.exercises.map((itemExercise) => itemExercise.name).join(' + ')))
 
-const modalElement = (selector: string) => ionElement(selector, 'ion-modal')
+const modalElement = (selector: string) => ionElement(selector, OPEN_MODAL)
 
 async function openOverviewEditing() {
   const user = userEvent.setup()
@@ -40,16 +42,18 @@ describe('overview editing', () => {
     await saveWorkout(session)
   })
 
-  it('adds an exercise to a section', async () => {
+  it('adds a new exercise to a section from the picker and opens it for editing', async () => {
     await openOverviewEditing()
 
-    fireEvent.click(await screen.findByText('הוספת תרגיל'))
+    fireEvent.click(await screen.findByText('הוספת תרגיל', { selector: 'ion-label' }))
+    fireEvent.click(await (await exercisePicker()).findByText('תרגיל חדש'))
 
     await waitFor(async () => expect(await savedNames()).toEqual([['סקוואט', 'לחיצת חזה', 'חתירה', 'תרגיל חדש']]))
 
     const added = (await db.workouts.get('w1'))?.sections[0].items[3].exercises[0]
 
     expect(added?.sets).toEqual([open(null, 10), open(null, 10)])
+    expect(await screen.findByLabelText('שם התרגיל')).toHaveValue('תרגיל חדש')
   })
 
   it('renames an exercise through the item editor, keeping its sets', async () => {
@@ -116,7 +120,56 @@ describe('overview editing', () => {
   })
 })
 
-const toasts = () => Array.from(document.querySelectorAll('ion-toast'), (toast) => toast.message)
+describe('adding an existing exercise', () => {
+  freezeDate(oct(26, 12))
+
+  beforeEach(async () => {
+    await resetDb()
+    await saveWorkout(session)
+    await saveRoutine(routine('r1', 'אימון גוף מלא', [[{ name: 'פלאנק', target: seconds(30) }]]))
+
+    await saveWorkout(
+      workout({
+        id: 'prev',
+        startedAt: oct(22),
+        exercises: [{ ...exercise('דדליפט', [done(80, 8), done(80, 6)], reps(8)), tip: 'גב ישר' }, exercise('מתח', [done(null, 8)])],
+      }),
+    )
+  })
+
+  it('lists done exercises with their last date before routine ones, and filters by search', async () => {
+    await openOverviewEditing()
+
+    fireEvent.click(await screen.findByText('הוספת תרגיל', { selector: 'ion-label' }))
+
+    await waitFor(async () => expect(await pickerRows()).toEqual(['תרגיל חדש', 'דדליפט 22.10', 'מתח 22.10', 'פלאנק']))
+    ionInput(await pickerSearch(), ' דד ')
+    await waitFor(async () => expect(await pickerRows()).toEqual(['תרגיל חדש', 'דדליפט 22.10']))
+  })
+
+  it('adds the picked exercise with its target, tip and last sets, without opening the editor', async () => {
+    await openOverviewEditing()
+
+    fireEvent.click(await screen.findByText('הוספת תרגיל', { selector: 'ion-label' }))
+    fireEvent.click(await (await exercisePicker()).findByText('דדליפט'))
+
+    await waitFor(async () => expect(await savedNames()).toEqual([['סקוואט', 'לחיצת חזה', 'חתירה', 'דדליפט']]))
+    expect((await db.workouts.get('w1'))?.sections[0].items[3].exercises[0]).toEqual({
+      ...exercise('דדליפט', [open(80, 8), open(80, 6)], reps(8)),
+      tip: 'גב ישר',
+    })
+    await waitFor(() => expect(document.querySelector('ion-modal ion-searchbar')).toBeNull())
+    expect(screen.queryByLabelText('שם התרגיל')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('סיום', { selector: 'ion-modal ion-button' }))
+    fireEvent.click(await screen.findByText('דדליפט', { selector: 'ion-modal ion-item ion-label' }))
+
+    expect(await screen.findByText('דדליפט', { selector: 'h1' })).toBeInTheDocument()
+    await waitFor(() => expect(visibleAll('.item-previous').map((line) => line.textContent)).toEqual(['פעם קודמת: 80 ק״ג × 8, 6']))
+  })
+})
+
+const toasts =() => Array.from(document.querySelectorAll('ion-toast'), (toast) => toast.message)
 
 describe('saving the workout as a routine', () => {
   beforeEach(async () => {

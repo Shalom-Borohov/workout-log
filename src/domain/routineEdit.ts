@@ -76,7 +76,7 @@ export const DEFAULT_ROUTINE_NAME = COMMON_COPY.newRoutine
 
 export const DEFAULT_SECTION_NAME = APP_COPY.defaultSectionName
 
-const DEFAULT_EXERCISE_NAME = APP_COPY.defaultExerciseName
+export const DEFAULT_EXERCISE_NAME = APP_COPY.defaultExerciseName
 
 const DEFAULT_REPS = 10
 

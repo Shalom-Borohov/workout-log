@@ -42,6 +42,13 @@ Code is in three layers, and dependencies point downward only:
   - `backup.ts`: backup export/import, with hand-written type guards for the JSON.
 - `src/pages/<feature>/` (`live`, `routines`, `timeline`, `exercises`, `settings`): grouped by feature. Each folder holds that screen's components, hooks, CSS and copy, and features don't import from each other.
 - Shared UI goes in `src/components/`, `src/hooks/`, `src/navigation/` and `src/copy/`. Move code there only once a second feature needs it.
+- `src/appUpdate/`: the update bar, the "מה חדש" sheet and `changelog.ts`, rendered by `Tabs.tsx` and Settings.
+
+Updates:
+
+- `vite-plugin-pwa` runs with `registerType: 'prompt'`, so a new service worker waits until the user taps "עדכון" (`UpdateBar`, through `useRegisterSW`).
+- `updateChecks.ts` calls `registration.update()` when the app becomes visible and hourly. iOS doesn't check on its own when a Home Screen app resumes.
+- The last version whose notes were shown is kept in `localStorage` (`src/data/seenVersion.ts`). `test/setup.ts` marks the running version as seen before each test.
 
 Data model essentials:
 
@@ -96,4 +103,5 @@ Schema changes:
 - No `as` casts (`as const` is fine) and no `?? ''`/`?? 0` fallbacks to satisfy types. Narrow parsed JSON with type guards.
 - Durations are stored in seconds. Minutes are a display unit only.
 - Every PR that ships raises `version` in `package.json`: the minor number for features, the patch number for fixes. Settings shows it with the build time.
+- The same PR adds a release to `src/appUpdate/changelog.ts`: short Hebrew lines for what the user will notice, under `features` and `fixes`. The phone shows them once after updating.
 - Keep files under about 250 lines, split by responsibility.

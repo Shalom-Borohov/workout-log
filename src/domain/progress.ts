@@ -1,7 +1,7 @@
 import { itemSets } from './routineEdit'
 import type { Routine, RoutineExercise, SetLog, Target, Workout, WorkoutExercise } from './types'
 
-const LOCALE = 'he'
+export const LOCALE = 'he'
 
 export function targetAmount(target: Target): number {
   return target.kind === 'reps' ? target.reps : target.seconds
@@ -156,7 +156,7 @@ function changeTracker() {
   }
 }
 
-function chronological(history: Workout[], before: number): Workout[] {
+export function chronological(history: Workout[], before: number): Workout[] {
   return history
     .filter((workout) => workout.finishedAt !== null && workout.startedAt < before)
     .sort((first, second) => first.startedAt - second.startedAt)

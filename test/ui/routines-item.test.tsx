@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveRoutine } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
-import { ionChange, ionElement, ionField } from '../helpers/ionic'
+import { ionChange, ionElement, ionField, OPEN_MODAL } from '../helpers/ionic'
 import { renderAt } from '../helpers/renderAt'
 import { reps, routine, seconds } from '../helpers/workouts'
 
@@ -19,7 +19,7 @@ async function openSquat() {
 }
 
 async function itemSheet() {
-  const modal = await ionElement('ion-modal')
+  const modal = (await ionElement('ion-content', OPEN_MODAL)).closest('ion-modal')
 
   if (!(modal instanceof HTMLElement)) {
     throw new Error('item sheet not found')

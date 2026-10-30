@@ -6,31 +6,24 @@ import {
   IonSearchbar,
   IonTitle,
   IonToolbar,
-  type SearchbarInputEventDetail,
 } from '@ionic/react'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { COMMON_COPY } from '../../copy/common'
 import { EXERCISES_COPY } from './copy'
 import { useFinishedWorkouts, useRoutines } from '../../data/hooks'
 import { exerciseNames, latestSessions } from '../../domain/progress'
+import { useSearch } from '../../hooks/useSearch'
 import { ExerciseRow } from './ExerciseRow'
 import './exercises.css'
 
 export function ExercisesPage() {
   const routines = useRoutines()
   const workouts = useFinishedWorkouts()
-  const [query, setQuery] = useState('')
-  const needle = query.trim().toLowerCase()
+  const search = useSearch()
   const allNames = useMemo(() => (routines && workouts ? exerciseNames(routines, workouts) : []), [routines, workouts])
   const latest = useMemo(() => workouts && latestSessions(workouts), [workouts])
-  const names = allNames.filter((name) => name.toLowerCase().includes(needle))
-
-  function handleInput({ value }: SearchbarInputEventDetail) {
-    if (typeof value === 'string') {
-      setQuery(value)
-    }
-  }
+  const names = allNames.filter(search.matches)
 
   return (
     <IonPage>
@@ -46,9 +39,9 @@ export function ExercisesPage() {
           </IonToolbar>
           <IonToolbar>
             <IonSearchbar
-              placeholder={EXERCISES_COPY.search}
-              value={query}
-              onIonInput={(event) => handleInput(event.detail)}
+              placeholder={COMMON_COPY.search}
+              value={search.query}
+              onIonInput={(event) => search.onInput(event.detail)}
             />
           </IonToolbar>
         </IonHeader>
@@ -63,7 +56,7 @@ export function ExercisesPage() {
           <EmptyState title={EXERCISES_COPY.emptyTitle} body={EXERCISES_COPY.emptyBody} />
         )}
         {allNames.length > 0 && names.length === 0 && (
-          <EmptyState title={EXERCISES_COPY.noResultsTitle(query.trim())} body={EXERCISES_COPY.noResultsBody} />
+          <EmptyState title={EXERCISES_COPY.noResultsTitle(search.query.trim())} body={EXERCISES_COPY.noResultsBody} />
         )}
       </IonContent>
     </IonPage>
