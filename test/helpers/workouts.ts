@@ -1,4 +1,4 @@
-import type { Routine, RoutineExercise, SetLog, Target, Workout, WorkoutExercise } from '../../src/domain/types'
+import type { Activity, Routine, RoutineExercise, SetLog, Target, Workout, WorkoutExercise } from '../../src/domain/types'
 
 export const reps = (count: number): Target => ({ kind: 'reps', reps: count })
 
@@ -23,6 +23,7 @@ interface WorkoutInput {
 
 export function workout({ id, startedAt, finishedAt = startedAt + 3600000, exercises }: WorkoutInput): Workout {
   return {
+    kind: 'routine',
     id,
     routineId: 'r1',
     routineName: 'אימון גוף מלא',
@@ -36,6 +37,18 @@ export function workout({ id, startedAt, finishedAt = startedAt + 3600000, exerc
       },
     ],
   }
+}
+
+interface ActivityInput {
+  id: string
+  name?: string
+  startedAt: number
+  finishedAt?: number
+  summary?: string
+}
+
+export function activity({ id, name = 'אגרוף תאילנדי', startedAt, finishedAt = startedAt + 3600000, summary = '' }: ActivityInput): Activity {
+  return { kind: 'activity', id, name, startedAt, finishedAt, summary }
 }
 
 type ExerciseInput = Pick<RoutineExercise, 'name' | 'target'> & Partial<Pick<RoutineExercise, 'weight' | 'tip'>>

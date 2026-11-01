@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { withChanges } from '../../src/domain/progress'
 import type { Workout } from '../../src/domain/types'
-import { done, exercise, oct, reps, workout } from '../helpers/workouts'
+import { activity, done, exercise, oct, reps, workout } from '../helpers/workouts'
 
 const changesOf = (target: Workout, history: Workout[]) => withChanges(history).find((entry) => entry.id === target.id)?.changes
 
@@ -73,6 +73,20 @@ describe('withChanges', () => {
     expect(withChanges(history).map((entry) => [entry.id, entry.changes.map((change) => change.kind)])).toEqual([
       ['c', []],
       ['b', ['record']],
+      ['a', []],
+    ])
+  })
+
+  it('keeps activities in place with no changes and without breaking comparisons', () => {
+    const history = [
+      workout({ id: 'a', startedAt: oct(12), exercises: [exercise('סקוואט', [done(40, 10)])] }),
+      activity({ id: 'boxing', startedAt: oct(15) }),
+      workout({ id: 'b', startedAt: oct(19), exercises: [exercise('סקוואט', [done(45, 10)])] }),
+    ]
+
+    expect(withChanges(history).map((entry) => [entry.id, entry.changes.map((change) => change.kind)])).toEqual([
+      ['b', ['record']],
+      ['boxing', []],
       ['a', []],
     ])
   })

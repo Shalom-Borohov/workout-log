@@ -26,6 +26,7 @@ describe('startWorkout', () => {
     const started = startWorkout(fullBody, [], oct(26), ids())
 
     expect(started).toEqual({
+      kind: 'routine',
       id: 'w1',
       routineId: 'r1',
       routineName: 'אימון גוף מלא',

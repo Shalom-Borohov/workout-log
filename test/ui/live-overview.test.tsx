@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
-import { resetDb } from '../helpers/db'
+import { resetDb, savedWorkout } from '../helpers/db'
 import { alertPresented, ionChange, ionElement, ionEvent, ionField, ionInput, OPEN_MODAL, visibleAll } from '../helpers/ionic'
 import { exercisePicker, pickerRows, pickerSearch } from '../helpers/picker'
 import { renderAt } from '../helpers/renderAt'
@@ -22,7 +22,7 @@ const session = workout({
 })
 
 const savedNames = async () =>
-  (await db.workouts.get('w1'))?.sections.map((section) => section.items.map((item) => item.exercises.map((itemExercise) => itemExercise.name).join(' + ')))
+  (await savedWorkout('w1'))?.sections.map((section) => section.items.map((item) => item.exercises.map((itemExercise) => itemExercise.name).join(' + ')))
 
 const modalElement = (selector: string) => ionElement(selector, OPEN_MODAL)
 
@@ -50,7 +50,7 @@ describe('overview editing', () => {
 
     await waitFor(async () => expect(await savedNames()).toEqual([['סקוואט', 'לחיצת חזה', 'חתירה', 'תרגיל חדש']]))
 
-    const added = (await db.workouts.get('w1'))?.sections[0].items[3].exercises[0]
+    const added = (await savedWorkout('w1'))?.sections[0].items[3].exercises[0]
 
     expect(added?.sets).toEqual([open(null, 10), open(null, 10)])
     expect(await screen.findByLabelText('שם התרגיל')).toHaveValue('תרגיל חדש')
@@ -63,7 +63,7 @@ describe('overview editing', () => {
     ionChange(await ionField('שם התרגיל'), 'סקוואט גביע')
 
     await waitFor(async () => expect(await savedNames()).toEqual([['סקוואט גביע', 'לחיצת חזה', 'חתירה']]))
-    expect((await db.workouts.get('w1'))?.sections[0].items[0].exercises[0].sets).toEqual([done(60, 10), open(60, 10)])
+    expect((await savedWorkout('w1'))?.sections[0].items[0].exercises[0].sets).toEqual([done(60, 10), open(60, 10)])
     expect(screen.queryByText('משקל התחלתי (ק״ג)')).not.toBeInTheDocument()
   })
 
@@ -154,7 +154,7 @@ describe('adding an existing exercise', () => {
     fireEvent.click(await (await exercisePicker()).findByText('דדליפט'))
 
     await waitFor(async () => expect(await savedNames()).toEqual([['סקוואט', 'לחיצת חזה', 'חתירה', 'דדליפט']]))
-    expect((await db.workouts.get('w1'))?.sections[0].items[3].exercises[0]).toEqual({
+    expect((await savedWorkout('w1'))?.sections[0].items[3].exercises[0]).toEqual({
       ...exercise('דדליפט', [open(80, 8), open(80, 6)], reps(8)),
       tip: 'גב ישר',
     })
@@ -222,7 +222,7 @@ describe('saving the workout as a routine', () => {
     expect(created?.sections[0].items.map((item) => item.exercises[0].name)).toEqual(['סקוואט', 'לחיצת חזה', 'חתירה'])
     expect(created?.sections[0].items[0].exercises[0].weight).toBe(50)
     expect((await db.routines.get('r1'))?.sections[0].items).toHaveLength(1)
-    expect((await db.workouts.get('w1'))?.routineId).toBe('r1')
+    expect((await savedWorkout('w1'))?.routineId).toBe('r1')
     await waitFor(() => expect(toasts()).toContain('נשמר אימון חדש'))
   })
 

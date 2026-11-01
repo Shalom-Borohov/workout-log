@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.4.0',
+    features: ['אפשר לרשום גם פעילות אחרת, כמו אגרוף תאילנדי או פילאטיס: בכפתור + בציר הזמן'],
+    fixes: [],
+  },
+  {
     version: '1.3.0',
     features: [
       'בהוספת תרגיל אפשר לבחור תרגיל שכבר עשית, עם היעד והדגשים שלו',

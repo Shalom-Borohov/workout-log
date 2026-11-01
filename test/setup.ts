@@ -19,6 +19,17 @@ Object.defineProperty(window, 'matchMedia', {
   }),
 })
 
+class NoopIntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return []
+  }
+}
+
+Object.defineProperty(window, 'IntersectionObserver', { writable: true, value: NoopIntersectionObserver })
+
 setupIonicReact({ mode: 'ios' })
 
 beforeEach(() => {

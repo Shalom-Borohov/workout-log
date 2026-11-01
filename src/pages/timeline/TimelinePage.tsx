@@ -8,6 +8,7 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  useIonActionSheet,
 } from '@ionic/react'
 import { add } from 'ionicons/icons'
 import { useMemo, useState } from 'react'
@@ -15,25 +16,37 @@ import { EmptyState } from '../../components/EmptyState'
 import { SettingsButton } from '../../components/SettingsButton'
 import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
-import { useActiveWorkout, useFinishedWorkouts } from '../../data/hooks'
+import { useActiveWorkout, useFinishedRecords } from '../../data/hooks'
 import { useNow } from '../../hooks/useNow'
 import { withChanges } from '../../domain/progress'
 import { MINUTE_MS } from '../../domain/time'
 import { groupByWeek } from '../../domain/timeline'
 import { TIMELINE_PATH } from '../../navigation/paths'
 import { ActiveWorkoutBanner } from './ActiveWorkoutBanner'
+import { ActivityModal } from './ActivityModal'
 import { PastWorkoutModal } from './PastWorkoutModal'
 import { StartWorkoutButton } from './StartWorkoutButton'
 import { WeekSection } from './WeekSection'
 import './timeline.css'
 
 export function TimelinePage() {
-  const workouts = useFinishedWorkouts()
+  const workouts = useFinishedRecords()
   const active = useActiveWorkout()
   const now = useNow(MINUTE_MS)
   const changes = useMemo(() => (workouts ? withChanges(workouts) : []), [workouts])
   const groups = useMemo(() => groupByWeek(changes, now), [changes, now])
-  const [addingPast, setAddingPast] = useState(false)
+  const [adding, setAdding] = useState<'past' | 'activity' | null>(null)
+  const [presentSheet] = useIonActionSheet()
+
+  function chooseAddition() {
+    presentSheet({
+      buttons: [
+        { text: TIMELINE_COPY.pastWorkout, handler: () => setAdding('past') },
+        { text: TIMELINE_COPY.otherActivity, handler: () => setAdding('activity') },
+        { text: COMMON_COPY.cancel, role: 'cancel' },
+      ],
+    })
+  }
 
   return (
     <IonPage>
@@ -42,13 +55,14 @@ export function TimelinePage() {
           <IonTitle>{COMMON_COPY.timeline}</IonTitle>
           <IonButtons slot="end">
             <SettingsButton tab={TIMELINE_PATH} />
-            <IonButton aria-label={TIMELINE_COPY.addPastWorkout} onClick={() => setAddingPast(true)}>
+            <IonButton aria-label={TIMELINE_COPY.add} onClick={chooseAddition}>
               <IonIcon slot="icon-only" icon={add} />
             </IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <PastWorkoutModal isOpen={addingPast} onClose={() => setAddingPast(false)} />
+      <PastWorkoutModal isOpen={adding === 'past'} onClose={() => setAdding(null)} />
+      <ActivityModal isOpen={adding === 'activity'} activity={null} onClose={() => setAdding(null)} />
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>

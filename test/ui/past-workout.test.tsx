@@ -1,10 +1,10 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
-import { saveRoutine, saveWorkout } from '../../src/data/repo'
+import { finishedWorkouts, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
-import { buttonByLabel, ionChange, ionField, ionInput } from '../helpers/ionic'
+import { buttonByLabel, ionChange, ionField, ionInput, startTimePicker } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, reps, routine, workout } from '../helpers/workouts'
 
@@ -12,7 +12,8 @@ const legs = routine('r1', 'אימון רגליים', [[{ name: 'סקוואט', 
 
 async function openModal() {
   renderAt('/tabs/timeline')
-  fireEvent.click(await buttonByLabel('הוספת אימון קודם'))
+  fireEvent.click(await buttonByLabel('הוספה'))
+  fireEvent.click(await screen.findByText('אימון קודם', { selector: '.action-sheet-button *' }))
 }
 
 const saveButton = () => screen.getByText('שמירה').closest('ion-button')
@@ -39,17 +40,35 @@ describe('past workout', () => {
     await openModal()
 
     ionInput(await ionField('תאריך'), '2026-10-24')
-    ionInput(await ionField('שעת התחלה'), '18:30')
+    ionChange(await startTimePicker(), '18:30')
     ionInput(await ionField('משך (דקות)'), '45')
     fireEvent.click(await screen.findByText('שמירה'))
 
     await waitFor(() => expect(currentPath()).toMatch(/^\/tabs\/timeline\/workout\//))
 
-    const [added] = (await db.workouts.toArray()).filter((saved) => saved.id !== 'prev')
+    const [added] = (await finishedWorkouts()).filter((saved) => saved.id !== 'prev')
 
     expect(currentPath()).toBe(`/tabs/timeline/workout/${added.id}`)
     expect(added).toMatchObject({ routineId: 'r1', startedAt: oct(24, 18, 30), finishedAt: oct(24, 19, 15) })
     expect(added.sections[0].items[0].exercises[0].sets).toEqual([{ weight: 20, amount: 10, done: false }])
+  })
+
+  it('picks the start time on a 24-hour wheel', async () => {
+    await saveRoutine(legs)
+    await openModal()
+
+    const picker = await startTimePicker()
+
+    expect(picker).toHaveProperty('presentation', 'time')
+    expect(picker).toHaveProperty('hourCycle', 'h23')
+
+    ionInput(await ionField('תאריך'), '2026-10-24')
+    ionChange(picker, '2026-10-26T21:15:00')
+    await waitFor(() => expect(saveButton()).toHaveProperty('disabled', false))
+    fireEvent.click(screen.getByText('שמירה'))
+
+    await waitFor(() => expect(currentPath()).toMatch(/^\/tabs\/timeline\/workout\//))
+    expect(await finishedWorkouts()).toMatchObject([{ startedAt: oct(24, 21, 15) }])
   })
 
   it('picks among routines with exercises and defaults to an hour ending now', async () => {
@@ -74,7 +93,7 @@ describe('past workout', () => {
     await openModal()
 
     ionInput(await ionField('תאריך'), date)
-    ionInput(await ionField('שעת התחלה'), time)
+    ionChange(await startTimePicker(), time)
 
     expect(await screen.findByText('שעת ההתחלה צריכה להיות בעבר')).toBeInTheDocument()
     expect(saveButton()).toHaveProperty('disabled', true)
@@ -95,7 +114,7 @@ describe('past workout', () => {
     await saveRoutine(legs)
     await openModal()
 
-    ionInput(await ionField('שעת התחלה'), '11:30')
+    ionChange(await startTimePicker(), '11:30')
     ionInput(await ionField('משך (דקות)'), '45')
 
     expect(await screen.findByText('האימון צריך להסתיים עד עכשיו')).toBeInTheDocument()

@@ -1,5 +1,6 @@
+import { isRoutineWorkout } from './activities'
 import { itemSets } from './routineEdit'
-import type { Routine, RoutineExercise, SetLog, Target, Workout, WorkoutExercise } from './types'
+import type { Routine, RoutineExercise, SetLog, Target, Workout, WorkoutExercise, WorkoutRecord } from './types'
 
 export const LOCALE = 'he'
 
@@ -93,6 +94,7 @@ export function startWorkout(routine: Routine, history: Workout[], now: number, 
   const previous = previousSetsLookup(history, now)
 
   return {
+    kind: 'routine',
     id: newId(),
     routineId: routine.id,
     routineName: routine.name,
@@ -131,7 +133,10 @@ type ExerciseState = { heaviest: number; previousBest: SetLog }
 function changeTracker() {
   const state = new Map<string, ExerciseState>()
 
-  return (workout: Workout): Change[] => {
+  return (workout: WorkoutRecord): Change[] => {
+    if (!isRoutineWorkout(workout)) {
+      return []
+    }
     const names = [...new Set(exercisesOf(workout).map((exercise) => exercise.name))]
 
     return names.flatMap((name): Change[] => {
@@ -156,15 +161,15 @@ function changeTracker() {
   }
 }
 
-export function chronological(history: Workout[], before: number): Workout[] {
+export function chronological<R extends WorkoutRecord>(history: R[], before: number): R[] {
   return history
     .filter((workout) => workout.finishedAt !== null && workout.startedAt < before)
     .sort((first, second) => first.startedAt - second.startedAt)
 }
 
-export type WorkoutWithChanges = Workout & { changes: Change[] }
+export type WorkoutWithChanges = WorkoutRecord & { changes: Change[] }
 
-export function withChanges(history: Workout[]): WorkoutWithChanges[] {
+export function withChanges(history: WorkoutRecord[]): WorkoutWithChanges[] {
   const track = changeTracker()
 
   return chronological(history, Infinity)

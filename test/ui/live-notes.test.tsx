@@ -2,7 +2,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveWorkout } from '../../src/data/repo'
-import { resetDb } from '../helpers/db'
+import { resetDb, savedWorkout } from '../helpers/db'
 import { userEvent } from '@testing-library/user-event'
 import { actionSheetPresented, alertPresented, ionInput, visibleAll } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
@@ -22,7 +22,7 @@ async function chooseFromMenu(text: string) {
   fireEvent.click(screen.getByText(text, { selector: '.action-sheet-button-label' }))
 }
 
-const savedExercises = async () => (await db.workouts.get('w1'))?.sections[0].items[0].exercises
+const savedExercises = async () => (await savedWorkout('w1'))?.sections[0].items[0].exercises
 
 describe('live next-time note', () => {
   it('saves one note per exercise of the item from the item menu', async () => {

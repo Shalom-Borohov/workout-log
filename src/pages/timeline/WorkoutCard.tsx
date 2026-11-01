@@ -1,8 +1,9 @@
 import { IonItem, IonLabel } from '@ionic/react'
 import { ChangeBadge } from '../../components/ChangeBadge'
-import { formatAmount, formatDay, formatSummary, formatWeight } from '../../domain/format'
+import { recordName } from '../../domain/activities'
+import { formatAmount, formatDay, formatWeight } from '../../domain/format'
 import type { Change, WorkoutWithChanges } from '../../domain/progress'
-import { summarize } from '../../domain/timeline'
+import { summaryLine } from '../../domain/timeline'
 import { workoutDetailPath } from '../../navigation/paths'
 
 const MAX_CARD_CHANGES = 3
@@ -14,17 +15,16 @@ function changeLabel({ name, set, target }: Change): string {
 }
 
 export function WorkoutCard({ workout }: { workout: WorkoutWithChanges }) {
-  const { minutes, doneSets } = summarize(workout)
-  const [summaryLine] = workout.summary.trim().split('\n')
+  const [firstSummaryLine] = workout.summary.trim().split('\n')
 
   return (
     <IonItem button detail routerLink={workoutDetailPath(workout.id)}>
       <IonLabel className="workout-card">
         <div className="workout-card-heading">
-          <h2 className="workout-card-title">{workout.routineName}</h2>
+          <h2 className="workout-card-title">{recordName(workout)}</h2>
           <span className="workout-card-date">{formatDay(workout.startedAt)}</span>
         </div>
-        <p className="workout-card-meta">{formatSummary(minutes, doneSets)}</p>
+        <p className="workout-card-meta">{summaryLine(workout)}</p>
         {workout.changes.length > 0 && (
           <div className="workout-card-changes">
             {workout.changes.slice(0, MAX_CARD_CHANGES).map((change) => (
@@ -32,7 +32,7 @@ export function WorkoutCard({ workout }: { workout: WorkoutWithChanges }) {
             ))}
           </div>
         )}
-        {summaryLine && <p className="workout-card-summary">{summaryLine}</p>}
+        {firstSummaryLine && <p className="workout-card-summary">{firstSummaryLine}</p>}
       </IonLabel>
     </IonItem>
   )

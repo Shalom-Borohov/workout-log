@@ -1,7 +1,8 @@
 import { APP_COPY } from '../copy/app'
-import type { Routine, SetLog, Target, Workout } from '../domain/types'
+import type { Activity, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
 import { db } from './db'
 import {
+  type LegacyRecord,
   type LegacyRoutine,
   type LegacyRoutineExercise,
   type LegacyRoutineItem,
@@ -10,13 +11,13 @@ import {
   type LegacyWorkoutExercise,
   type LegacyWorkoutItem,
   type LegacyWorkoutSection,
+  upgradeRecord,
   upgradeRoutine,
-  upgradeWorkout,
 } from './migrate'
 
-export type Backup = { version: 1; exportedAt: number; routines: Routine[]; workouts: Workout[] }
+export type Backup = { version: 1; exportedAt: number; routines: Routine[]; workouts: WorkoutRecord[] }
 
-type LegacyBackup = { version: 1; exportedAt: number; routines: LegacyRoutine[]; workouts: LegacyWorkout[] }
+type LegacyBackup = { version: 1; exportedAt: number; routines: LegacyRoutine[]; workouts: LegacyRecord[] }
 
 type Guard<T> = (value: unknown) => value is T
 
@@ -96,6 +97,7 @@ const isWorkoutSection = (section: unknown): section is LegacyWorkoutSection =>
 
 const isWorkout = (workout: unknown): workout is LegacyWorkout =>
   isObject(workout) &&
+  (workout.kind === undefined || workout.kind === 'routine') &&
   isString(workout.id) &&
   isString(workout.routineId) &&
   isString(workout.routineName) &&
@@ -104,19 +106,30 @@ const isWorkout = (workout: unknown): workout is LegacyWorkout =>
   isString(workout.summary) &&
   arrayOf(isWorkoutSection)(workout.sections)
 
+const isActivity = (activity: unknown): activity is Activity =>
+  isObject(activity) &&
+  activity.kind === 'activity' &&
+  isString(activity.id) &&
+  isString(activity.name) &&
+  isNumber(activity.startedAt) &&
+  isNumber(activity.finishedAt) &&
+  isString(activity.summary)
+
+const isRecord = (record: unknown): record is LegacyRecord => isActivity(record) || isWorkout(record)
+
 const isBackup = (backup: unknown): backup is LegacyBackup =>
   isObject(backup) &&
   backup.version === 1 &&
   isNumber(backup.exportedAt) &&
   arrayOf(isRoutine)(backup.routines) &&
-  arrayOf(isWorkout)(backup.workouts)
+  arrayOf(isRecord)(backup.workouts)
 
 export function parseBackup(json: unknown): Backup {
   if (!isBackup(json)) {
     throw new Error(APP_COPY.invalidBackup)
   }
 
-  return { ...json, routines: json.routines.map(upgradeRoutine), workouts: json.workouts.map(upgradeWorkout) }
+  return { ...json, routines: json.routines.map(upgradeRoutine), workouts: json.workouts.map(upgradeRecord) }
 }
 
 export async function exportBackup(now: number): Promise<Backup> {

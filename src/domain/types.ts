@@ -54,6 +54,7 @@ export interface WorkoutSection {
 }
 
 export interface Workout {
+  kind: 'routine'
   id: string
   routineId: string
   routineName: string
@@ -62,6 +63,17 @@ export interface Workout {
   summary: string
   sections: WorkoutSection[]
 }
+
+export interface Activity {
+  kind: 'activity'
+  id: string
+  name: string
+  startedAt: number
+  finishedAt: number
+  summary: string
+}
+
+export type WorkoutRecord = Workout | Activity
 
 export interface BackgroundSetting {
   key: 'background'

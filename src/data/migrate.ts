@@ -1,4 +1,5 @@
 import type {
+  Activity,
   Routine,
   RoutineExercise,
   RoutineItem,
@@ -6,6 +7,7 @@ import type {
   Workout,
   WorkoutExercise,
   WorkoutItem,
+  WorkoutRecord,
   WorkoutSection,
 } from '../domain/types'
 
@@ -25,7 +27,9 @@ export type LegacyWorkoutItem = Omit<WorkoutItem, 'exercises'> & { exercises: Le
 
 export type LegacyWorkoutSection = Omit<WorkoutSection, 'items'> & { items: LegacyWorkoutItem[] }
 
-export type LegacyWorkout = Omit<Workout, 'sections'> & { sections: LegacyWorkoutSection[] }
+export type LegacyWorkout = Omit<Legacy<Workout, 'kind'>, 'sections'> & { sections: LegacyWorkoutSection[] }
+
+export type LegacyRecord = LegacyWorkout | Activity
 
 export function upgradeRoutine(routine: LegacyRoutine): Routine {
   return {
@@ -45,6 +49,7 @@ export function upgradeRoutine(routine: LegacyRoutine): Routine {
 export function upgradeWorkout(workout: LegacyWorkout): Workout {
   return {
     ...workout,
+    kind: 'routine',
     sections: workout.sections.map((section) => ({
       ...section,
       items: section.items.map((item) => ({
@@ -53,4 +58,8 @@ export function upgradeWorkout(workout: LegacyWorkout): Workout {
       })),
     })),
   }
+}
+
+export function upgradeRecord(record: LegacyRecord): WorkoutRecord {
+  return record.kind === 'activity' ? record : upgradeWorkout(record)
 }

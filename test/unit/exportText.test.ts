@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { historyText } from '../../src/domain/exportText'
-import { done, exercise, oct, open, seconds, workout } from '../helpers/workouts'
+import { activity, done, exercise, oct, open, seconds, workout } from '../helpers/workouts'
 
 describe('historyText', () => {
   it('writes a workout as a heading, its section and one line per exercise', () => {
@@ -14,6 +14,12 @@ describe('historyText', () => {
     expect(historyText([legs])).toBe(
       ['אימון גוף מלא · יום ב׳ 26.10.2026 · 45 דק׳', 'עיקרי', 'לחיצת חזה: 20 × 10, 20 × 10, 22.5 × 8', 'מתח: 6'].join('\n'),
     )
+  })
+
+  it('writes an activity as its heading and summary', () => {
+    const boxing = activity({ id: 'a1', startedAt: oct(26, 19), finishedAt: oct(26, 20), summary: 'ספארינג' })
+
+    expect(historyText([boxing])).toBe(['אגרוף תאילנדי · יום ב׳ 26.10.2026 · 60 דק׳', 'ספארינג'].join('\n'))
   })
 
   it('writes skipped, undone and timed exercises', () => {

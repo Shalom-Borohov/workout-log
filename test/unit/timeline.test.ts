@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { groupByWeek, summarize } from '../../src/domain/timeline'
-import { done, exercise, oct, open, workout } from '../helpers/workouts'
+import { activity, done, exercise, oct, open, workout } from '../helpers/workouts'
 
 describe('summarize', () => {
   it('summary counts done sets only', () => {
@@ -16,6 +16,13 @@ describe('summarize', () => {
     })
 
     expect(summarize(finished)).toEqual({ minutes: 48, doneSets: 3 })
+  })
+
+  it('an activity has its minutes and no sets', () => {
+    expect(summarize(activity({ id: 'boxing', startedAt: oct(26, 19), finishedAt: oct(26, 20, 15) }))).toEqual({
+      minutes: 75,
+      doneSets: 0,
+    })
   })
 
   it('does not count ticked sets of a skipped exercise', () => {

@@ -50,7 +50,9 @@ export function ionElement(selector: string, scope = VISIBLE_PAGE) {
   })
 }
 
-export const buttonByLabel = (label: string) => ionElement(`ion-button[aria-label="${label}"]`)
+export const startTimePicker = () => ionElement('ion-datetime', 'body')
+
+export const buttonByLabel =(label: string) => ionElement(`ion-button[aria-label="${label}"]`)
 
 export async function expectInOrder(texts: string[]) {
   const elements = await Promise.all(texts.map((text) => screen.findByText(text)))
