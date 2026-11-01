@@ -134,6 +134,7 @@ describe('database upgrade', () => {
     ])
     expect(await db.workouts.toArray()).toEqual([
       {
+        kind: 'routine',
         id: 'w1',
         routineId: 'r1',
         routineName: 'אימון גוף מלא',
@@ -176,6 +177,15 @@ describe('database upgrade', () => {
     legacyDb.close()
 
     expect(await db.routines.toArray()).toEqual([{ ...v3Routine, createdAt: 7 }])
-    expect(await db.workouts.toArray()).toEqual([v3Workout])
+    expect(await db.workouts.toArray()).toEqual([{ ...v3Workout, kind: 'routine' }])
+  })
+
+  it('marks every v4 workout as a routine workout', async () => {
+    const legacyDb = new Dexie('workout-log')
+    legacyDb.version(4).stores({ routines: 'id, createdAt', workouts: 'id, startedAt, finishedAt', settings: 'key' })
+    await legacyDb.table('workouts').put(v3Workout)
+    legacyDb.close()
+
+    expect(await db.workouts.toArray()).toEqual([{ ...v3Workout, kind: 'routine' }])
   })
 })

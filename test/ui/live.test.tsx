@@ -2,7 +2,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveWorkout } from '../../src/data/repo'
-import { resetDb } from '../helpers/db'
+import { resetDb, savedWorkout } from '../helpers/db'
 import { actionSheetPresented, ionChange, ionInput } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, open, seconds, workout } from '../helpers/workouts'
@@ -38,7 +38,7 @@ describe('live workout', () => {
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 1', pressed: false }))
 
-    await waitFor(async () => expect((await db.workouts.get('w1'))?.sections[0].items[0].exercises[0].sets[0].done).toBe(true))
+    await waitFor(async () => expect((await savedWorkout('w1'))?.sections[0].items[0].exercises[0].sets[0].done).toBe(true))
     view.unmount()
     renderAt('/tabs/timeline/workout/w1')
 
@@ -75,7 +75,7 @@ describe('live workout', () => {
     )
     const user = userEvent.setup()
     renderAt('/tabs/timeline/workout/w1')
-    const firstSet = async () => (await db.workouts.get('w1'))?.sections[0].items.map((item) => item.exercises[0].sets[0])
+    const firstSet = async () => (await savedWorkout('w1'))?.sections[0].items.map((item) => item.exercises[0].sets[0])
 
     ionChange(await screen.findByLabelText('סקוואט סט 1 משקל'), '62.5')
     ionChange(screen.getByLabelText('סקוואט סט 1 חזרות'), '8')
@@ -113,7 +113,7 @@ describe('live workout', () => {
     await saveWorkout(active)
     const user = userEvent.setup()
     renderAt('/tabs/timeline/workout/w1')
-    const squat = async () => (await db.workouts.get('w1'))?.sections[0].items[0].exercises[0]
+    const squat = async () => (await savedWorkout('w1'))?.sections[0].items[0].exercises[0]
     const choose = async (text: string) => {
       const presented = actionSheetPresented()
 
@@ -195,7 +195,7 @@ describe('live workout', () => {
     expect(screen.queryByText(/^\d+:\d\d$/)).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'סקוואט סט 1' }))
-    await waitFor(async () => expect((await db.workouts.get('w1'))?.sections[0].items[0].exercises[0].sets[0].done).toBe(true))
+    await waitFor(async () => expect((await savedWorkout('w1'))?.sections[0].items[0].exercises[0].sets[0].done).toBe(true))
     await user.click(screen.getByText('סיום', { selector: 'ion-button' }))
 
     expect(screen.queryByText('סיכום האימון', { selector: 'ion-title' })).not.toBeInTheDocument()
@@ -215,7 +215,7 @@ describe('live workout', () => {
 
     await user.click(screen.getByRole('button', { name: 'מקבילים סט 1' }))
     await waitFor(async () =>
-      expect((await db.workouts.get('w1'))?.sections[0].items[0].exercises.map((pairExercise) => pairExercise.sets[0].done)).toEqual([false, true]),
+      expect((await savedWorkout('w1'))?.sections[0].items[0].exercises.map((pairExercise) => pairExercise.sets[0].done)).toEqual([false, true]),
     )
   })
 

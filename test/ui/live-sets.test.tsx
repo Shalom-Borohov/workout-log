@@ -1,14 +1,13 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { db } from '../../src/data/db'
 import { saveWorkout } from '../../src/data/repo'
-import { resetDb } from '../helpers/db'
+import { resetDb, savedWorkout } from '../helpers/db'
 import { renderAt } from '../helpers/renderAt'
 import { ionChange, ionField } from '../helpers/ionic'
 import { done, exercise, oct, open, seconds, workout } from '../helpers/workouts'
 
-const firstSets = async () => (await db.workouts.get('w1'))?.sections[0].items[0].exercises[0].sets
+const firstSets = async () => (await savedWorkout('w1'))?.sections[0].items[0].exercises[0].sets
 
 beforeEach(async () => {
   await resetDb()

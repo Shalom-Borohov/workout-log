@@ -9,7 +9,7 @@ const SessionWorkout = memo(LiveWorkout, (previous, next) => previous.initial.id
 function WorkoutLoader({ id }: { id: string }) {
   const workout = useWorkout(id)
 
-  return workout ? <SessionWorkout initial={workout} /> : null
+  return workout?.kind === 'routine' ? <SessionWorkout initial={workout} /> : null
 }
 
 export function LiveWorkoutPage() {

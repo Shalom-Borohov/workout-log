@@ -1,5 +1,6 @@
+import { isRoutineWorkout } from '../domain/activities'
 import { startWorkout } from '../domain/progress'
-import type { Routine, Workout } from '../domain/types'
+import type { Routine, Workout, WorkoutRecord } from '../domain/types'
 import { db } from './db'
 
 export async function saveRoutine(routine: Routine) {
@@ -20,23 +21,31 @@ export async function deleteRoutine(id: string) {
   await db.routines.delete(id)
 }
 
+export async function saveRecord(record: WorkoutRecord) {
+  await db.workouts.put(record)
+}
+
 export async function saveWorkout(workout: Workout) {
-  await db.workouts.put(workout)
+  await saveRecord(workout)
 }
 
 export async function deleteWorkout(id: string) {
   await db.workouts.delete(id)
 }
 
-export function finishedWorkouts(): Promise<Workout[]> {
+export function finishedRecords(): Promise<WorkoutRecord[]> {
   return db.workouts.where('finishedAt').above(0).reverse().sortBy('startedAt')
+}
+
+export async function finishedWorkouts(): Promise<Workout[]> {
+  return (await finishedRecords()).filter(isRoutineWorkout)
 }
 
 export function activeWorkout(): Promise<Workout | undefined> {
   return db.workouts
     .orderBy('startedAt')
     .reverse()
-    .filter((workout) => workout.finishedAt === null)
+    .filter((record): record is Workout => record.kind === 'routine' && record.finishedAt === null)
     .first()
 }
 

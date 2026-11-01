@@ -7,6 +7,7 @@ import { done, exercise, oct, open, reps, routineExercise, seconds } from '../he
 const sets = (count: number) => Array.from({ length: count }, () => open(40, 10))
 
 const session: Workout = {
+  kind: 'routine',
   id: 'w1',
   routineId: 'r1',
   routineName: 'אימון גוף מלא',

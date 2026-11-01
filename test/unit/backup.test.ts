@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { exportBackup, parseBackup, restoreBackup } from '../../src/data/backup'
 import { db } from '../../src/data/db'
 import { setBackground } from '../../src/data/background'
-import { saveRoutine, saveWorkout } from '../../src/data/repo'
+import { finishedRecords, finishedWorkouts, saveRecord, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
-import { done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
+import { activity, done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
 
 const fullBody = {
   ...routine('r1', 'אימון גוף מלא', [
@@ -23,6 +23,8 @@ const past = workout({
   exercises: [exercise('סקוואט', [done(40, 12), done(null, 10)]), exercise('פלאנק', [done(null, 30)], seconds(30))],
 })
 
+const boxing = activity({ id: 'a1', startedAt: oct(21, 19), summary: 'ספארינג' })
+
 describe('backup', () => {
   beforeEach(resetDb)
 
@@ -40,6 +42,27 @@ describe('backup', () => {
     expect(json.exportedAt).toBe(oct(26))
     expect(await db.routines.toArray()).toEqual([fullBody])
     expect(await db.workouts.toArray()).toEqual([{ ...past, summary: 'הרגשתי חזק' }])
+  })
+
+  it('an activity round-trips with the workouts', async () => {
+    await saveWorkout(past)
+    await saveRecord(boxing)
+
+    const json = JSON.parse(JSON.stringify(await exportBackup(oct(26))))
+
+    await resetDb()
+    await restoreBackup(parseBackup(json))
+
+    expect(await finishedRecords()).toEqual([boxing, past])
+  })
+
+  it('rejects a malformed activity', async () => {
+    const valid = JSON.parse(JSON.stringify(await exportBackup(oct(26))))
+    const { name: _name, ...unnamed } = boxing
+
+    for (const bad of [unnamed, { ...boxing, finishedAt: null }, { ...boxing, kind: 'class' }]) {
+      expect(() => parseBackup({ ...valid, workouts: [bad] })).toThrow('קובץ הגיבוי לא תקין')
+    }
   })
 
   it('invalid backup leaves data intact', async () => {
@@ -127,7 +150,8 @@ describe('backup', () => {
     await restoreBackup(parseBackup(legacy))
 
     const [squatPlan] = (await db.routines.toArray())[0].sections[0].items
-    const [squatDone] = (await db.workouts.toArray())[0].sections[0].items[0].exercises
+    const [restored] = await finishedWorkouts()
+    const [squatDone] = restored.sections[0].items[0].exercises
 
     expect(squatPlan).toEqual({ id: 'i1', sets: null, exercises: [{ name: 'סקוואט', target: { kind: 'reps', reps: 12 }, weight: null, tip: '' }] })
     expect(squatDone).toEqual({

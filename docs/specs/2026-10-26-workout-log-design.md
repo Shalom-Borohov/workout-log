@@ -12,7 +12,7 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 6. **Routines:** paste a note → app parses it → user fixes the result; routines also editable in-app (add / reorder / delete exercises).
 7. **Timer:** workout clock only (elapsed time). No rest timer.
 8. **Hosting:** public GitHub repo, GitHub Pages, auto-deploy on push to `main`.
-9. **Timeline entry:** routine, day + date, duration, sets done, plus a line of what improved (↑) and new bests (★). Tap → full workout.
+9. **Timeline entry:** routine, day + date, duration, sets done, plus a line of what improved (↑) and new bests (★). Tap → full workout. Other activities show name, day and duration only (item 40).
 10. **Tabs:** ציר זמן (home, with "התחל אימון") · אימונים (routines; settings/backup inside) · תרגילים (exercise list with history).
 11. **Name:** אימונים. Repo: `workout-log`.
 12. **סיכום note (added 2026-10-26):** optional free-text note per workout. Tapping "סיום" opens a "סיכום האימון" sheet with a text box (may be left empty) and "שמירה"; the note can also be added/edited later from the workout's detail page. The timeline card shows its first line (truncated with …) under the changes line; the detail page shows the full text.
@@ -22,7 +22,7 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 
 15. **Design pass (added 2026-10-27):** Impeccable (Operate mode) + Apple HIG; HIG wins on conflicts. Native iOS structure with the icon's orange as tint (system orange `#FF9500` / dark `#FF9F0A`), ✓ stays iOS green, SF system font, light/dark follow the phone.
 16. **Live workout UX (added 2026-10-27):** ticking the last set of an exercise auto-advances to the next after ~0.6 s (active workouts only, not on the last exercise); weight/reps have −/+ steppers (weight ±2.5 kg, reps ±1, time ±1 min or ±15 s) and the number can still be tapped to type; a "פעם קודמת" line shows the previous session's completed sets; a progress bar shows done sets / total sets (skipped exercises excluded).
-17. **Timeline + exercises (added 2026-10-27):** week headers show "N אימונים · M סטים"; exercise history pages show a small SVG line of the heaviest weight per session when there are ≥2 weighted sessions.
+17. **Timeline + exercises (added 2026-10-27):** week headers show "N אימונים · M סטים" (other activities count as workouts, item 40); exercise history pages show a small SVG line of the heaviest weight per session when there are ≥2 weighted sessions.
 
 18. **Post-launch feedback (added 2026-10-28):** decided after the first real session. One branch for all items. Connecting Claude to GitHub is out for now.
 19. **Starting weight (added 2026-10-28):** a routine exercise may have a starting weight. It prefills only while the exercise has no history; after that, the last session's weights prefill as before. It is shown in the routine row ("10 חזרות · 20 ק״ג").
@@ -32,7 +32,7 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
     - A "הערה לפעם הבאה", written from the exercise menu, is shown in the next session of that exercise under its "פעם קודמת" line (the same session the sets come from).
 22. **Duplicate routine (added 2026-10-28):** a "שכפול" swipe action creates "<name> (עותק)" with fresh ids and opens it in the editor.
 23. **Past workouts (added 2026-10-28):**
-    - "+" on the timeline opens "הוספת אימון קודם". You choose the routine, date, start time (in the past) and duration.
+    - "+" on the timeline, then "אימון קודם" (item 40), opens the past workout form. You choose the routine, date, start time (in the past, on a 24-hour wheel) and duration.
     - The duration is at most 3 hours (the time limit in item 27), and the workout must end by now. Otherwise saving is disabled and a message explains why.
     - The workout is created finished, with sets prefilled from sessions before that date, and opens in edit mode.
 24. **Start button (added 2026-10-28):** "התחל אימון", and the "אימון בתהליך" banner during a workout, are pinned at the bottom of the timeline, above the tab bar.
@@ -70,6 +70,14 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
     - Then come the names from routines and finished workouts, without "תרגיל חדש". Exercises you've done come first, most recent first, with their last date. Exercises only in routines follow, A–Z. Search matches part of a name.
     - Picking one adds it to that section right away, without the editor. It brings the target and tip from the last finished workout that has it, otherwise from the most recently edited routine. Weight is not copied: in a workout it prefills from history, as for any exercise.
     - Exercises already in the workout or routine stay in the list. A pair's second exercise is still named in the editor.
+40. **Other activities (added 2026-10-31):**
+    - "+" on the timeline opens a sheet: "אימון קודם" (item 23) or "פעילות אחרת", for training outside the gym (Thai boxing, machine Pilates, a class).
+    - An activity is logged once, after the fact: name, date, start time and duration, with the same time rules as item 23. Saving needs a name. There is no schedule or recurring class.
+    - The name is free text. Names of earlier activities, most recent first, appear under it as quick picks, filtered by what is typed.
+    - Saving closes the form and stays on the timeline.
+    - Its card shows the name, day and "N דק׳" with no sets and no ↑/★. It counts as a workout in the week header and adds no sets.
+    - Its detail page shows the overview, "סיכום" and delete. "עריכה" reopens the same form, filled in.
+    - Activities never open the live workout and never appear in the exercises tab or in prefills. Backups and the history export include them.
 
 ## Assumptions (accepted by the user)
 

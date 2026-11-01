@@ -1,7 +1,15 @@
 import { db } from '../../src/data/db'
+import { isRoutineWorkout } from '../../src/domain/activities'
+import type { Workout } from '../../src/domain/types'
 
 export async function resetDb() {
   await db.routines.clear()
   await db.workouts.clear()
   await db.settings.clear()
+}
+
+export async function savedWorkout(id: string): Promise<Workout | undefined> {
+  const record = await db.workouts.get(id)
+
+  return record && isRoutineWorkout(record) ? record : undefined
 }

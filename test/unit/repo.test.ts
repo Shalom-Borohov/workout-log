@@ -1,8 +1,16 @@
 import { liveQuery } from 'dexie'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { activeWorkout, addPastWorkout, beginWorkout, finishedWorkouts, saveWorkout } from '../../src/data/repo'
+import {
+  activeWorkout,
+  addPastWorkout,
+  beginWorkout,
+  finishedRecords,
+  finishedWorkouts,
+  saveRecord,
+  saveWorkout,
+} from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
-import { done, exercise, reps, routine, workout } from '../helpers/workouts'
+import { activity, done, exercise, reps, routine, workout } from '../helpers/workouts'
 
 describe('repo', () => {
   beforeEach(resetDb)
@@ -15,6 +23,16 @@ describe('repo', () => {
     const ids = (await finishedWorkouts()).map((entry) => entry.id)
 
     expect(ids).toEqual(['new', 'old'])
+  })
+
+  it('lists activities with finished records but keeps them out of routine workouts', async () => {
+    await saveWorkout(workout({ id: 'gym', startedAt: 1_000, finishedAt: 2_000, exercises: [] }))
+    await saveWorkout(workout({ id: 'active', startedAt: 5_000, finishedAt: null, exercises: [] }))
+    await saveRecord(activity({ id: 'boxing', startedAt: 3_000, finishedAt: 4_000 }))
+
+    expect((await finishedRecords()).map((entry) => entry.id)).toEqual(['boxing', 'gym'])
+    expect((await finishedWorkouts()).map((entry) => entry.id)).toEqual(['gym'])
+    expect((await activeWorkout())?.id).toBe('active')
   })
 
   it('finds the workout in progress', async () => {

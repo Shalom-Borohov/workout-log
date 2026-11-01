@@ -15,20 +15,18 @@ import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
 import { useWorkout } from '../../data/hooks'
 import { deleteWorkout } from '../../data/repo'
-import { formatDay, formatSummary } from '../../domain/format'
-import { summarize } from '../../domain/timeline'
-import type { Workout } from '../../domain/types'
+import { recordName, sectionsOf } from '../../domain/activities'
+import { formatDay } from '../../domain/format'
+import { summaryLine } from '../../domain/timeline'
+import type { WorkoutRecord } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import { TIMELINE_PATH, workoutPath } from '../../navigation/paths'
+import { ActivityEditButton } from './ActivityEditButton'
 import { SummaryEditor } from './SummaryEditor'
 import { WorkoutSections } from './WorkoutSections'
 import './timeline.css'
 
-function overview(workout: Workout): string {
-  const { minutes, doneSets } = summarize(workout)
-
-  return `${formatDay(workout.startedAt)} · ${formatSummary(minutes, doneSets)}`
-}
+const overview = (workout: WorkoutRecord) => `${formatDay(workout.startedAt)} · ${summaryLine(workout)}`
 
 export function WorkoutDetail({ id }: { id: string }) {
   const workout = useWorkout(id)
@@ -59,9 +57,14 @@ export function WorkoutDetail({ id }: { id: string }) {
           <IonButtons slot="start">
             <IonBackButton text={COMMON_COPY.back} defaultHref={TIMELINE_PATH} />
           </IonButtons>
-          <IonTitle>{workout?.routineName}</IonTitle>
+          <IonTitle>{workout && recordName(workout)}</IonTitle>
           <IonButtons slot="end">
-            <IonButton routerLink={workoutPath(TIMELINE_PATH, id)}>{COMMON_COPY.edit}</IonButton>
+            {workout &&
+              (workout.kind === 'activity' ? (
+                <ActivityEditButton activity={workout} />
+              ) : (
+                <IonButton routerLink={workoutPath(TIMELINE_PATH, id)}>{COMMON_COPY.edit}</IonButton>
+              ))}
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -70,12 +73,12 @@ export function WorkoutDetail({ id }: { id: string }) {
           <>
             <IonHeader collapse="condense">
               <IonToolbar>
-                <IonTitle size="large">{workout.routineName}</IonTitle>
+                <IonTitle size="large">{recordName(workout)}</IonTitle>
               </IonToolbar>
             </IonHeader>
             <p className="workout-overview">{overview(workout)}</p>
             <SummaryEditor workout={workout} />
-            <WorkoutSections sections={workout.sections} />
+            <WorkoutSections sections={sectionsOf(workout)} />
             <IonList inset className="workout-delete">
               <IonItem button detail={false} onClick={confirmRemove}>
                 <IonLabel color="danger" className="ion-text-center">

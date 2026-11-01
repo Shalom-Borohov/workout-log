@@ -3,11 +3,9 @@ import {
   IonButtons,
   IonContent,
   IonHeader,
-  IonInput,
   IonItem,
   IonList,
   IonModal,
-  IonNote,
   IonSelect,
   IonSelectOption,
   IonTitle,
@@ -19,45 +17,26 @@ import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
 import { useRoutines } from '../../data/hooks'
 import { addPastWorkout } from '../../data/repo'
-import { isoDate, pad } from '../../domain/format'
-import { MAX_SECONDS } from '../../domain/limits'
+import { pastTimeProblems } from '../../domain/pastTime'
 import { hasExercises } from '../../domain/progress'
-import { HOUR_MS, MINUTE_MS, SECONDS_PER_MINUTE } from '../../domain/time'
+import { MINUTE_MS } from '../../domain/time'
 import { useNow } from '../../hooks/useNow'
 import { TIMELINE_PATH, workoutPath } from '../../navigation/paths'
-
-const DEFAULT_DURATION_MINUTES = 60
-
-const MAX_DURATION_MINUTES = MAX_SECONDS / SECONDS_PER_MINUTE
-
-const timeValue = (date: Date) => `${pad(date.getHours())}:${pad(date.getMinutes())}`
+import { PastTimeItems, PastTimeNotes } from './PastTimeFields'
+import { defaultPastTime, readPastTime } from './pastTimeForm'
 
 function PastWorkoutForm({ onClose }: { onClose: () => void }) {
   const routines = useRoutines()
   const router = useIonRouter()
   const now = useNow(MINUTE_MS)
-  const [defaultStart] = useState(() => new Date(now - HOUR_MS))
   const [routineId, setRoutineId] = useState<string | null>(null)
-  const [date, setDate] = useState(() => isoDate(defaultStart.getTime()))
-  const [time, setTime] = useState(() => timeValue(defaultStart))
-  const [duration, setDuration] = useState(String(DEFAULT_DURATION_MINUTES))
+  const [pastTime, setPastTime] = useState(() => defaultPastTime(now))
 
   const startable = routines ? routines.filter(hasExercises) : []
   const routine = startable.find((candidate) => candidate.id === routineId) ?? startable.at(0)
-  const startedAt = new Date(`${date}T${time}`).getTime()
-  const minutes = Number(duration)
-  const inFuture = startedAt >= now
-  const tooLong = minutes > MAX_DURATION_MINUTES
-  const endsAfterNow = !inFuture && startedAt + minutes * MINUTE_MS > now
-
-  const valid =
-    routine !== undefined &&
-    Number.isFinite(startedAt) &&
-    Number.isInteger(minutes) &&
-    minutes > 0 &&
-    !inFuture &&
-    !tooLong &&
-    !endsAfterNow
+  const { startedAt, minutes } = readPastTime(pastTime)
+  const problems = pastTimeProblems(startedAt, minutes, now)
+  const valid = routine !== undefined && problems.valid
 
   async function save() {
     if (!routine) {
@@ -101,50 +80,9 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
               ))}
             </IonSelect>
           </IonItem>
-          <IonItem>
-            <IonInput
-              label={TIMELINE_COPY.date}
-              type="date"
-              max={isoDate(now)}
-              value={date}
-              onIonInput={(event) => typeof event.detail.value === 'string' && setDate(event.detail.value)}
-            />
-          </IonItem>
-          <IonItem>
-            <IonInput
-              label={TIMELINE_COPY.startTime}
-              type="time"
-              value={time}
-              onIonInput={(event) => typeof event.detail.value === 'string' && setTime(event.detail.value)}
-            />
-          </IonItem>
-          <IonItem>
-            <IonInput
-              label={TIMELINE_COPY.durationMinutes}
-              type="number"
-              inputmode="numeric"
-              min={1}
-              max={MAX_DURATION_MINUTES}
-              value={duration}
-              onIonInput={(event) => typeof event.detail.value === 'string' && setDuration(event.detail.value)}
-            />
-          </IonItem>
+          <PastTimeItems value={pastTime} now={now} onChange={setPastTime} />
         </IonList>
-        {inFuture && (
-          <IonNote color="danger" className="list-footer">
-            {TIMELINE_COPY.startTimeMustBePast}
-          </IonNote>
-        )}
-        {endsAfterNow && (
-          <IonNote color="danger" className="list-footer">
-            {TIMELINE_COPY.mustEndByNow}
-          </IonNote>
-        )}
-        {tooLong && (
-          <IonNote color="danger" className="list-footer">
-            {TIMELINE_COPY.maxDuration(MAX_DURATION_MINUTES)}
-          </IonNote>
-        )}
+        <PastTimeNotes problems={problems} />
       </IonContent>
     </>
   )
