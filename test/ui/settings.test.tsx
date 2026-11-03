@@ -61,6 +61,7 @@ describe('settings', () => {
       exportedAt: new Date(2026, 9, 26, 9, 30).getTime(),
       routines: [legs],
       workouts: [past],
+      dailyLogs: [],
     })
   })
 

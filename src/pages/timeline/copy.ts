@@ -12,6 +12,8 @@ export const TIMELINE_COPY = {
   editActivity: 'עריכת פעילות',
   activityName: 'שם הפעילות',
   activityNamePlaceholder: 'למשל אגרוף תאילנדי',
+  location: 'מיקום',
+  locationPlaceholder: 'למשל מגרש בפארק',
   routine: 'אימון',
   date: 'תאריך',
   startTime: 'שעת התחלה',

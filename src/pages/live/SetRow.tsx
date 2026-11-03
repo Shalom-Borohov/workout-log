@@ -5,7 +5,7 @@ import { LIVE_COPY } from './copy'
 import { formatSet } from '../../domain/format'
 import type { SetLog, Target } from '../../domain/types'
 import { CurrentSet } from './CurrentSet'
-import { SetCheck } from './SetCheck'
+import { SetCheck } from '../../components/SetCheck'
 
 interface SetRowProps {
   title: string

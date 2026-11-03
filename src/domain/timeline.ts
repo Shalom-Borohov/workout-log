@@ -1,6 +1,6 @@
 import { FORMAT_COPY } from '../copy/format'
-import { isRoutineWorkout, sectionsOf } from './activities'
-import { dayMonth, formatSummary } from './format'
+import { isRoutineWorkout, locationOf, sectionsOf } from './activities'
+import { dayMonth, formatSummary, LIST_SEPARATOR } from './format'
 import { completedSets, exercisesOf } from './progress'
 import { DAYS_PER_WEEK, MINUTE_MS } from './time'
 import type { WorkoutRecord } from './types'
@@ -12,10 +12,20 @@ export function summarize(record: WorkoutRecord): { minutes: number; doneSets: n
   return { minutes, doneSets }
 }
 
+export function minutesAndLocation(record: WorkoutRecord): string {
+  const minutes = FORMAT_COPY.minutes(summarize(record).minutes)
+  const location = locationOf(record)
+
+  return location ? `${minutes}${LIST_SEPARATOR}${location}` : minutes
+}
+
 export function summaryLine(record: WorkoutRecord): string {
+  if (!isRoutineWorkout(record)) {
+    return minutesAndLocation(record)
+  }
   const { minutes, doneSets } = summarize(record)
 
-  return isRoutineWorkout(record) ? formatSummary(minutes, doneSets) : FORMAT_COPY.minutes(minutes)
+  return formatSummary(minutes, doneSets)
 }
 
 function weekStart(timestamp: number): number {

@@ -55,12 +55,12 @@ export function RoutineRow({ routine, now }: { routine: Routine; now: number }) 
 
     await saveRoutine(copy)
     void sliding.current?.close()
-    router.push(routinePath(copy.id))
+    router.push(routinePath(ROUTINES_PATH, copy.id))
   }
 
   return (
     <IonItemSliding ref={sliding}>
-      <IonItem button detail onClick={() => router.push(routinePath(routine.id))}>
+      <IonItem button detail onClick={() => router.push(routinePath(ROUTINES_PATH, routine.id))}>
         <IonLabel>
           <h2>{routine.name}</h2>
           <p>{counts(routine, now)}</p>

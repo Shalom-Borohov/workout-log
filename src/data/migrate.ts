@@ -19,7 +19,7 @@ export type LegacyRoutineItem = Omit<Legacy<RoutineItem, 'sets'>, 'exercises'> &
 
 export type LegacyRoutineSection = Omit<RoutineSection, 'items'> & { items: LegacyRoutineItem[] }
 
-export type LegacyRoutine = Omit<Legacy<Routine, 'createdAt'>, 'sections'> & { sections: LegacyRoutineSection[] }
+export type LegacyRoutine = Omit<Legacy<Routine, 'createdAt' | 'daily'>, 'sections'> & { sections: LegacyRoutineSection[] }
 
 export type LegacyWorkoutExercise = Legacy<WorkoutExercise, 'tip' | 'note'>
 
@@ -29,11 +29,14 @@ export type LegacyWorkoutSection = Omit<WorkoutSection, 'items'> & { items: Lega
 
 export type LegacyWorkout = Omit<Legacy<Workout, 'kind'>, 'sections'> & { sections: LegacyWorkoutSection[] }
 
-export type LegacyRecord = LegacyWorkout | Activity
+export type LegacyActivity = Legacy<Activity, 'location'>
+
+export type LegacyRecord = LegacyWorkout | LegacyActivity
 
 export function upgradeRoutine(routine: LegacyRoutine): Routine {
   return {
     ...routine,
+    daily: routine.daily ?? false,
     createdAt: routine.createdAt ?? routine.updatedAt,
     sections: routine.sections.map((section) => ({
       ...section,
@@ -60,8 +63,10 @@ export function upgradeWorkout(workout: LegacyWorkout): Workout {
   }
 }
 
+const upgradeActivity = (activity: LegacyActivity): Activity => ({ ...activity, location: activity.location ?? '' })
+
 export function upgradeRecord(record: LegacyRecord): WorkoutRecord {
-  return record.kind === 'activity' ? record : upgradeWorkout(record)
+  return record.kind === 'activity' ? upgradeActivity(record) : upgradeWorkout(record)
 }
 
 function carryInto(workout: Workout, latest: Map<string, string>): Workout {

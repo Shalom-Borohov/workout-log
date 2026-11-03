@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useState } from 'react'
 import { BACKGROUND_KEY } from './background'
 import { db } from './db'
-import { activeWorkout, finishedRecords, finishedWorkouts } from './repo'
+import { activeWorkout, dailyLogs, finishedRecords, finishedWorkouts } from './repo'
 
 export function useRoutines() {
   return useLiveQuery(async () =>
@@ -29,6 +29,10 @@ export function useFinishedWorkouts() {
 
 export function useFinishedRecords() {
   return useLiveQuery(finishedRecords)
+}
+
+export function useDailyLogs() {
+  return useLiveQuery(dailyLogs)
 }
 
 export function useActiveWorkout() {

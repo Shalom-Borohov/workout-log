@@ -1,8 +1,10 @@
 import { APP_COPY } from '../copy/app'
-import type { Activity, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
+import { dailyLogId } from '../domain/daily'
+import type { DailyLog, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
 import { db } from './db'
 import {
   carryNotesForward,
+  type LegacyActivity,
   type LegacyRecord,
   type LegacyRoutine,
   type LegacyRoutineExercise,
@@ -20,13 +22,20 @@ const BACKUP_VERSION = 2
 
 const VERSION_BEFORE_CARRIED_NOTES = 1
 
-export type Backup = { version: typeof BACKUP_VERSION; exportedAt: number; routines: Routine[]; workouts: WorkoutRecord[] }
+export type Backup = {
+  version: typeof BACKUP_VERSION
+  exportedAt: number
+  routines: Routine[]
+  workouts: WorkoutRecord[]
+  dailyLogs: DailyLog[]
+}
 
 type LegacyBackup = {
   version: typeof VERSION_BEFORE_CARRIED_NOTES | typeof BACKUP_VERSION
   exportedAt: number
   routines: LegacyRoutine[]
   workouts: LegacyRecord[]
+  dailyLogs?: DailyLog[]
 }
 
 type Guard<T> = (value: unknown) => value is T
@@ -83,6 +92,7 @@ const isRoutine = (routine: unknown): routine is LegacyRoutine =>
   isObject(routine) &&
   isString(routine.id) &&
   isString(routine.name) &&
+  optional(isBoolean)(routine.daily) &&
   optional(isNumber)(routine.createdAt) &&
   isNumber(routine.updatedAt) &&
   arrayOf(isRoutineSection)(routine.sections)
@@ -116,23 +126,34 @@ const isWorkout = (workout: unknown): workout is LegacyWorkout =>
   isString(workout.summary) &&
   arrayOf(isWorkoutSection)(workout.sections)
 
-const isActivity = (activity: unknown): activity is Activity =>
+const isActivity = (activity: unknown): activity is LegacyActivity =>
   isObject(activity) &&
   activity.kind === 'activity' &&
   isString(activity.id) &&
   isString(activity.name) &&
   isNumber(activity.startedAt) &&
   isNumber(activity.finishedAt) &&
-  isString(activity.summary)
+  isString(activity.summary) &&
+  optional(isString)(activity.location)
 
 const isRecord = (record: unknown): record is LegacyRecord => isActivity(record) || isWorkout(record)
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
+
+const isDailyLog = (log: unknown): log is DailyLog =>
+  isObject(log) &&
+  isString(log.routineId) &&
+  isString(log.date) &&
+  ISO_DATE.test(log.date) &&
+  log.id === dailyLogId(log.routineId, log.date)
 
 const isBackup = (backup: unknown): backup is LegacyBackup =>
   isObject(backup) &&
   (backup.version === VERSION_BEFORE_CARRIED_NOTES || backup.version === BACKUP_VERSION) &&
   isNumber(backup.exportedAt) &&
   arrayOf(isRoutine)(backup.routines) &&
-  arrayOf(isRecord)(backup.workouts)
+  arrayOf(isRecord)(backup.workouts) &&
+  optional(arrayOf(isDailyLog))(backup.dailyLogs)
 
 export function parseBackup(json: unknown): Backup {
   if (!isBackup(json)) {
@@ -146,20 +167,27 @@ export function parseBackup(json: unknown): Backup {
     version: BACKUP_VERSION,
     routines: json.routines.map(upgradeRoutine),
     workouts: json.version === VERSION_BEFORE_CARRIED_NOTES ? carryNotesForward(workouts) : workouts,
+    dailyLogs: json.dailyLogs ?? [],
   }
 }
 
 export async function exportBackup(now: number): Promise<Backup> {
-  const [routines, workouts] = await Promise.all([db.routines.toArray(), db.workouts.toArray()])
+  const [routines, workouts, dailyLogs] = await Promise.all([
+    db.routines.toArray(),
+    db.workouts.toArray(),
+    db.dailyLogs.toArray(),
+  ])
 
-  return { version: BACKUP_VERSION, exportedAt: now, routines, workouts }
+  return { version: BACKUP_VERSION, exportedAt: now, routines, workouts, dailyLogs }
 }
 
 export async function restoreBackup(backup: Backup): Promise<void> {
-  await db.transaction('rw', db.routines, db.workouts, async () => {
+  await db.transaction('rw', db.routines, db.workouts, db.dailyLogs, async () => {
     await db.routines.clear()
     await db.workouts.clear()
+    await db.dailyLogs.clear()
     await db.routines.bulkPut(backup.routines)
     await db.workouts.bulkPut(backup.workouts)
+    await db.dailyLogs.bulkPut(backup.dailyLogs)
   })
 }

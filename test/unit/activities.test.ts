@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { activityNames } from '../../src/domain/activities'
+import { activityNames, lastLocation } from '../../src/domain/activities'
 import { pastTimeProblems } from '../../src/domain/pastTime'
 import { activity, oct, workout } from '../helpers/workouts'
 
@@ -14,6 +14,25 @@ describe('activity names', () => {
     ]
 
     expect(activityNames(records)).toEqual(['אגרוף תאילנדי', 'פילאטיס מכשירים'])
+  })
+})
+
+describe('last location', () => {
+  const records = [
+    activity({ id: 'a1', name: 'כדורגל', startedAt: oct(10), location: 'פארק הירקון' }),
+    activity({ id: 'a2', name: ' כדורגל ', startedAt: oct(14), location: 'מגרש השכונה' }),
+    activity({ id: 'a3', name: 'כדורגל', startedAt: oct(20) }),
+    activity({ id: 'a4', name: 'כדורסל', startedAt: oct(22), location: 'אולם הספורט' }),
+    workout({ id: 'w1', startedAt: oct(24), exercises: [] }),
+  ]
+
+  it('takes the newest location given for that name, skipping ones left empty', () => {
+    expect(lastLocation(records, 'כדורגל')).toBe('מגרש השכונה')
+  })
+
+  it('is empty for a name with no location or no past activity', () => {
+    expect(lastLocation([activity({ id: 'a1', name: 'פילאטיס', startedAt: oct(10) })], 'פילאטיס')).toBe('')
+    expect(lastLocation(records, 'כדורעף')).toBe('')
   })
 })
 

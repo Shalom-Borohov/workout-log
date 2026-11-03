@@ -22,6 +22,12 @@ describe('historyText', () => {
     expect(historyText([boxing])).toBe(['אגרוף תאילנדי · יום ב׳ 26.10.2026 · 60 דק׳', 'ספארינג'].join('\n'))
   })
 
+  it('adds an activity location to its heading', () => {
+    const football = activity({ id: 'a1', name: 'כדורגל', startedAt: oct(26, 19), finishedAt: oct(26, 20), location: 'פארק הירקון' })
+
+    expect(historyText([football])).toBe('כדורגל · יום ב׳ 26.10.2026 · 60 דק׳ · פארק הירקון')
+  })
+
   it('writes skipped, undone and timed exercises', () => {
     const mixed = workout({
       id: 'w1',

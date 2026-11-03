@@ -18,7 +18,7 @@ import { TIMELINE_COPY } from './copy'
 import { useRoutines } from '../../data/hooks'
 import { addPastWorkout } from '../../data/repo'
 import { pastTimeProblems } from '../../domain/pastTime'
-import { hasExercises } from '../../domain/progress'
+import { isStartable } from '../../domain/progress'
 import { MINUTE_MS } from '../../domain/time'
 import { useNow } from '../../hooks/useNow'
 import { TIMELINE_PATH, workoutPath } from '../../navigation/paths'
@@ -32,7 +32,7 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
   const [routineId, setRoutineId] = useState<string | null>(null)
   const [pastTime, setPastTime] = useState(() => defaultPastTime(now))
 
-  const startable = routines ? routines.filter(hasExercises) : []
+  const startable = routines ? routines.filter(isStartable) : []
   const routine = startable.find((candidate) => candidate.id === routineId) ?? startable.at(0)
   const { startedAt, minutes } = readPastTime(pastTime)
   const problems = pastTimeProblems(startedAt, minutes, now)

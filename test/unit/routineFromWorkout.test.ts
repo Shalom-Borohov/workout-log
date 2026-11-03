@@ -33,6 +33,7 @@ const session: Workout = {
 const base: Routine = {
   id: 'r1',
   name: 'גוף מלא',
+  daily: false,
   createdAt: 3,
   updatedAt: 5,
   sections: [
@@ -50,6 +51,7 @@ describe('routineFromWorkout', () => {
     expect(routineFromWorkout(session, base, counter(), 900)).toEqual({
       id: 'r1',
       name: 'גוף מלא',
+      daily: false,
       createdAt: 3,
       updatedAt: 900,
       sections: [

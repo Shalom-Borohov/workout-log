@@ -9,6 +9,7 @@ const squat = routineExercise({ name: 'סקוואט', target: reps(12), weight: 
 const legs: Routine = {
   id: 'r1',
   name: 'אימון רגליים',
+  daily: false,
   createdAt: 50,
   updatedAt: 100,
   sections: [
@@ -22,6 +23,7 @@ describe('duplicateRoutine', () => {
     expect(duplicateRoutine(legs, counter(), 500)).toEqual({
       id: 'n1',
       name: 'אימון רגליים (עותק)',
+      daily: false,
       createdAt: 500,
       updatedAt: 500,
       sections: [
@@ -29,6 +31,10 @@ describe('duplicateRoutine', () => {
         { id: 'n4', name: 'עיקרי', sets: 3, items: [{ id: 'n5', sets: 4, exercises: [squat, squat] }] },
       ],
     })
+  })
+
+  it('a copy of a daily routine is daily too', () => {
+    expect(duplicateRoutine({ ...legs, daily: true }, counter(), 500).daily).toBe(true)
   })
 
   it('leaves the original routine unchanged', () => {
@@ -42,7 +48,7 @@ describe('duplicateRoutine', () => {
 
 describe('newRoutine', () => {
   it('is created now', () => {
-    expect(newRoutine('r2', 's1', 700)).toMatchObject({ id: 'r2', createdAt: 700, updatedAt: 700 })
+    expect(newRoutine('r2', 's1', 700, false)).toMatchObject({ id: 'r2', daily: false, createdAt: 700, updatedAt: 700 })
   })
 })
 

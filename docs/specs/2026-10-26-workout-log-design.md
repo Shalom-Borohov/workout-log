@@ -10,7 +10,7 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 4. **Storage:** on device (IndexedDB) + Export/Import backup file. No account, no server.
 5. **Set order:** always straight sets — all sets of one exercise, then the next.
 6. **Routines:** paste a note → app parses it → user fixes the result; routines also editable in-app (add / reorder / delete exercises).
-7. **Timer:** workout clock (elapsed time), plus a rest timer that stays out of sight (item 41, updated 2026-11-03).
+7. **Timer:** workout clock (elapsed time), plus a rest timer that stays out of sight (item 43, updated 2026-11-03).
 8. **Hosting:** public GitHub repo, GitHub Pages, auto-deploy on push to `main`.
 9. **Timeline entry:** routine, day + date, duration, sets done, plus a line of what improved (↑) and new bests (★). Tap → full workout. Other activities show name, day and duration only (item 40).
 10. **Tabs:** ציר זמן (home, with "התחל אימון") · אימונים (routines; settings/backup inside) · תרגילים (exercise list with history).
@@ -30,7 +30,7 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 21. **Tips and exercise notes (added 2026-10-28, updated 2026-11-03):** two kinds of note.
     - A tip (דגשים) on the routine exercise is copied into the workout and always shown under the exercise name.
     - A note ("הערה") belongs to the exercise and carries over from workout to workout until you change or clear it. Each workout copies it from the latest finished workout that has the exercise, even one where it was skipped. (The sets still prefill from the last session with ticked sets.) Renaming an exercise in a workout's "עריכה" gives it the new name's note when that name has one, and otherwise keeps the note it had.
-    - Notes written before this change were for the next time only and were not copied into later workouts. Updating the app (database version 6) and importing a backup made before it (backup version 1) copy each exercise's latest note forward into its later workouts, so it carries on from there. Backups now say version 2, and their notes are left as they are.
+    - Notes written before this change were for the next time only and were not copied into later workouts. Updating the app (database version 8) and importing a backup made before it (backup version 1) copy each exercise's latest note forward into its later workouts, so it carries on from there. Backups now say version 2, and their notes are left as they are.
     - It is shown in a row of its own under the sets (✎, the note, ›; "<name>: …" for each exercise of a pair that has one), during the workout and when editing a finished one. With no note, the row reads "הוספת הערה". Tapping it opens "הערה לתרגיל", a sheet with a large text box (updated 2026-11-03).
 22. **Duplicate routine (added 2026-10-28):** a "שכפול" swipe action creates "<name> (עותק)" with fresh ids and opens it in the editor.
 23. **Past workouts (added 2026-10-28):**
@@ -42,11 +42,11 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 26. **Auto-advance (added 2026-10-28):** after the last set of an exercise, the workout moves to the next exercise that is neither skipped nor done. If there is none, it stays.
 27. **Limits (added 2026-10-28):** weight ≤ 500 kg, reps ≤ 100 (whole), time ≤ 3 h. Typed values are clamped on commit, and "+" is disabled at the max. This applies in the workout and in the routine editor.
 28. **Gestures and motion in a workout (added 2026-10-28):**
-    - A horizontal swipe on the exercise moves between exercises; skipped ones stay reachable. In RTL, dragging rightward goes to the next exercise. A swipe that starts on a set row swipes that row instead (item 42, updated 2026-11-03).
+    - A horizontal swipe on the exercise moves between exercises; skipped ones stay reachable. In RTL, dragging rightward goes to the next exercise. A swipe that starts on a set row swipes that row instead (item 44, updated 2026-11-03).
     - A swipe that starts within 50 px of the swipe-back edge is left to the app's swipe-back (updated 2026-10-29).
     - Swiping up on the footer opens the exercise list.
     - Changing exercise slides the new card in from the direction of travel. There is no motion under reduce-motion.
-29. **Summary mid-workout (added 2026-10-28):** "הוספה לסיכום" in the exercise menu (⋯) edits the workout's summary without finishing. It is the only action left in the menu (item 42, updated 2026-11-03).
+29. **Summary mid-workout (added 2026-10-28):** "הוספה לסיכום" in the exercise menu (⋯) edits the workout's summary without finishing. It is the only action left in the menu (item 44, updated 2026-11-03).
 30. **Overview editing (added 2026-10-28):**
     - In the exercise list, "עריכה" lets you add, remove, reorder and edit exercises of the running workout.
     - "עדכון <routine>" writes the exercises, targets, tips and set counts back to the routine.
@@ -81,16 +81,30 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
     - Its card shows the name, day and "N דק׳" with no sets and no ↑/★. It counts as a workout in the week header and adds no sets.
     - Its detail page shows the overview, "סיכום" and delete. "עריכה" reopens the same form, filled in.
     - Activities never open the live workout and never appear in the exercises tab or in prefills. Backups and the history export include them.
-41. **Rest timer (added 2026-11-03):**
+41. **Activity location (added 2026-11-03):**
+    - The activity form has an optional free-text "מיקום" under the name. Saving still needs only a name.
+    - The location is remembered per activity name. When the name matches an earlier activity, tapped from the quick picks or typed in full, the location fills in from the newest one of that name that has a location. Activities left without one are skipped.
+    - A location you typed stays when the name changes. "עריכה" opens with the saved location, and changing the name there keeps it.
+    - The card, the detail overview and the history export show it after the minutes ("60 דק׳ · פארק הירקון"). Without a location they look as before.
+    - Activities logged before this, on the phone or in a backup file, have no location.
+42. **Daily routines (added 2026-11-02, moved to their own tab 2026-11-03):** short drills done every day (posture, mobility), not a gym workout.
+    - A fourth tab, "יומי", sits second in the tab bar (ציר זמן · יומי · אימונים · תרגילים). "+" there creates an empty daily routine and opens it in the editor, under the tab. With none, the tab explains what it is for and points at "+".
+    - "אימון יומי" is a switch in the routine editor and moves a routine between אימונים (gym routines only) and יומי. A daily routine is never started live: it is left out of "התחל אימון" and "אימון קודם". It needs no exercises.
+    - Each daily routine has a card, newest first: its name, its drills ("גשר ישבן 15 · פלאנק 30 שנ׳") and a ✓ (the same check as a set row in a workout) that logs today; a second tap removes it at once. Tapping the rest of the card opens the editor.
+    - Below the cards, a month calendar (Sunday first) shows the days done for one routine. With two or more, a scrollable segmented control above it picks which, starting with the newest. Tapping a past day logs or removes it; days after today are disabled, and today is ringed. ‹ › move between months, back without limit and forward up to the current month. There is no streak or count.
+    - The timeline shows gym workouts only.
+    - A log only records the routine and the day. Logs are not workouts: they never count in the week header, never get ↑/★, never prefill, and never appear in the exercises tab, which also leaves out a daily routine's exercises. The "הוספת תרגיל" picker still offers them, so a drill can be added to a gym routine. The history export leaves them out. Logs of a deleted or no longer daily routine are kept but not shown.
+    - Backups include the logs; older backups import with none, and a restore replaces them.
+43. **Rest timer (added 2026-11-03):**
     - Ticking a set in a running workout starts a rest, and ticking the next set restarts it. Un-ticking leaves it running. The tick that finishes the whole workout starts none and stops one that is running. Editing a finished workout never starts one.
     - It stays out of sight: a ⏱ next to ⋯ is the only sign. Tapping ⏱ shows the time left with −/+ for 5 s, or until tapped again.
     - −/+ change the rest by 15 s, including the running one; − is disabled at 15 s. The length is kept on the phone for every workout, starts at 60 s and is not in the backup. The timer itself has no off switch.
     - When the rest ends, a short sound plays and ⏱ turns green until the next tick. The sound is a short notification sound that plays over music from other apps instead of pausing it. It plays only while the app is open (iOS web apps can't vibrate or play in the background), and not when you come back to the app after the rest already ended. The rest is not saved: leaving the workout or reloading drops it.
     - A 🔊/🔇 button next to −/+ turns the sound off or on. The choice is kept on the phone like the length; ⏱ still turns green with the sound off.
-42. **Exercise actions (added 2026-11-03):** "דלג" (or "בטל דילוג") and "הוספת סט" are buttons under the note row. Swiping a set row, as in the routines list, shows "שכפול", which adds an unticked copy right after it, and "מחיקה", which deletes it (a full swipe deletes). In a pair, both act on that exercise's set only. "מחיקה" is not offered on an exercise's only set and asks first when the set is ticked. ⋯ keeps only "הוספה לסיכום".
-43. **Back to the current exercise (added 2026-11-03):** the current exercise is the first one that is neither skipped nor done (where the workout resumes). When you move off it, a "חזרה לתרגיל הנוכחי" pill above the footer takes you back. It is hidden once everything is done and when editing a finished workout.
-44. **Feedback form (added 2026-11-03):** "דיווח על באג / הצעה" comes right after the backup section in Settings and opens on "הצעה". The version line stays at the bottom (item 35).
-45. **Exercise header (added 2026-11-03):** the line above the exercise name shows the section and position together ("עיקרי · 3 מתוך 8"), then the name and its tips.
+44. **Exercise actions (added 2026-11-03):** "דלג" (or "בטל דילוג") and "הוספת סט" are buttons under the note row. Swiping a set row, as in the routines list, shows "שכפול", which adds an unticked copy right after it, and "מחיקה", which deletes it (a full swipe deletes). In a pair, both act on that exercise's set only. "מחיקה" is not offered on an exercise's only set and asks first when the set is ticked. ⋯ keeps only "הוספה לסיכום".
+45. **Back to the current exercise (added 2026-11-03):** the current exercise is the first one that is neither skipped nor done (where the workout resumes). When you move off it, a "חזרה לתרגיל הנוכחי" pill above the footer takes you back. It is hidden once everything is done and when editing a finished workout.
+46. **Feedback form (added 2026-11-03):** "דיווח על באג / הצעה" comes right after the backup section in Settings and opens on "הצעה". The version line stays at the bottom (item 35).
+47. **Exercise header (added 2026-11-03):** the line above the exercise name shows the section and position together ("עיקרי · 3 מתוך 8"), then the name and its tips.
 
 ## Assumptions (accepted by the user)
 

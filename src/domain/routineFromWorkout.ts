@@ -34,6 +34,6 @@ export function routineFromWorkout(
   })
 
   return base
-    ? { id: base.id, name: base.name, createdAt: base.createdAt, updatedAt: now, sections }
+    ? { ...base, updatedAt: now, sections }
     : createRoutine(ids(), workout.routineName, sections, now)
 }

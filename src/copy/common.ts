@@ -9,6 +9,7 @@ export const COMMON_COPY = {
   back: 'חזרה',
   timeline: 'ציר זמן',
   routines: 'אימונים',
+  daily: 'יומי',
   exercises: 'תרגילים',
   settings: 'הגדרות',
   sets: 'סטים',

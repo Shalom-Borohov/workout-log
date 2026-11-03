@@ -1,6 +1,14 @@
 import Dexie, { type EntityTable, type Transaction } from 'dexie'
-import type { BackgroundSetting, Routine, WorkoutRecord } from '../domain/types'
-import { carryNotesForward, type LegacyRoutine, type LegacyWorkout, upgradeRoutine, upgradeWorkout } from './migrate'
+import type { BackgroundSetting, DailyLog, Routine, WorkoutRecord } from '../domain/types'
+import {
+  carryNotesForward,
+  type LegacyRecord,
+  type LegacyRoutine,
+  type LegacyWorkout,
+  upgradeRecord,
+  upgradeRoutine,
+  upgradeWorkout,
+} from './migrate'
 
 const DB_NAME = 'workout-log'
 
@@ -13,10 +21,20 @@ function upgradeRoutines(transaction: Transaction) {
     })
 }
 
+function upgradeActivities(transaction: Transaction) {
+  return transaction
+    .table<LegacyRecord>('workouts')
+    .filter((record) => record.kind === 'activity')
+    .modify((record, ref) => {
+      ref.value = upgradeRecord(record)
+    })
+}
+
 class WorkoutDb extends Dexie {
   routines!: EntityTable<Routine, 'id'>
   workouts!: EntityTable<WorkoutRecord, 'id'>
   settings!: EntityTable<BackgroundSetting, 'key'>
+  dailyLogs!: EntityTable<DailyLog, 'id'>
 
   constructor() {
     super(DB_NAME)
@@ -51,7 +69,11 @@ class WorkoutDb extends Dexie {
             workout.kind = 'routine'
           }),
       )
-    this.version(6)
+    this.version(6).stores({}).upgrade(upgradeActivities)
+    this.version(7)
+      .stores({ dailyLogs: 'id' })
+      .upgrade(upgradeRoutines)
+    this.version(8)
       .stores({})
       .upgrade(async (transaction) => {
         const workouts = transaction.table<WorkoutRecord>('workouts')

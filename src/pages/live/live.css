@@ -99,39 +99,9 @@
   color: var(--app-label-secondary);
 }
 
-.set-check {
-  display: grid;
-  place-items: center;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--app-label-secondary);
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.set-check[aria-pressed='true'] {
-  color: var(--ion-color-success);
-}
-
-.set-check:active {
-  opacity: 0.6;
-}
-
-.set-check-small {
-  inline-size: 48px;
-  block-size: 48px;
-  margin-inline-start: 4px;
-  font-size: 30px;
-}
-
 .set-check-large {
   grid-area: check;
   align-self: center;
-  inline-size: 76px;
-  block-size: 76px;
-  font-size: 68px;
 }
 
 .set-row-current {
