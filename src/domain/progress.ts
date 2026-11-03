@@ -16,18 +16,13 @@ export function completedSets(exercise: WorkoutExercise): SetLog[] {
   return exercise.skipped ? [] : exercise.sets.filter((set) => set.done)
 }
 
-export type ExerciseSession = { workoutId: string; startedAt: number; target: Target; sets: SetLog[]; note: string }
+export type ExerciseSession = { workoutId: string; startedAt: number; target: Target; sets: SetLog[] }
 
 function sessionOf(workout: Workout, name: string): ExerciseSession | null {
   const matching = exercisesOf(workout).filter((exercise) => exercise.name === name)
   const sets = matching.flatMap(completedSets)
 
-  const note = matching
-    .map((exercise) => exercise.note)
-    .filter((exerciseNote) => exerciseNote !== '')
-    .join('\n')
-
-  return sets.length > 0 ? { workoutId: workout.id, startedAt: workout.startedAt, target: matching[0].target, sets, note } : null
+  return sets.length > 0 ? { workoutId: workout.id, startedAt: workout.startedAt, target: matching[0].target, sets } : null
 }
 
 export function exerciseHistory(history: Workout[], name: string): ExerciseSession[] {
@@ -42,30 +37,30 @@ export function exerciseHistory(history: Workout[], name: string): ExerciseSessi
 
 type LookupKey = Pick<RoutineExercise, 'name' | 'target'>
 
-export type PreviousLookup = (exercise: LookupKey) => SetLog[] | null
+export type PreviousExercise = { sets: SetLog[] | null; note: string }
 
-export type PreviousSessionLookup = (exercise: LookupKey) => ExerciseSession | null
+export type PreviousExerciseLookup = (exercise: LookupKey) => PreviousExercise
 
-export function previousSessionLookup(history: Workout[], before: number): PreviousSessionLookup {
-  const latest = latestSessions(chronological(history, before))
+export const NO_HISTORY: PreviousExerciseLookup = () => ({ sets: null, note: '' })
 
-  return (exercise) => {
-    const last = latest.get(exercise.name)
-
-    return last && last.target.kind === exercise.target.kind ? last : null
-  }
+function latestNotes(workouts: Workout[]): Map<string, string> {
+  return new Map(workouts.flatMap(exercisesOf).map((exercise) => [exercise.name, exercise.note]))
 }
 
-export function setsOf(lookup: PreviousSessionLookup): PreviousLookup {
+export function previousExerciseLookup(history: Workout[], before: number): PreviousExerciseLookup {
+  const workouts = chronological(history, before)
+  const sessions = latestSessions(workouts)
+  const notes = latestNotes(workouts)
+
   return (exercise) => {
-    const last = lookup(exercise)
+    const session = sessions.get(exercise.name)
+    const note = notes.get(exercise.name)
 
-    return last && last.sets
+    return {
+      sets: session && session.target.kind === exercise.target.kind ? session.sets : null,
+      note: note === undefined ? '' : note,
+    }
   }
-}
-
-export function previousSetsLookup(history: Workout[], before: number): PreviousLookup {
-  return setsOf(previousSessionLookup(history, before))
 }
 
 export function prefill(exercise: Pick<RoutineExercise, 'target' | 'weight'>, count: number, last: SetLog[] | null): SetLog[] {
@@ -79,19 +74,21 @@ export function prefill(exercise: Pick<RoutineExercise, 'target' | 'weight'>, co
   })
 }
 
-export function toWorkoutExercise(exercise: RoutineExercise, count: number, previous: PreviousLookup): WorkoutExercise {
+export function toWorkoutExercise(exercise: RoutineExercise, count: number, previous: PreviousExerciseLookup): WorkoutExercise {
+  const { sets, note } = previous(exercise)
+
   return {
     name: exercise.name,
     target: exercise.target,
-    sets: prefill(exercise, count, previous(exercise)),
+    sets: prefill(exercise, count, sets),
     skipped: false,
     tip: exercise.tip,
-    note: '',
+    note,
   }
 }
 
 export function startWorkout(routine: Routine, history: Workout[], now: number, newId: () => string): Workout {
-  const previous = previousSetsLookup(history, now)
+  const previous = previousExerciseLookup(history, now)
 
   return {
     kind: 'routine',

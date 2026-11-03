@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { type PreviousLookup, type PreviousSessionLookup, setsOf } from '../../domain/progress'
+import { NO_HISTORY, type PreviousExerciseLookup } from '../../domain/progress'
 import { type Change, newItem } from '../../domain/routineEdit'
 import type { RoutineExercise, RoutineItem, Workout } from '../../domain/types'
 import { addItem, asRoutineItem, editItem, locateItem, removeItem } from '../../domain/workoutStructure'
 
 export type WorkoutEdit = (edit: (current: Workout) => Workout) => void
 
-export function useOverviewEditor(workout: Workout, previous: PreviousSessionLookup | undefined, onEdit: WorkoutEdit) {
+export function useOverviewEditor(workout: Workout, previous: PreviousExerciseLookup | undefined, onEdit: WorkoutEdit) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const located = editingId === null ? undefined : locateItem(workout, editingId)
 
@@ -15,13 +15,13 @@ export function useOverviewEditor(workout: Workout, previous: PreviousSessionLoo
     sectionSets: located.sectionSets,
   }
 
-  const previousSets: PreviousLookup = previous ? setsOf(previous) : () => null
+  const previousExercises = previous ?? NO_HISTORY
 
   function add(sectionIndex: number, exercise?: RoutineExercise) {
     const id = crypto.randomUUID()
     const item = exercise ? newItem(id, [exercise]) : newItem(id)
 
-    onEdit((current) => addItem(current, sectionIndex, item, previousSets))
+    onEdit((current) => addItem(current, sectionIndex, item, previousExercises))
 
     if (!exercise) {
       setEditingId(id)
@@ -29,7 +29,7 @@ export function useOverviewEditor(workout: Workout, previous: PreviousSessionLoo
   }
 
   function change(id: string, edit: Change<RoutineItem>) {
-    onEdit((current) => editItem(current, id, edit, previousSets))
+    onEdit((current) => editItem(current, id, edit, previousExercises))
   }
 
   function remove(id: string) {

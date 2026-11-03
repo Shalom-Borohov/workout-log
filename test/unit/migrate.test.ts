@@ -1,6 +1,9 @@
 import Dexie from 'dexie'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
+import { carryNotesForward } from '../../src/data/migrate'
+import { exercisesOf } from '../../src/domain/progress'
+import { activity, done, exercise, oct, open, workout } from '../helpers/workouts'
 
 const v2Routine = {
   id: 'r1',
@@ -187,5 +190,39 @@ describe('database upgrade', () => {
     legacyDb.close()
 
     expect(await db.workouts.toArray()).toEqual([{ ...v3Workout, kind: 'routine' }])
+  })
+
+  it('carries each next-time note of a v5 database forward to later workouts of that exercise', async () => {
+    const later = { ...v3Workout, id: 'w3', startedAt: 5000, finishedAt: 6000, kind: 'routine' }
+
+    const legacyDb = new Dexie('workout-log')
+    legacyDb.version(5).stores({ routines: 'id, createdAt', workouts: 'id, startedAt, finishedAt', settings: 'key' })
+    await legacyDb.table('workouts').bulkPut([{ ...v3Workout, kind: 'routine' }, withNote(later, '')])
+    legacyDb.close()
+
+    expect(await db.workouts.get('w3')).toEqual(withNote(later, 'לעלות ל-45'))
+  })
+})
+
+function withNote<W extends typeof v3Workout>(record: W, note: string): W {
+  const [exercise] = record.sections[0].items[0].exercises
+
+  return { ...record, sections: [{ ...record.sections[0], items: [{ ...record.sections[0].items[0], exercises: [{ ...exercise, note }] }] }] }
+}
+
+describe('carryNotesForward', () => {
+  it('fills an empty note from the latest earlier note of the same exercise, and keeps written ones', () => {
+    const records = [
+      workout({ id: 'c', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10)])] }),
+      workout({ id: 'a', startedAt: oct(12), exercises: [{ ...exercise('סקוואט', [done(50, 10)]), note: 'ברכיים החוצה' }] }),
+      workout({ id: 'b', startedAt: oct(19), exercises: [{ ...exercise('סקוואט', [done(55, 10)]), note: 'לעלות במשקל' }, exercise('חתירה', [done(30, 12)])] }),
+      activity({ id: 'x', startedAt: oct(20) }),
+    ]
+
+    const notes = carryNotesForward(records).map((record) =>
+      record.kind === 'activity' ? record.id : exercisesOf(record).map((workoutExercise) => workoutExercise.note),
+    )
+
+    expect(notes).toEqual([['לעלות במשקל'], ['ברכיים החוצה'], ['לעלות במשקל', ''], 'x'])
   })
 })

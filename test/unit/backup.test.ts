@@ -38,7 +38,7 @@ describe('backup', () => {
     await saveRoutine({ ...fullBody, id: 'other' })
     await restoreBackup(parseBackup(json))
 
-    expect(json.version).toBe(1)
+    expect(json.version).toBe(2)
     expect(json.exportedAt).toBe(oct(26))
     expect(await db.routines.toArray()).toEqual([fullBody])
     expect(await db.workouts.toArray()).toEqual([{ ...past, summary: 'הרגשתי חזק' }])
@@ -81,7 +81,7 @@ describe('backup', () => {
       null,
       'גיבוי',
       [],
-      { ...valid, version: 2 },
+      { ...valid, version: 3 },
       { ...valid, routines: undefined },
       { ...valid, routines: [{ ...fullBody, createdAt: '2026-10-29' }] },
       { ...valid, routines: [{ ...fullBody, sections: [{ id: 's1', name: 'עיקרי', sets: '3', items: [] }] }] },
@@ -181,5 +181,14 @@ describe('backup', () => {
 
     expect(Object.keys(json).sort()).toEqual(['exportedAt', 'routines', 'version', 'workouts'])
     expect(await db.settings.count()).toBe(1)
+  })
+
+  it('carries next-time notes forward from a backup made before notes carried over, but not from a newer one', () => {
+    const noted = workout({ id: 'a', startedAt: oct(12), exercises: [{ ...exercise('סקוואט', [done(50, 10)]), note: 'ברכיים החוצה' }] })
+    const cleared = workout({ id: 'b', startedAt: oct(19), exercises: [exercise('סקוואט', [done(55, 10)])] })
+    const note = (backup: unknown) => parseBackup(backup).workouts.flatMap((record) => (record.kind === 'activity' ? [] : record.sections[0].items[0].exercises[0].note))
+
+    expect(note({ version: 1, exportedAt: oct(26), routines: [], workouts: [noted, cleared] })).toEqual(['ברכיים החוצה', 'ברכיים החוצה'])
+    expect(note({ version: 2, exportedAt: oct(26), routines: [], workouts: [noted, cleared] })).toEqual(['ברכיים החוצה', ''])
   })
 })

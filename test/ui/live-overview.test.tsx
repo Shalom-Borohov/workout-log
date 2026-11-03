@@ -5,7 +5,7 @@ import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb, savedWorkout } from '../helpers/db'
-import { alertPresented, ionChange, ionElement, ionEvent, ionField, ionInput, OPEN_MODAL, visibleAll } from '../helpers/ionic'
+import { alertPresented, ionChange, ionElement, ionEvent, ionField, ionInput, OPEN_MODAL } from '../helpers/ionic'
 import { exercisePicker, pickerRows, pickerSearch } from '../helpers/picker'
 import { renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, open, reps, routine, seconds, workout } from '../helpers/workouts'
@@ -74,7 +74,7 @@ describe('overview editing', () => {
 
     await waitFor(async () => expect(await savedNames()).toEqual([['לחיצת חזה', 'חתירה']]))
     expect(await screen.findByText('לחיצת חזה', { selector: 'h1' })).toBeInTheDocument()
-    expect(screen.getByText('תרגיל 1 מתוך 2')).toBeInTheDocument()
+    expect(screen.getByText('עיקרי · 1 מתוך 2')).toBeInTheDocument()
   })
 
   it('reorders within a section and keeps showing the current exercise', async () => {
@@ -84,7 +84,7 @@ describe('overview editing', () => {
 
     await waitFor(async () => expect(await savedNames()).toEqual([['לחיצת חזה', 'חתירה', 'סקוואט']]))
     expect(screen.getByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
-    expect(screen.getByText('תרגיל 3 מתוך 3')).toBeInTheDocument()
+    expect(screen.getByText('עיקרי · 3 מתוך 3')).toBeInTheDocument()
   })
 
   it('a deleted exercise does not carry its selected set over to the next one', async () => {
@@ -165,7 +165,6 @@ describe('adding an existing exercise', () => {
     fireEvent.click(await screen.findByText('דדליפט', { selector: 'ion-modal ion-item ion-label' }))
 
     expect(await screen.findByText('דדליפט', { selector: 'h1' })).toBeInTheDocument()
-    await waitFor(() => expect(visibleAll('.item-previous').map((line) => line.textContent)).toEqual(['פעם קודמת: 80 ק״ג × 8, 6']))
   })
 })
 

@@ -1,4 +1,4 @@
-import { prefill, type PreviousLookup, targetAmount, toWorkoutExercise } from './progress'
+import { prefill, type PreviousExerciseLookup, targetAmount, toWorkoutExercise } from './progress'
 import {
   type Change,
   DEFAULT_SETS,
@@ -25,7 +25,7 @@ export function commonSets(section: WorkoutSection): number {
   )
 }
 
-export function addItem(workout: Workout, sectionIndex: number, routineItem: RoutineItem, previous: PreviousLookup): Workout {
+export function addItem(workout: Workout, sectionIndex: number, routineItem: RoutineItem, previous: PreviousExerciseLookup): Workout {
   const count = itemSets(routineItem, commonSets(workout.sections[sectionIndex]))
 
   const item: WorkoutItem = {
@@ -84,7 +84,7 @@ export function applyItemEdit(
   item: WorkoutItem,
   edited: RoutineItem,
   sectionSets: number,
-  previous: PreviousLookup,
+  previous: PreviousExerciseLookup,
 ): WorkoutItem {
   const count = itemSets(edited, sectionSets)
 
@@ -95,9 +95,11 @@ export function applyItemEdit(
     }
     const sameExercise = current.name === exercise.name && targetAmount(current.target) === targetAmount(exercise.target)
     const keepsSets = current.target.kind === exercise.target.kind && (sameExercise || current.sets.some((set) => set.done))
-    const sets = keepsSets ? resize(current.sets, count) : prefill(exercise, count, previous(exercise))
+    const last = previous(exercise)
+    const sets = keepsSets ? resize(current.sets, count) : prefill(exercise, count, last.sets)
+    const note = current.name !== exercise.name && last.note !== '' ? last.note : current.note
 
-    return { ...current, name: exercise.name, target: exercise.target, tip: exercise.tip, sets }
+    return { ...current, name: exercise.name, target: exercise.target, tip: exercise.tip, sets, note }
   })
 
   return { ...item, exercises }
@@ -115,7 +117,7 @@ export function locateItem(workout: Workout, id: string): LocatedItem | undefine
     .find(({ item }) => item.id === id)
 }
 
-export function editItem(workout: Workout, id: string, change: Change<RoutineItem>, previous: PreviousLookup): Workout {
+export function editItem(workout: Workout, id: string, change: Change<RoutineItem>, previous: PreviousExerciseLookup): Workout {
   const located = locateItem(workout, id)
   if (!located) {
     return workout

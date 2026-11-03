@@ -14,7 +14,7 @@ beforeEach(async () => {
 })
 
 describe('live current set', () => {
-  it('weight stepper adds 2.5, fills it down to later sets and saves', async () => {
+  it('weight stepper adds 1 kg, fills it down to later sets and saves', async () => {
     await saveWorkout(
       workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10), open(60, 10)])] }),
     )
@@ -23,8 +23,8 @@ describe('live current set', () => {
 
     await user.click(await screen.findByRole('button', { name: 'הגדלת משקל' }))
 
-    expect(await screen.findByLabelText('סקוואט סט 1 משקל')).toHaveValue('62.5')
-    await waitFor(async () => expect(await firstSets()).toEqual([open(62.5, 10), open(62.5, 10)]))
+    expect(await screen.findByLabelText('סקוואט סט 1 משקל')).toHaveValue('61')
+    await waitFor(async () => expect(await firstSets()).toEqual([open(61, 10), open(61, 10)]))
   })
 
   it('a typed weight fills down to later open sets with the same or no weight', async () => {
@@ -45,7 +45,7 @@ describe('live current set', () => {
     )
   })
 
-  it('weight stepper on an empty weight starts at 2.5', async () => {
+  it('weight stepper on an empty weight starts at 1 kg', async () => {
     await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('מתח', [open(null, 8)])] }))
     const user = userEvent.setup()
     renderAt('/tabs/timeline/workout/w1')
@@ -53,7 +53,7 @@ describe('live current set', () => {
     expect(await screen.findByRole('button', { name: 'הקטנת משקל' })).toBeDisabled()
     await user.click(screen.getByRole('button', { name: 'הגדלת משקל' }))
 
-    await waitFor(async () => expect(await firstSets()).toEqual([open(2.5, 8)]))
+    await waitFor(async () => expect(await firstSets()).toEqual([open(1, 8)]))
   })
 
   it('reps stepper subtracts one', async () => {

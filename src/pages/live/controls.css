@@ -1,0 +1,57 @@
+.item-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-block: 4px 16px;
+  padding-inline: 16px;
+}
+
+.back-to-current {
+  inset-block-end: 12px;
+  inset-inline: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.back-to-current-space {
+  block-size: 48px;
+}
+
+.back-to-current-pill {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  pointer-events: auto;
+}
+
+.rest-button {
+  --color: var(--app-label-secondary);
+}
+
+.rest-button.rest-ended {
+  --color: var(--ion-color-success);
+}
+
+.rest-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-block: 4px;
+  margin-inline: 16px;
+}
+
+.rest-stepper {
+  flex: 1;
+}
+
+.rest-left {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+}

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveWorkout } from '../../src/data/repo'
 import { resetDb, savedWorkout } from '../helpers/db'
-import { actionSheetPresented, ionChange, ionInput } from '../helpers/ionic'
+import { actionSheetPresented, alertPresented, ionChange, ionInput, visibleAll } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, open, seconds, workout } from '../helpers/workouts'
 import { userEvent } from '@testing-library/user-event'
@@ -25,6 +25,29 @@ const halfDone = workout({
     exercise('חתירה', [done(30, 12), open(30, 12)]),
   ],
 })
+
+function setSliding(setLabel: string): Element {
+  const sliding = screen.getByRole('button', { name: setLabel }).closest('ion-item-sliding')
+
+  if (!sliding) {
+    throw new Error(`no swipe actions for ${setLabel}`)
+  }
+
+  return sliding
+}
+
+const setOptions = (setLabel: string) =>
+  Array.from(setSliding(setLabel).querySelectorAll('ion-item-option'), (option) => option.textContent)
+
+function setOption(setLabel: string, text: string): Element {
+  const option = Array.from(setSliding(setLabel).querySelectorAll('ion-item-option')).find((element) => element.textContent === text)
+
+  if (!option) {
+    throw new Error(`no ${text} for ${setLabel}`)
+  }
+
+  return option
+}
 
 beforeEach(async () => {
   await resetDb()
@@ -52,7 +75,7 @@ describe('live workout', () => {
     renderAt('/tabs/timeline/workout/w1')
 
     expect(await screen.findByText('חתירה', { selector: 'h1' })).toBeInTheDocument()
-    expect(screen.getByText('תרגיל 3 מתוך 3')).toBeInTheDocument()
+    expect(screen.getByText('עיקרי · 3 מתוך 3')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'חתירה סט 1', pressed: true })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'חתירה סט 2', pressed: false })).toBeInTheDocument()
 
@@ -109,33 +132,54 @@ describe('live workout', () => {
     expect(await screen.findByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
   })
 
-  it('item menu skips and adds and removes sets', async () => {
+  it('skips and adds sets from the card, and duplicates and deletes a set by swiping it', async () => {
     await saveWorkout(active)
     const user = userEvent.setup()
     renderAt('/tabs/timeline/workout/w1')
     const squat = async () => (await savedWorkout('w1'))?.sections[0].items[0].exercises[0]
-    const choose = async (text: string) => {
-      const presented = actionSheetPresented()
+    const cardButton = (text: string) => screen.findByText(text, { selector: '.item-actions ion-button' })
 
-      await user.click(await screen.findByLabelText('פעולות לתרגיל'))
-      await presented
-      fireEvent.click(screen.getByText(text, { selector: '.action-sheet-button-label' }))
-      await waitFor(() => expect(document.querySelector('ion-action-sheet')).toBeNull())
-    }
-
-    await choose('דלג על התרגיל')
+    await user.click(await cardButton('דלג'))
     expect(await screen.findByText('דילגת על התרגיל')).toBeInTheDocument()
     await waitFor(async () => expect((await squat())?.skipped).toBe(true))
 
-    await choose('בטל דילוג')
+    await user.click(await cardButton('בטל דילוג'))
     await waitFor(async () => expect((await squat())?.skipped).toBe(false))
+    expect(visibleAll('.item-actions ion-button').map((button) => button.textContent)).toEqual(['דלג', 'הוספת סט'])
 
-    await choose('הוספת סט')
+    await user.click(await cardButton('הוספת סט'))
     expect(await screen.findByRole('button', { name: 'סקוואט סט 3' })).toBeInTheDocument()
 
-    await choose('הורדת סט')
-    await waitFor(() => expect(screen.queryByRole('button', { name: 'סקוואט סט 3' })).not.toBeInTheDocument())
-    await waitFor(async () => expect((await squat())?.sets).toHaveLength(2))
+    fireEvent.click(setOption('סקוואט סט 1', 'שכפול'))
+    expect(await screen.findByRole('button', { name: 'סקוואט סט 4' })).toBeInTheDocument()
+
+    fireEvent.click(setOption('סקוואט סט 4', 'מחיקה'))
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'סקוואט סט 4' })).not.toBeInTheDocument())
+    await waitFor(async () => expect((await squat())?.sets).toHaveLength(3))
+
+    const presented = actionSheetPresented()
+
+    await user.click(await screen.findByLabelText('פעולות לתרגיל'))
+    await presented
+
+    const menu = Array.from(document.querySelectorAll('.action-sheet-button-label'), (label) => label.textContent)
+
+    expect(menu).toEqual(['הוספה לסיכום'])
+  })
+
+  it('asks before deleting a ticked set, and offers no delete on the only set', async () => {
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [done(60, 10), open(70, 8)])] }))
+    renderAt('/tabs/timeline/workout/w1')
+    const presented = alertPresented()
+
+    expect(await screen.findByRole('button', { name: 'סקוואט סט 1' })).toBeInTheDocument()
+    fireEvent.click(setOption('סקוואט סט 1', 'מחיקה'))
+    await presented
+    fireEvent.click(screen.getByText('מחיקה', { selector: '.alert-button-inner' }))
+
+    await waitFor(async () => expect((await savedWorkout('w1'))?.sections[0].items[0].exercises[0].sets).toEqual([open(70, 8)]))
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'סקוואט סט 2' })).not.toBeInTheDocument())
+    expect(setOptions('סקוואט סט 1')).toEqual(['שכפול'])
   })
 
   it('finish saves summary and finishedAt and opens detail', async () => {
@@ -185,7 +229,7 @@ describe('live workout', () => {
     expect(await db.workouts.get('w1')).toBeUndefined()
   })
 
-  it('edit mode keeps the workout finished and goes back', async () => {
+  it('edit mode keeps the workout finished and goes to its page even when opened without history', async () => {
     const finished = { ...active, finishedAt: oct(26, 11), summary: 'טוב' }
     await saveWorkout(finished)
     const user = userEvent.setup()
@@ -199,6 +243,7 @@ describe('live workout', () => {
     await user.click(screen.getByText('סיום', { selector: 'ion-button' }))
 
     expect(screen.queryByText('סיכום האימון', { selector: 'ion-title' })).not.toBeInTheDocument()
+    await waitFor(() => expect(currentPath()).toBe('/tabs/timeline/w1'))
     expect(await db.workouts.get('w1')).toMatchObject({ finishedAt: oct(26, 11), summary: 'טוב' })
   })
 

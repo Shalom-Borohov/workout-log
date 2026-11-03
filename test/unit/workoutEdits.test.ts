@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SetLog, Workout } from '../../src/domain/types'
-import { addSet, editSet, fillWeight, firstUnfinished, nextUnfinished, removeSet } from '../../src/domain/workoutEdits'
+import { addSet, currentIndex, duplicateSetAt, editSet, fillWeight, firstUnfinished, nextUnfinished, removeSetAt } from '../../src/domain/workoutEdits'
 import { done, exercise, oct, open, workout } from '../helpers/workouts'
 
 const ref = { section: 0, item: 0 }
@@ -25,6 +25,22 @@ describe('workoutEdits', () => {
     expect(firstUnfinished(active)).toBe(2)
   })
 
+  it('currentIndex is the first unfinished item, or null once everything is done or skipped', () => {
+    const skipped = { ...exercise('לחיצת חזה', [open(40, 10)]), skipped: true }
+
+    const inProgress = workout({
+      id: 'w1',
+      startedAt: oct(26),
+      finishedAt: null,
+      exercises: [exercise('סקוואט', [done(60, 10)]), skipped, exercise('חתירה', [open(30, 12)])],
+    })
+
+    const allDone = workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [done(60, 10)]), skipped] })
+
+    expect(currentIndex(inProgress)).toBe(2)
+    expect(currentIndex(allDone)).toBeNull()
+  })
+
   it('addSet copies last set', () => {
     const active =pairWorkout([done(20, 12), done(22, 10)], [done(null, 15)])
     const sets = addSet(active,ref).sections[0].items[0].exercises.map((pairExercise) => pairExercise.sets)
@@ -36,13 +52,24 @@ describe('workoutEdits', () => {
     expect(active.sections[0].items[0].exercises[0].sets).toHaveLength(2)
   })
 
-  it('removeSet keeps one', () => {
-    const active =pairWorkout([done(20, 12), open(22, 10)], [done(null, 15), open(null, 15)])
-    const once = removeSet(active,ref)
-    const twice = removeSet(once, ref)
+  it('removeSetAt removes that one set of that exercise and never the last one', () => {
+    const active = pairWorkout([done(20, 12), open(22, 10), open(24, 8)], [done(null, 15)])
+    const removed = removeSetAt(active, ref, 0, 1)
 
-    expect(once.sections[0].items[0].exercises.map((pairExercise) => pairExercise.sets)).toEqual([[done(20, 12)], [done(null, 15)]])
-    expect(twice).toEqual(once)
+    expect(removed.sections[0].items[0].exercises.map((pairExercise) => pairExercise.sets)).toEqual([
+      [done(20, 12), open(24, 8)],
+      [done(null, 15)],
+    ])
+    expect(removeSetAt(active, ref, 1, 0)).toEqual(active)
+  })
+
+  it('duplicateSetAt inserts an unticked copy right after that set of that exercise', () => {
+    const active = pairWorkout([done(20, 12), open(24, 8)], [done(null, 15)])
+
+    expect(duplicateSetAt(active, ref, 0, 0).sections[0].items[0].exercises.map((pairExercise) => pairExercise.sets)).toEqual([
+      [done(20, 12), open(20, 12), open(24, 8)],
+      [done(null, 15)],
+    ])
   })
 
   it('fillWeight carries a new weight down to later open sets that had the old weight or none', () => {

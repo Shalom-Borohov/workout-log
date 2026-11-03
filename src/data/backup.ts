@@ -2,6 +2,7 @@ import { APP_COPY } from '../copy/app'
 import type { Activity, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
 import { db } from './db'
 import {
+  carryNotesForward,
   type LegacyRecord,
   type LegacyRoutine,
   type LegacyRoutineExercise,
@@ -15,9 +16,18 @@ import {
   upgradeRoutine,
 } from './migrate'
 
-export type Backup = { version: 1; exportedAt: number; routines: Routine[]; workouts: WorkoutRecord[] }
+const BACKUP_VERSION = 2
 
-type LegacyBackup = { version: 1; exportedAt: number; routines: LegacyRoutine[]; workouts: LegacyRecord[] }
+const VERSION_BEFORE_CARRIED_NOTES = 1
+
+export type Backup = { version: typeof BACKUP_VERSION; exportedAt: number; routines: Routine[]; workouts: WorkoutRecord[] }
+
+type LegacyBackup = {
+  version: typeof VERSION_BEFORE_CARRIED_NOTES | typeof BACKUP_VERSION
+  exportedAt: number
+  routines: LegacyRoutine[]
+  workouts: LegacyRecord[]
+}
 
 type Guard<T> = (value: unknown) => value is T
 
@@ -119,7 +129,7 @@ const isRecord = (record: unknown): record is LegacyRecord => isActivity(record)
 
 const isBackup = (backup: unknown): backup is LegacyBackup =>
   isObject(backup) &&
-  backup.version === 1 &&
+  (backup.version === VERSION_BEFORE_CARRIED_NOTES || backup.version === BACKUP_VERSION) &&
   isNumber(backup.exportedAt) &&
   arrayOf(isRoutine)(backup.routines) &&
   arrayOf(isRecord)(backup.workouts)
@@ -129,13 +139,20 @@ export function parseBackup(json: unknown): Backup {
     throw new Error(APP_COPY.invalidBackup)
   }
 
-  return { ...json, routines: json.routines.map(upgradeRoutine), workouts: json.workouts.map(upgradeRecord) }
+  const workouts = json.workouts.map(upgradeRecord)
+
+  return {
+    ...json,
+    version: BACKUP_VERSION,
+    routines: json.routines.map(upgradeRoutine),
+    workouts: json.version === VERSION_BEFORE_CARRIED_NOTES ? carryNotesForward(workouts) : workouts,
+  }
 }
 
 export async function exportBackup(now: number): Promise<Backup> {
   const [routines, workouts] = await Promise.all([db.routines.toArray(), db.workouts.toArray()])
 
-  return { version: 1, exportedAt: now, routines, workouts }
+  return { version: BACKUP_VERSION, exportedAt: now, routines, workouts }
 }
 
 export async function restoreBackup(backup: Backup): Promise<void> {

@@ -57,7 +57,7 @@ describe('settings', () => {
 
     expect(files?.map((file) => file.name)).toEqual(['workouts-backup-2026-10-26.json'])
     expect(await readJson(files?.[0])).toEqual({
-      version: 1,
+      version: 2,
       exportedAt: new Date(2026, 9, 26, 9, 30).getTime(),
       routines: [legs],
       workouts: [past],
@@ -110,6 +110,7 @@ describe('settings', () => {
 
     renderAt('/tabs/routines/settings')
     fireEvent.click(await screen.findByText('דיווח על באג / הצעה'))
+    ionChange(await screen.findByText('באג', { selector: 'ion-segment-button ion-label' }), 'bug')
     ionInput(await ionField('תיאור'), 'הכפתור לא עובד\nלחצתי פעמיים')
     fireEvent.click(await screen.findByText('פתיחה ב-GitHub'))
 
@@ -133,13 +134,22 @@ describe('settings', () => {
     expect(await screen.findByText(/^גרסה \d+\.\d+\.\d+ · עודכן \d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}$/)).toBeInTheDocument()
   })
 
-  it('opens a suggestion with a shortened title, only once there is text', async () => {
+  it('shows the feedback report right after the backup section', async () => {
+    renderAt('/tabs/routines/settings')
+
+    const report = await screen.findByText('דיווח על באג / הצעה')
+    const follows = (first: Element, second: Element) => Boolean(first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING)
+
+    expect(follows(screen.getByText('ייבוא גיבוי'), report)).toBe(true)
+    expect(follows(report, screen.getByText('ייצוא היסטוריה'))).toBe(true)
+  })
+
+  it('opens a suggestion by default, with a shortened title, only once there is text', async () => {
     const openWindow = vi.spyOn(window, 'open').mockReturnValue(null)
     const idea = 'כדאי להוסיף גרף התקדמות שבועי לכל תרגיל, עם השוואה לחודש הקודם ולשיא האישי שלי בתרגיל'
 
     renderAt('/tabs/routines/settings')
     fireEvent.click(await screen.findByText('דיווח על באג / הצעה'))
-    ionChange(await screen.findByText('הצעה', { selector: 'ion-segment-button ion-label' }), 'idea')
 
     expect((await screen.findByText('פתיחה ב-GitHub')).closest('ion-button')).toHaveProperty('disabled', true)
 

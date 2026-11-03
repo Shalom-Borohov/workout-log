@@ -29,7 +29,7 @@ const PLACEHOLDERS: Record<FeedbackKind, string> = {
 }
 
 function FeedbackForm({ onClose }: { onClose: () => void }) {
-  const [kind, setKind] = useState<FeedbackKind>('bug')
+  const [kind, setKind] = useState<FeedbackKind>('idea')
   const [text, setText] = useState('')
 
   function send() {

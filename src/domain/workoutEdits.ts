@@ -21,17 +21,18 @@ function isUnfinished(item: WorkoutItem): boolean {
   return item.exercises.some((exercise) => !exercise.skipped && exercise.sets.some((set) => !set.done))
 }
 
-export function firstUnfinished(workout: Workout): number {
-  const refs = itemRefs(workout)
-  const index = refs.findIndex((ref) => isUnfinished(itemAt(workout, ref)))
-
-  return index === -1 ? refs.length - 1 : index
-}
-
 export function nextUnfinished(workout: Workout, current: number): number | null {
   const index = itemRefs(workout).findIndex((ref, refIndex) => refIndex > current && isUnfinished(itemAt(workout, ref)))
 
   return index === -1 ? null : index
+}
+
+export function currentIndex(workout: Workout): number | null {
+  return nextUnfinished(workout, -1)
+}
+
+export function firstUnfinished(workout: Workout): number {
+  return currentIndex(workout) ?? itemRefs(workout).length - 1
 }
 
 function mapItem(workout: Workout, ref: ItemRef, edit: (item: WorkoutItem) => WorkoutItem): Workout {
@@ -117,7 +118,7 @@ export function stepValue(current: number | null, delta: number, max: number): n
   return Math.min(Math.max(current === null ? delta : current + delta, 0), max)
 }
 
-export const WEIGHT_STEP = 2.5
+export const WEIGHT_STEP = 1
 
 const SECONDS_STEP = 15
 
@@ -144,9 +145,23 @@ export function setNotes(workout: Workout, ref: ItemRef, notes: string[]): Worko
   }))
 }
 
-export function removeSet(workout: Workout, ref: ItemRef): Workout {
+function mapSets(workout: Workout, ref: ItemRef, exercise: number, edit: (sets: SetLog[]) => SetLog[]): Workout {
   return mapItem(workout, ref, (item) => ({
     ...item,
-    exercises: item.exercises.map((exercise) => (exercise.sets.length > 1 ? { ...exercise, sets: exercise.sets.slice(0, -1) } : exercise)),
+    exercises: item.exercises.map((workoutExercise, exerciseIndex) =>
+      exerciseIndex === exercise ? { ...workoutExercise, sets: edit(workoutExercise.sets) } : workoutExercise,
+    ),
   }))
+}
+
+export function removeSetAt(workout: Workout, ref: ItemRef, exercise: number, set: number): Workout {
+  if (itemAt(workout, ref).exercises[exercise].sets.length <= 1) {
+    return workout
+  }
+
+  return mapSets(workout, ref, exercise, (sets) => sets.filter((_, setIndex) => setIndex !== set))
+}
+
+export function duplicateSetAt(workout: Workout, ref: ItemRef, exercise: number, set: number): Workout {
+  return mapSets(workout, ref, exercise, (sets) => sets.toSpliced(set + 1, 0, { ...sets[set], done: false }))
 }

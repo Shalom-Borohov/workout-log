@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable, type Transaction } from 'dexie'
 import type { BackgroundSetting, Routine, WorkoutRecord } from '../domain/types'
-import { type LegacyRoutine, type LegacyWorkout, upgradeRoutine, upgradeWorkout } from './migrate'
+import { carryNotesForward, type LegacyRoutine, type LegacyWorkout, upgradeRoutine, upgradeWorkout } from './migrate'
 
 const DB_NAME = 'workout-log'
 
@@ -51,6 +51,13 @@ class WorkoutDb extends Dexie {
             workout.kind = 'routine'
           }),
       )
+    this.version(6)
+      .stores({})
+      .upgrade(async (transaction) => {
+        const workouts = transaction.table<WorkoutRecord>('workouts')
+
+        await workouts.bulkPut(carryNotesForward(await workouts.toArray()))
+      })
   }
 }
 

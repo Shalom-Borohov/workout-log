@@ -24,7 +24,6 @@ export const COMMON_COPY = {
   addExercise: 'הוספת תרגיל',
   addSet: 'הוספת סט',
   removeSet: 'הורדת סט',
-  nextTimeNote: 'הערה לפעם הבאה',
   saveAsNewRoutine: 'שמירה כאימון חדש',
   deleteWorkoutQuestion: 'למחוק את האימון?',
   deleteWorkout: 'מחיקת האימון',
