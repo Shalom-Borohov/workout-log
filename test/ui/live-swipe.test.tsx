@@ -108,6 +108,16 @@ describe('live swipe between exercises', () => {
     expect(await heading('סקוואט')).toBeInTheDocument()
   })
 
+  it('leaves a drag that starts on a set to the set, without changing exercise', async () => {
+    await saveWorkout(threeItems)
+    renderAt('/tabs/timeline/workout/w1')
+
+    drag(await screen.findByRole('button', { name: 'סקוואט סט 1' }), { x: 300, y: 400 }, { x: 450, y: 405 })
+    await pause(100)
+
+    expect(screen.getByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
+  })
+
   it('ignores a drag that starts at the swipe-back edge', async () => {
     await saveWorkout(threeItems)
     const user = userEvent.setup()
@@ -139,6 +149,6 @@ describe('live swipe between exercises', () => {
     await pause(100)
 
     expect(screen.getByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
-    expect(screen.getByText('תרגיל 1 מתוך 3')).toBeInTheDocument()
+    expect(screen.getByText('עיקרי · 1 מתוך 3')).toBeInTheDocument()
   })
 })

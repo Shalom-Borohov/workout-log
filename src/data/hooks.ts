@@ -19,6 +19,10 @@ export function useWorkout(id: string) {
   return useLiveQuery(() => db.workouts.get(id), [id])
 }
 
+export function useWorkoutLookup(id: string) {
+  return useLiveQuery(async () => ({ workout: await db.workouts.get(id) }), [id])
+}
+
 export function useFinishedWorkouts() {
   return useLiveQuery(finishedWorkouts)
 }

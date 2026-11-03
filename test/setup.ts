@@ -30,11 +30,14 @@ class NoopIntersectionObserver {
 
 Object.defineProperty(window, 'IntersectionObserver', { writable: true, value: NoopIntersectionObserver })
 
+Object.defineProperty(HTMLMediaElement.prototype, 'play', { writable: true, value: () => Promise.resolve() })
+Object.defineProperty(HTMLMediaElement.prototype, 'pause', { writable: true, value: () => {} })
 Object.defineProperty(Element.prototype, 'scrollTo', { writable: true, value: () => {} })
 
 setupIonicReact({ mode: 'ios' })
 
 beforeEach(() => {
+  localStorage.clear()
   saveSeenVersion(__APP_VERSION__)
 })
 

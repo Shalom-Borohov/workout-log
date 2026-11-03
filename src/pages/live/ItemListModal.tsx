@@ -2,7 +2,7 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonTo
 import { useState } from 'react'
 import { HALF_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
-import type { PreviousSessionLookup } from '../../domain/progress'
+import type { PreviousExerciseLookup } from '../../domain/progress'
 import type { RoutineExercise, Workout } from '../../domain/types'
 import { canRemoveItem, moveItem } from '../../domain/workoutStructure'
 import { ExercisePicker } from '../../components/itemEditor/ExercisePicker'
@@ -15,7 +15,7 @@ interface ItemListModalProps {
   isOpen: boolean
   workout: Workout
   current: number
-  previous: PreviousSessionLookup | undefined
+  previous: PreviousExerciseLookup | undefined
   onSelect: (index: number) => void
   onEdit: WorkoutEdit
   onClose: () => void

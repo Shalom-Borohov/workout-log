@@ -3,8 +3,7 @@ import {
   bestSet,
   exerciseHistory,
   exerciseNames,
-  previousSessionLookup,
-  previousSetsLookup,
+  previousExerciseLookup,
   startWorkout,
   targetAmount,
 } from '../../src/domain/progress'
@@ -123,6 +122,33 @@ describe('startWorkout', () => {
     ])
   })
 
+  it('carries each exercise note over from its last session', () => {
+    const history = [
+      workout({ id: 'old', startedAt: oct(12), exercises: [{ ...exercise('סקוואט', [done(30, 12)]), note: 'ישן' }] }),
+      workout({ id: 'last', startedAt: oct(19), exercises: [{ ...exercise('סקוואט', [done(40, 12)]), note: 'ברכיים החוצה' }] }),
+    ]
+
+    const started = startWorkout(fullBody, history, oct(26), ids())
+
+    expect(started.sections.flatMap((section) => section.items.map((item) => item.exercises[0].note))).toEqual(['ברכיים החוצה', ''])
+  })
+
+  it('carries a note written on a skipped exercise, while the weights still come from the last ticked sets', () => {
+    const history = [
+      workout({ id: 'done', startedAt: oct(12), exercises: [{ ...exercise('סקוואט', [done(40, 12)]), note: 'ישן' }] }),
+      workout({
+        id: 'skipped',
+        startedAt: oct(19),
+        exercises: [{ ...exercise('סקוואט', [open(40, 12)]), skipped: true, note: 'כתף, ללכת קל' }],
+      }),
+    ]
+
+    const [squat] = startWorkout(fullBody, history, oct(26), ids()).sections[0].items[0].exercises
+
+    expect(squat.note).toBe('כתף, ללכת קל')
+    expect(squat.sets[0]).toEqual({ weight: 40, amount: 12, done: false })
+  })
+
   it('prefills from the routine target after a switch between reps and time', () => {
     const history = [workout({ id: 'last', startedAt: oct(19), exercises: [exercise('פלאנק', [done(5, 12)], reps(12))] })]
     const timed = routine('r1', 'ליבה', [[{ name: 'פלאנק', target: seconds(30) }]], 2)
@@ -186,7 +212,7 @@ describe('previousSets as history lookup', () => {
       workout({ id: 'c', startedAt: oct(21), exercises: [exercise('סקוואט', [open(45, 12), open(45, 12)])] }),
     ]
 
-    expect(previousSetsLookup(history, oct(26))({ name: 'סקוואט', target: reps(10) })).toEqual([{ weight: 40, amount: 12, done: true }])
+    expect(previousExerciseLookup(history, oct(26))({ name: 'סקוואט', target: reps(10) }).sets).toEqual([{ weight: 40, amount: 12, done: true }])
   })
 
   it('ignores skipped exercises even with ticked sets', () => {
@@ -195,7 +221,7 @@ describe('previousSets as history lookup', () => {
       workout({ id: 'b', startedAt: oct(19), exercises: [{ ...exercise('סקוואט', [done(45, 12)]), skipped: true }] }),
     ]
 
-    expect(previousSetsLookup(history, oct(26))({ name: 'סקוואט', target: reps(10) })).toEqual([{ weight: 40, amount: 12, done: true }])
+    expect(previousExerciseLookup(history, oct(26))({ name: 'סקוואט', target: reps(10) }).sets).toEqual([{ weight: 40, amount: 12, done: true }])
   })
 
   it('ignores unfinished workouts and workouts from the given time on', () => {
@@ -205,22 +231,13 @@ describe('previousSets as history lookup', () => {
       workout({ id: 'same', startedAt: oct(26), exercises: [exercise('סקוואט', [done(60, 12)])] }),
     ]
 
-    expect(previousSetsLookup(history, oct(26))({ name: 'סקוואט', target: reps(10) })).toEqual([{ weight: 40, amount: 12, done: true }])
-  })
-
-  it('carries the note of the session the previous sets come from', () => {
-    const history = [
-      workout({ id: 'a', startedAt: oct(12), exercises: [{ ...exercise('סקוואט', [done(40, 12)]), note: 'לעלות ל-42.5' }] }),
-      workout({ id: 'b', startedAt: oct(19), exercises: [{ ...exercise('סקוואט', [open(45, 12)]), note: 'כאב בברך' }] }),
-    ]
-
-    expect(previousSessionLookup(history, oct(26))({ name: 'סקוואט', target: reps(10) })?.note).toBe('לעלות ל-42.5')
+    expect(previousExerciseLookup(history, oct(26))({ name: 'סקוואט', target: reps(10) }).sets).toEqual([{ weight: 40, amount: 12, done: true }])
   })
 
   it('returns null for a never-done exercise', () => {
     const history = [workout({ id: 'a', startedAt: oct(19), exercises: [exercise('סקוואט', [done(40, 12)])] })]
 
-    expect(previousSetsLookup(history, oct(26))({ name: 'פלאנק', target: reps(10) })).toBeNull()
+    expect(previousExerciseLookup(history, oct(26))({ name: 'פלאנק', target: reps(10) }).sets).toBeNull()
   })
 })
 
@@ -259,14 +276,12 @@ describe('exerciseHistory', () => {
         startedAt: oct(19),
         target: { kind: 'duration', seconds: 45 },
         sets: [{ weight: null, amount: 45, done: true }],
-        note: '',
       },
       {
         workoutId: 'a',
         startedAt: oct(12),
         target: { kind: 'duration', seconds: 30 },
         sets: [{ weight: null, amount: 30, done: true }],
-        note: '',
       },
     ])
   })

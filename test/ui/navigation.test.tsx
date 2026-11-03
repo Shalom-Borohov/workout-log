@@ -1,10 +1,10 @@
 import { useIonRouter } from '@ionic/react'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { saveWorkout } from '../../src/data/repo'
+import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
 import { renderAt } from '../helpers/renderAt'
-import { done, exercise, oct, open, workout } from '../helpers/workouts'
+import { done, exercise, oct, open, reps, routine, workout } from '../helpers/workouts'
 
 function BackGesture() {
   const router = useIonRouter()
@@ -29,6 +29,16 @@ function visiblePageText() {
 const expectVisible = (text: string) => waitFor(() => expect(visiblePageText()).toContain(text))
 
 const path = () => screen.getByTestId('location').textContent
+
+function tabButton(tab: string): Element {
+  const button = document.querySelector(`ion-tab-button[tab="${tab}"]`)
+
+  if (!button) {
+    throw new Error(`no tab button ${tab}`)
+  }
+
+  return button
+}
 
 describe('navigation round trips', () => {
   beforeEach(resetDb)
@@ -55,7 +65,42 @@ describe('navigation round trips', () => {
     renderApp(link)
 
     await waitFor(() => expect(path()).toBe('/tabs/timeline/workout/live'))
-    await expectVisible('תרגיל 1 מתוך 1')
+    await expectVisible('עיקרי · 1 מתוך 1')
+  })
+
+  it('the routines tab shows its list again after finishing a workout started from it', async () => {
+    await saveRoutine(routine('r1', 'אימון רגליים', [[{ name: 'סקוואט', target: reps(10) }]]))
+    renderApp('/tabs/routines')
+
+    fireEvent.click(await screen.findByText('התחל', { selector: `${VISIBLE} ion-button` }))
+    await waitFor(() => expect(path()).toMatch(/^\/tabs\/routines\/workout\//))
+    fireEvent.click(await screen.findByText('סיום', { selector: `${VISIBLE} ion-button` }))
+    fireEvent.click(await screen.findByText('שמירה', { selector: 'ion-modal ion-button' }))
+    await waitFor(() => expect(path()).toMatch(/^\/tabs\/timeline\/[^/]+$/))
+    await expectVisible('עריכה')
+
+    fireEvent.click(tabButton('routines'))
+
+    await waitFor(() => expect(path()).toBe('/tabs/routines'))
+    await expectVisible('התחל')
+  })
+
+  it('the routines tab shows its list again after deleting a workout started from it', async () => {
+    await saveRoutine(routine('r1', 'אימון רגליים', [[{ name: 'סקוואט', target: reps(10) }]]))
+    renderApp('/tabs/routines')
+
+    fireEvent.click(await screen.findByText('התחל', { selector: `${VISIBLE} ion-button` }))
+    await waitFor(() => expect(path()).toMatch(/^\/tabs\/routines\/workout\//))
+    fireEvent.click(await screen.findByText('סיום', { selector: `${VISIBLE} ion-button` }))
+    fireEvent.click(await screen.findByText('מחיקת האימון'))
+    fireEvent.click(await screen.findByText('מחיקה', { selector: '.alert-button-inner' }))
+    await waitFor(() => expect(path()).toBe('/tabs/timeline'))
+    await expectVisible('ציר זמן')
+
+    fireEvent.click(tabButton('routines'))
+
+    await waitFor(() => expect(path()).toBe('/tabs/routines'))
+    await expectVisible('התחל')
   })
 
   it('an active workout shows its exercise every time it is re-entered', async () => {
@@ -67,7 +112,7 @@ describe('navigation round trips', () => {
     for (let round = 0; round < 3; round++) {
       fireEvent.click(await screen.findByText('אימון בתהליך'))
       await waitFor(() => expect(path()).toBe('/tabs/timeline/workout/live'))
-      await expectVisible('תרגיל 1 מתוך 1')
+      await expectVisible('עיקרי · 1 מתוך 1')
 
       fireEvent.click(screen.getByTestId('swipe-back'))
       await waitFor(() => expect(path()).toBe('/tabs/timeline'))

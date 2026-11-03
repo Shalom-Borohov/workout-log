@@ -3,16 +3,23 @@ import { ellipsisHorizontal } from 'ionicons/icons'
 import { ElapsedClock } from '../../components/ElapsedClock'
 import { COMMON_COPY } from '../../copy/common'
 import { LIVE_COPY } from './copy'
+import { RestButton, RestRow } from './RestTimer'
+import { useRestPeek } from './useRestPeek'
+import type { RestTimer } from './useRestTimer'
 
 interface LiveHeaderProps {
   title: string
   startedAt: number | null
   progress: { done: number; total: number }
+  restTimer: RestTimer
   onMenu: () => void
   onFinish: () => void
 }
 
-export function LiveHeader({ title, startedAt, progress, onMenu, onFinish }: LiveHeaderProps) {
+export function LiveHeader({ title, startedAt, progress, restTimer, onMenu, onFinish }: LiveHeaderProps) {
+  const peek = useRestPeek()
+  const { rest } = restTimer
+
   return (
     <IonHeader>
       <IonToolbar>
@@ -20,6 +27,7 @@ export function LiveHeader({ title, startedAt, progress, onMenu, onFinish }: Liv
           <IonButton aria-label={LIVE_COPY.exerciseActions} onClick={onMenu}>
             <IonIcon slot="icon-only" icon={ellipsisHorizontal} />
           </IonButton>
+          {rest && <RestButton rest={rest} onToggle={peek.toggle} />}
         </IonButtons>
         <IonTitle>
           <div className="live-title">{title}</div>
@@ -35,6 +43,21 @@ export function LiveHeader({ title, startedAt, progress, onMenu, onFinish }: Liv
           </IonButton>
         </IonButtons>
       </IonToolbar>
+      {rest && peek.peeking && (
+        <RestRow
+          rest={rest}
+          seconds={restTimer.seconds}
+          sound={restTimer.sound}
+          onAdjust={(direction) => {
+            restTimer.adjust(direction)
+            peek.keep()
+          }}
+          onToggleSound={() => {
+            restTimer.toggleSound()
+            peek.keep()
+          }}
+        />
+      )}
       <IonProgressBar
         className="live-progress"
         aria-label={LIVE_COPY.workoutProgress}

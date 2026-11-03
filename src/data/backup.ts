@@ -3,6 +3,7 @@ import { dailyLogId } from '../domain/daily'
 import type { DailyLog, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
 import { db } from './db'
 import {
+  carryNotesForward,
   type LegacyActivity,
   type LegacyRecord,
   type LegacyRoutine,
@@ -17,10 +18,20 @@ import {
   upgradeRoutine,
 } from './migrate'
 
-export type Backup = { version: 1; exportedAt: number; routines: Routine[]; workouts: WorkoutRecord[]; dailyLogs: DailyLog[] }
+const BACKUP_VERSION = 2
+
+const VERSION_BEFORE_CARRIED_NOTES = 1
+
+export type Backup = {
+  version: typeof BACKUP_VERSION
+  exportedAt: number
+  routines: Routine[]
+  workouts: WorkoutRecord[]
+  dailyLogs: DailyLog[]
+}
 
 type LegacyBackup = {
-  version: 1
+  version: typeof VERSION_BEFORE_CARRIED_NOTES | typeof BACKUP_VERSION
   exportedAt: number
   routines: LegacyRoutine[]
   workouts: LegacyRecord[]
@@ -138,7 +149,7 @@ const isDailyLog = (log: unknown): log is DailyLog =>
 
 const isBackup = (backup: unknown): backup is LegacyBackup =>
   isObject(backup) &&
-  backup.version === 1 &&
+  (backup.version === VERSION_BEFORE_CARRIED_NOTES || backup.version === BACKUP_VERSION) &&
   isNumber(backup.exportedAt) &&
   arrayOf(isRoutine)(backup.routines) &&
   arrayOf(isRecord)(backup.workouts) &&
@@ -149,10 +160,13 @@ export function parseBackup(json: unknown): Backup {
     throw new Error(APP_COPY.invalidBackup)
   }
 
+  const workouts = json.workouts.map(upgradeRecord)
+
   return {
     ...json,
+    version: BACKUP_VERSION,
     routines: json.routines.map(upgradeRoutine),
-    workouts: json.workouts.map(upgradeRecord),
+    workouts: json.version === VERSION_BEFORE_CARRIED_NOTES ? carryNotesForward(workouts) : workouts,
     dailyLogs: json.dailyLogs ?? [],
   }
 }
@@ -164,7 +178,7 @@ export async function exportBackup(now: number): Promise<Backup> {
     db.dailyLogs.toArray(),
   ])
 
-  return { version: 1, exportedAt: now, routines, workouts, dailyLogs }
+  return { version: BACKUP_VERSION, exportedAt: now, routines, workouts, dailyLogs }
 }
 
 export async function restoreBackup(backup: Backup): Promise<void> {

@@ -37,8 +37,8 @@ describe('stepValue', () => {
 })
 
 describe('step sizes', () => {
-  it('uses gym-sized steps for weight and each amount unit', () => {
-    expect(WEIGHT_STEP).toBe(2.5)
+  it('uses one-kilo weight steps and gym-sized steps for each amount unit', () => {
+    expect(WEIGHT_STEP).toBe(1)
     expect(amountStep(reps(10))).toBe(1)
     expect(amountStep(seconds(900))).toBe(60)
     expect(amountStep(seconds(30))).toBe(15)

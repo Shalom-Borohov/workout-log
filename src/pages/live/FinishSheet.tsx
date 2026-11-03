@@ -1,20 +1,10 @@
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonItem,
-  IonList,
-  IonModal,
-  IonTextarea,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/react'
+import { IonContent, IonItem, IonList, IonModal, IonTextarea } from '@ionic/react'
 import { useState } from 'react'
 import { HALF_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
 import { LIVE_COPY } from './copy'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
+import { SheetHeader } from './SheetHeader'
 
 export type SheetMode = 'finish' | 'summary'
 
@@ -53,19 +43,11 @@ function FinishForm({ mode, initialSummary, onCancel, onSave, onDelete }: Finish
 
   return (
     <>
-      <IonHeader>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonButton onClick={onCancel}>{COMMON_COPY.cancel}</IonButton>
-          </IonButtons>
-          <IonTitle>{mode === 'finish' ? COMMON_COPY.workoutSummary : COMMON_COPY.summary}</IonTitle>
-          <IonButtons slot="end">
-            <IonButton strong onClick={() => onSave(summary.trim())}>
-              {COMMON_COPY.save}
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
+      <SheetHeader
+        title={mode === 'finish' ? COMMON_COPY.workoutSummary : COMMON_COPY.summary}
+        onCancel={onCancel}
+        onSave={() => onSave(summary.trim())}
+      />
       <IonContent>
         <IonList inset>
           <IonItem>

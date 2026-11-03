@@ -4,7 +4,7 @@ import { db } from '../../src/data/db'
 import { saveWorkout } from '../../src/data/repo'
 import { resetDb, savedWorkout } from '../helpers/db'
 import { userEvent } from '@testing-library/user-event'
-import { actionSheetPresented, alertPresented, ionInput, visibleAll } from '../helpers/ionic'
+import { actionSheetPresented, ionInput, visibleAll } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { exercise, oct, open, workout } from '../helpers/workouts'
 
@@ -24,8 +24,10 @@ async function chooseFromMenu(text: string) {
 
 const savedExercises = async () => (await savedWorkout('w1'))?.sections[0].items[0].exercises
 
-describe('live next-time note', () => {
-  it('saves one note per exercise of the item from the item menu', async () => {
+const exerciseNotes = () => visibleAll('.item-note').map((line) => line.textContent)
+
+describe('live exercise note', () => {
+  it('writes one note per exercise of the item in the note sheet and shows them under the sets', async () => {
     const base = workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [] })
 
     const pair = {
@@ -34,19 +36,44 @@ describe('live next-time note', () => {
     }
 
     await saveWorkout({ ...base, sections: [{ name: 'סופר סט', items: [pair] }] })
+    const user = userEvent.setup()
     renderAt('/tabs/timeline/workout/w1')
 
-    const presented = alertPresented()
+    await user.click(await screen.findByText('מתח: ישן', { selector: '.item-note' }))
 
-    await chooseFromMenu('הערה לפעם הבאה')
-    await presented
-
+    expect(await screen.findByText('הערה לתרגיל', { selector: 'ion-modal ion-title' })).toBeInTheDocument()
     expect(screen.getByLabelText('הערה · מתח')).toHaveValue('ישן')
-    fireEvent.input(screen.getByLabelText('הערה · מתח'), { target: { value: 'אחיזה צרה' } })
-    fireEvent.input(screen.getByLabelText('הערה · מקבילים'), { target: { value: 'להוסיף משקל \n' } })
-    fireEvent.click(screen.getByText('שמירה', { selector: '.alert-button-inner' }))
+    ionInput(screen.getByLabelText('הערה · מתח'), 'אחיזה צרה')
+    ionInput(screen.getByLabelText('הערה · מקבילים'), 'להוסיף משקל \n')
+    await user.click(screen.getByText('שמירה', { selector: 'ion-modal ion-button' }))
 
     await waitFor(async () => expect((await savedExercises())?.map((pairExercise) => pairExercise.note)).toEqual(['אחיזה צרה', 'להוסיף משקל']))
+    await waitFor(() => expect(exerciseNotes()).toEqual(['מתח: אחיזה צרה', 'מקבילים: להוסיף משקל']))
+
+    const lastSet = screen.getByRole('button', { name: 'מקבילים סט 1' })
+
+    expect(lastSet.compareDocumentPosition(visibleAll('.item-note')[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
+  it('reopens the note sheet from the note on the card', async () => {
+    const squat = { ...exercise('סקוואט', [open(60, 10)]), note: 'לעלות במשקל' }
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [squat] }))
+    const user = userEvent.setup()
+    renderAt('/tabs/timeline/workout/w1')
+
+    await user.click(await screen.findByText('לעלות במשקל', { selector: '.item-note' }))
+
+    expect(await screen.findByLabelText('הערה · סקוואט')).toHaveValue('לעלות במשקל')
+  })
+
+  it('offers to add a note when there is none', async () => {
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10)])] }))
+    const user = userEvent.setup()
+    renderAt('/tabs/timeline/workout/w1')
+
+    await user.click(await screen.findByText('הוספת הערה', { selector: '.item-note' }))
+
+    expect(await screen.findByLabelText('הערה · סקוואט')).toHaveValue('')
   })
 })
 

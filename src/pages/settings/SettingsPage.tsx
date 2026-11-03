@@ -117,6 +117,7 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
           </IonItem>
         </IonList>
         <IonNote className="list-footer">{SETTINGS_COPY.backupFooter}</IonNote>
+        <FeedbackSettings />
         <IonListHeader>
           <IonLabel>{SETTINGS_COPY.history}</IonLabel>
         </IonListHeader>
@@ -128,7 +129,6 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
         </IonList>
         <IonNote className="list-footer">{SETTINGS_COPY.historyFooter}</IonNote>
         <BackgroundSettings onError={(error) => void toast(errorMessage(error))} />
-        <FeedbackSettings />
         <IonList inset>
           <IonItem button onClick={() => setShowingChangelog(true)}>
             <IonLabel>{SETTINGS_COPY.version(__APP_VERSION__, formatDateTime(Date.parse(__BUILD_TIME__)))}</IonLabel>

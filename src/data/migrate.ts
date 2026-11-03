@@ -68,3 +68,44 @@ const upgradeActivity = (activity: LegacyActivity): Activity => ({ ...activity, 
 export function upgradeRecord(record: LegacyRecord): WorkoutRecord {
   return record.kind === 'activity' ? upgradeActivity(record) : upgradeWorkout(record)
 }
+
+function carryInto(workout: Workout, latest: Map<string, string>): Workout {
+  return {
+    ...workout,
+    sections: workout.sections.map((section) => ({
+      ...section,
+      items: section.items.map((item) => ({
+        ...item,
+        exercises: item.exercises.map((exercise) => {
+          if (exercise.note !== '') {
+            latest.set(exercise.name, exercise.note)
+
+            return exercise
+          }
+          const carried = latest.get(exercise.name)
+
+          return carried === undefined ? exercise : { ...exercise, note: carried }
+        }),
+      })),
+    })),
+  }
+}
+
+export function carryNotesForward(records: WorkoutRecord[]): WorkoutRecord[] {
+  const latest = new Map<string, string>()
+  const carried = [...records]
+
+  const chronological = records
+    .map((_, index) => index)
+    .sort((first, second) => records[first].startedAt - records[second].startedAt)
+
+  for (const index of chronological) {
+    const record = records[index]
+
+    if (record.kind !== 'activity') {
+      carried[index] = carryInto(record, latest)
+    }
+  }
+
+  return carried
+}

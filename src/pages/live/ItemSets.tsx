@@ -1,11 +1,14 @@
 import { IonLabel, IonList, IonListHeader } from '@ionic/react'
 import { Fragment, useState } from 'react'
+import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import { LIVE_COPY } from './copy'
 import type { SetLog, WorkoutItem } from '../../domain/types'
 import { setCount } from '../../domain/workoutStructure'
 import { SetRow } from './SetRow'
 
 export type SetChange = (exercise: number, set: number, patch: Partial<SetLog>) => void
+
+export type SetAction = (exercise: number, set: number) => void
 
 type Cell = { exercise: number; set: number }
 
@@ -26,9 +29,11 @@ interface SetRowsProps {
   current: Cell | undefined
   onSelect: (cell: Cell) => void
   onSetChange: SetChange
+  onSetDuplicate: SetAction
+  onSetRemove: SetAction
 }
 
-function ExerciseSetRow({ item, current, onSelect, onSetChange, exercise, set }: SetRowsProps & Cell) {
+function ExerciseSetRow({ item, current, onSelect, onSetChange, onSetDuplicate, onSetRemove, exercise, set }: SetRowsProps & Cell) {
   const workoutExercise = item.exercises[exercise]
 
   return (
@@ -39,7 +44,10 @@ function ExerciseSetRow({ item, current, onSelect, onSetChange, exercise, set }:
       set={workoutExercise.sets[set]}
       current={current !== undefined && current.exercise === exercise && current.set === set}
       onSelect={() => onSelect({ exercise, set })}
+      canRemove={workoutExercise.sets.length > 1}
       onChange={(patch) => onSetChange(exercise, set, patch)}
+      onDuplicate={() => onSetDuplicate(exercise, set)}
+      onRemove={() => onSetRemove(exercise, set)}
     />
   )
 }
@@ -72,8 +80,21 @@ function PairSets(props: SetRowsProps) {
   ))
 }
 
-export function ItemSets({ item, onSetChange }: { item: WorkoutItem; onSetChange: SetChange }) {
+interface ItemSetsProps {
+  item: WorkoutItem
+  onSetChange: SetChange
+  onSetDuplicate: SetAction
+  onSetRemove: SetAction
+}
+
+export function ItemSets({ item, onSetChange, onSetDuplicate, onSetRemove }: ItemSetsProps) {
   const [selected, setSelected] = useState<Cell>()
+  const confirmDelete = useConfirmDelete()
+
+  function remove(exercise: number, set: number) {
+    setSelected(undefined)
+    onSetRemove(exercise, set)
+  }
 
   const props: SetRowsProps = {
     item,
@@ -84,6 +105,22 @@ export function ItemSets({ item, onSetChange }: { item: WorkoutItem; onSetChange
         setSelected(undefined)
       }
       onSetChange(exercise, set, patch)
+    },
+    onSetDuplicate: (exercise, set) => {
+      setSelected(undefined)
+      onSetDuplicate(exercise, set)
+    },
+    onSetRemove: (exercise, set) => {
+      if (!item.exercises[exercise].sets[set].done) {
+        remove(exercise, set)
+
+        return
+      }
+      confirmDelete({
+        header: LIVE_COPY.removeSetQuestion,
+        message: LIVE_COPY.removeSetMessage,
+        onConfirm: () => remove(exercise, set),
+      })
     },
   }
 

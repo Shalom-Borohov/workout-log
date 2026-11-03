@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { PreviousLookup } from '../../src/domain/progress'
+import { NO_HISTORY, type PreviousExerciseLookup } from '../../src/domain/progress'
 import type { RoutineItem, Workout, WorkoutItem } from '../../src/domain/types'
 import {
   addItem,
@@ -14,9 +14,10 @@ import {
 } from '../../src/domain/workoutStructure'
 import { done, exercise, oct, open, reps, routineExercise, seconds, workout } from '../helpers/workouts'
 
-const noHistory: PreviousLookup = () => null
-
-const squatHistory: PreviousLookup = ({ name }) => (name === 'סקוואט' ? [done(60, 8), done(65, 6)] : null)
+const squatHistory: PreviousExerciseLookup = ({ name }) => ({
+  sets: name === 'סקוואט' ? [done(60, 8), done(65, 6)] : null,
+  note: '',
+})
 
 function sized(counts: number[]): Workout {
   return workout({
@@ -50,7 +51,7 @@ describe('addItem', () => {
     const item = { ...squatItem, sets: null }
 
     const counts = (base: Workout) =>
-      addItem(base, 0, item, noHistory).sections[0].items.at(-1)?.exercises[0].sets.length
+      addItem(base, 0, item, NO_HISTORY).sections[0].items.at(-1)?.exercises[0].sets.length
 
     expect(counts(sized([4, 2, 4]))).toBe(4)
     expect(counts(sized([2, 5]))).toBe(2)
@@ -91,13 +92,13 @@ const pair: WorkoutItem = {
 describe('editItem', () => {
   it('edits the item with that id through its routine view, leaving the others', () => {
     const original = sized([2, 2])
-    const edited = editItem(original, 'i1', (view) => ({ ...view, sets: 3 }), noHistory)
+    const edited = editItem(original, 'i1', (view) => ({ ...view, sets: 3 }), NO_HISTORY)
 
     expect(edited.sections[0].items.map((item) => item.exercises[0].sets)).toEqual([
       [open(20, 10), open(20, 10)],
       [open(20, 10), open(20, 10), open(20, 10)],
     ])
-    expect(editItem(original, 'missing', (view) => ({ ...view, sets: 3 }), noHistory)).toBe(original)
+    expect(editItem(original, 'missing', (view) => ({ ...view, sets: 3 }), NO_HISTORY)).toBe(original)
   })
 })
 
@@ -132,7 +133,10 @@ describe('asRoutineItem', () => {
   })
 })
 
-const benchHistory: PreviousLookup = ({ target }) => (target.kind === 'reps' ? [done(50, 8)] : [done(null, 45)])
+const benchHistory: PreviousExerciseLookup = ({ target }) => ({
+  sets: target.kind === 'reps' ? [done(50, 8)] : [done(null, 45)],
+  note: '',
+})
 
 describe('setCount', () => {
   it('counts the longer side of an uneven pair, as the live card shows it', () => {
@@ -157,6 +161,21 @@ describe('applyItemEdit', () => {
     expect(applyItemEdit(pair, edited, 2, benchHistory).exercises).toEqual([
       { name: 'לחיצת חזה בשיפוע', target: reps(8), sets: [done(40, 10), open(40, 10)], skipped: false, tip: 'לאט', note: 'להעלות' },
       pair.exercises[1],
+    ])
+  })
+
+  it('takes the note of the new name when renamed to an exercise that has one', () => {
+    const view = asRoutineItem(pair, 2)
+    const noted: PreviousExerciseLookup = ({ name }) => ({ sets: null, note: name === 'דדליפט' ? 'גב ישר' : '' })
+
+    const edited: RoutineItem = {
+      ...view,
+      exercises: [{ ...view.exercises[0], name: 'דדליפט' }, view.exercises[1]],
+    }
+
+    expect(applyItemEdit(pair, edited, 2, noted).exercises.map((pairExercise) => pairExercise.note)).toEqual([
+      'גב ישר',
+      pair.exercises[1].note,
     ])
   })
 

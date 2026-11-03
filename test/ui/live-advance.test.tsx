@@ -1,12 +1,10 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
 import { renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, open, workout } from '../helpers/workouts'
-import { actionSheetPresented } from '../helpers/ionic'
-import { heading, pause } from '../helpers/live'
 
 const threeItems = (finishedAt: number | null) =>
   workout({
@@ -25,15 +23,14 @@ beforeEach(async () => {
 })
 
 describe('live auto-advance', () => {
-  it('moves to the next item shortly after its last set is ticked', async () => {
+  it('moves to the next item as soon as its last set is ticked', async () => {
     await saveWorkout(threeItems(null))
     const user = userEvent.setup()
     renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 2', pressed: false }))
 
-    expect(screen.getByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
-    expect(await screen.findByText('לחיצת חזה', { selector: 'h1' }, { timeout: 1500 })).toBeInTheDocument()
+    expect(screen.getByText('לחיצת חזה', { selector: 'h1' })).toBeInTheDocument()
   })
 
   it('passes over skipped and done items to the next unfinished one', async () => {
@@ -55,7 +52,7 @@ describe('live auto-advance', () => {
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 1', pressed: false }))
 
-    expect(await screen.findByText('חתירה', { selector: 'h1' }, { timeout: 1500 })).toBeInTheDocument()
+    expect(screen.getByText('חתירה', { selector: 'h1' })).toBeInTheDocument()
   })
 
   it('does not advance when every later item is skipped or done', async () => {
@@ -71,7 +68,6 @@ describe('live auto-advance', () => {
     renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 1', pressed: false }))
-    await pause(900)
 
     expect(screen.getByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
   })
@@ -84,10 +80,9 @@ describe('live auto-advance', () => {
     await user.click(await screen.findByLabelText('כל התרגילים'))
     await user.click((await screen.findAllByText('חתירה', { selector: 'ion-modal ion-item ion-label' }))[0])
     await user.click(await screen.findByRole('button', { name: 'חתירה סט 1', pressed: false }))
-    await pause(900)
 
     expect(screen.getByText('חתירה', { selector: 'h1' })).toBeInTheDocument()
-    expect(screen.getByText('תרגיל 3 מתוך 3')).toBeInTheDocument()
+    expect(screen.getByText('עיקרי · 3 מתוך 3')).toBeInTheDocument()
   })
 
   it('does not advance when editing a finished workout', async () => {
@@ -96,50 +91,7 @@ describe('live auto-advance', () => {
     renderAt('/tabs/timeline/workout/w1')
 
     await user.click(await screen.findByRole('button', { name: 'סקוואט סט 2', pressed: false }))
-    await pause(900)
 
     expect(screen.getByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
-  })
-
-  it('un-ticking within the delay cancels the advance', async () => {
-    await saveWorkout(threeItems(null))
-    const user = userEvent.setup()
-    renderAt('/tabs/timeline/workout/w1')
-
-    await user.click(await screen.findByRole('button', { name: 'סקוואט סט 2', pressed: false }))
-    await user.click(screen.getByRole('button', { name: 'סקוואט סט 2', pressed: true }))
-    await pause(900)
-
-    expect(screen.getByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
-  })
-
-  it('adding a set within the delay cancels the advance', async () => {
-    await saveWorkout(threeItems(null))
-    const user = userEvent.setup()
-    renderAt('/tabs/timeline/workout/w1')
-
-    const presented = actionSheetPresented()
-
-    await user.click(await screen.findByRole('button', { name: 'סקוואט סט 2', pressed: false }))
-    await user.click(screen.getByLabelText('פעולות לתרגיל'))
-    await presented
-    fireEvent.click(screen.getByText('הוספת סט', { selector: '.action-sheet-button-label' }))
-    await pause(900)
-
-    expect(screen.getByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
-  })
-
-  it('navigating manually within the delay cancels the advance', async () => {
-    await saveWorkout(threeItems(null))
-    const user = userEvent.setup()
-    renderAt('/tabs/timeline/workout/w1')
-
-    await user.click(await screen.findByRole('button', { name: 'סקוואט סט 2', pressed: false }))
-    await user.click(screen.getByLabelText('כל התרגילים'))
-    await user.click((await screen.findAllByText('חתירה', { selector: 'ion-modal ion-item ion-label' }))[0])
-    expect(await heading('חתירה')).toBeInTheDocument()
-    await pause(900)
-
-    expect(screen.getByText('חתירה', { selector: 'h1' })).toBeInTheDocument()
   })
 })
