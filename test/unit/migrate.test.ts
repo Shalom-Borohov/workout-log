@@ -188,4 +188,16 @@ describe('database upgrade', () => {
 
     expect(await db.workouts.toArray()).toEqual([{ ...v3Workout, kind: 'routine' }])
   })
+
+  it('gives every v5 activity an empty location and keeps routine workouts as they were', async () => {
+    const v5Activity = { kind: 'activity', id: 'a1', name: 'כדורגל', startedAt: 5000, finishedAt: 6000, summary: 'ניצחנו' }
+    const v5Workout = { ...v3Workout, kind: 'routine' }
+
+    const legacyDb = new Dexie('workout-log')
+    legacyDb.version(5).stores({ routines: 'id, createdAt', workouts: 'id, startedAt, finishedAt', settings: 'key' })
+    await legacyDb.table('workouts').bulkPut([v5Activity, v5Workout])
+    legacyDb.close()
+
+    expect(await db.workouts.toArray()).toEqual([{ ...v5Activity, location: '' }, v5Workout])
+  })
 })

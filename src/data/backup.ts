@@ -1,7 +1,8 @@
 import { APP_COPY } from '../copy/app'
-import type { Activity, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
+import type { Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
 import { db } from './db'
 import {
+  type LegacyActivity,
   type LegacyRecord,
   type LegacyRoutine,
   type LegacyRoutineExercise,
@@ -106,14 +107,15 @@ const isWorkout = (workout: unknown): workout is LegacyWorkout =>
   isString(workout.summary) &&
   arrayOf(isWorkoutSection)(workout.sections)
 
-const isActivity = (activity: unknown): activity is Activity =>
+const isActivity = (activity: unknown): activity is LegacyActivity =>
   isObject(activity) &&
   activity.kind === 'activity' &&
   isString(activity.id) &&
   isString(activity.name) &&
   isNumber(activity.startedAt) &&
   isNumber(activity.finishedAt) &&
-  isString(activity.summary)
+  isString(activity.summary) &&
+  optional(isString)(activity.location)
 
 const isRecord = (record: unknown): record is LegacyRecord => isActivity(record) || isWorkout(record)
 
