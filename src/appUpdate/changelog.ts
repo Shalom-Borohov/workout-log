@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.5.0',
+    features: ['אפשר להוסיף מיקום לפעילות אחרת, ובפעם הבאה שבוחרים אותה הוא כבר ממולא'],
+    fixes: [],
+  },
+  {
     version: '1.4.0',
     features: ['אפשר לרשום גם פעילות אחרת, כמו אגרוף תאילנדי או פילאטיס: בכפתור + בציר הזמן'],
     fixes: [],

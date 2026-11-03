@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupByWeek, summarize } from '../../src/domain/timeline'
+import { groupByWeek, summarize, summaryLine } from '../../src/domain/timeline'
 import { activity, done, exercise, oct, open, workout } from '../helpers/workouts'
 
 describe('summarize', () => {
@@ -23,6 +23,13 @@ describe('summarize', () => {
       minutes: 75,
       doneSets: 0,
     })
+  })
+
+  it('an activity line shows its minutes, then its location when it has one', () => {
+    const football = { id: 'a1', name: 'כדורגל', startedAt: oct(26, 19), finishedAt: oct(26, 20) }
+
+    expect(summaryLine(activity({ ...football, location: 'פארק הירקון' }))).toBe('60 דק׳ · פארק הירקון')
+    expect(summaryLine(activity(football))).toBe('60 דק׳')
   })
 
   it('does not count ticked sets of a skipped exercise', () => {
