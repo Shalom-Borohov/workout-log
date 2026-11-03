@@ -29,7 +29,9 @@ export type LegacyWorkoutSection = Omit<WorkoutSection, 'items'> & { items: Lega
 
 export type LegacyWorkout = Omit<Legacy<Workout, 'kind'>, 'sections'> & { sections: LegacyWorkoutSection[] }
 
-export type LegacyRecord = LegacyWorkout | Activity
+export type LegacyActivity = Legacy<Activity, 'location'>
+
+export type LegacyRecord = LegacyWorkout | LegacyActivity
 
 export function upgradeRoutine(routine: LegacyRoutine): Routine {
   return {
@@ -61,6 +63,8 @@ export function upgradeWorkout(workout: LegacyWorkout): Workout {
   }
 }
 
+const upgradeActivity = (activity: LegacyActivity): Activity => ({ ...activity, location: activity.location ?? '' })
+
 export function upgradeRecord(record: LegacyRecord): WorkoutRecord {
-  return record.kind === 'activity' ? record : upgradeWorkout(record)
+  return record.kind === 'activity' ? upgradeActivity(record) : upgradeWorkout(record)
 }

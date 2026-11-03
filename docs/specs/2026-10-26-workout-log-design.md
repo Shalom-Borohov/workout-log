@@ -78,7 +78,13 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
     - Its card shows the name, day and "N דק׳" with no sets and no ↑/★. It counts as a workout in the week header and adds no sets.
     - Its detail page shows the overview, "סיכום" and delete. "עריכה" reopens the same form, filled in.
     - Activities never open the live workout and never appear in the exercises tab or in prefills. Backups and the history export include them.
-41. **Daily routines (added 2026-11-02, moved to their own tab 2026-11-03):** short drills done every day (posture, mobility), not a gym workout.
+41. **Activity location (added 2026-11-03):**
+    - The activity form has an optional free-text "מיקום" under the name. Saving still needs only a name.
+    - The location is remembered per activity name. When the name matches an earlier activity, tapped from the quick picks or typed in full, the location fills in from the newest one of that name that has a location. Activities left without one are skipped.
+    - A location you typed stays when the name changes. "עריכה" opens with the saved location, and changing the name there keeps it.
+    - The card, the detail overview and the history export show it after the minutes ("60 דק׳ · פארק הירקון"). Without a location they look as before.
+    - Activities logged before this, on the phone or in a backup file, have no location.
+42. **Daily routines (added 2026-11-02, moved to their own tab 2026-11-03):** short drills done every day (posture, mobility), not a gym workout.
     - A fourth tab, "יומי", sits second in the tab bar (ציר זמן · יומי · אימונים · תרגילים). "+" there creates an empty daily routine and opens it in the editor, under the tab. With none, the tab explains what it is for and points at "+".
     - "אימון יומי" is a switch in the routine editor and moves a routine between אימונים (gym routines only) and יומי. A daily routine is never started live: it is left out of "התחל אימון" and "אימון קודם". It needs no exercises.
     - Each daily routine has a card, newest first: its name, its drills ("גשר ישבן 15 · פלאנק 30 שנ׳") and a ✓ (the same check as a set row in a workout) that logs today; a second tap removes it at once. Tapping the rest of the card opens the editor.

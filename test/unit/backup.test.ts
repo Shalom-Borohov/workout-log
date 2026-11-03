@@ -23,7 +23,7 @@ const past = workout({
   exercises: [exercise('סקוואט', [done(40, 12), done(null, 10)]), exercise('פלאנק', [done(null, 30)], seconds(30))],
 })
 
-const boxing = activity({ id: 'a1', startedAt: oct(21, 19), summary: 'ספארינג' })
+const boxing = activity({ id: 'a1', startedAt: oct(21, 19), summary: 'ספארינג', location: 'מועדון הדרום' })
 
 const drills = { ...routine('d1', 'חטיפי תנועה', [[{ name: 'גשר ישבן', target: reps(15) }]]), daily: true }
 
@@ -106,9 +106,17 @@ describe('backup', () => {
     const valid = JSON.parse(JSON.stringify(await exportBackup(oct(26))))
     const { name: _name, ...unnamed } = boxing
 
-    for (const bad of [unnamed, { ...boxing, finishedAt: null }, { ...boxing, kind: 'class' }]) {
+    for (const bad of [unnamed, { ...boxing, finishedAt: null }, { ...boxing, kind: 'class' }, { ...boxing, location: 5 }]) {
       expect(() => parseBackup({ ...valid, workouts: [bad] })).toThrow('קובץ הגיבוי לא תקין')
     }
+  })
+
+  it('an activity from before locations imports with an empty location', async () => {
+    const { location: _location, ...noLocation } = boxing
+
+    await restoreBackup(parseBackup({ version: 1, exportedAt: oct(26), routines: [], workouts: [noLocation] }))
+
+    expect(await finishedRecords()).toEqual([{ ...boxing, location: '' }])
   })
 
   it('invalid backup leaves data intact', async () => {

@@ -8,8 +8,17 @@ export const sectionsOf = (record: WorkoutRecord): WorkoutSection[] => (isRoutin
 
 export const recordName = (record: WorkoutRecord): string => (record.kind === 'routine' ? record.routineName : record.name)
 
-export function activityNames(records: WorkoutRecord[]): string[] {
-  const newestFirst = records.filter(isActivity).sort((first, second) => second.startedAt - first.startedAt)
+export const locationOf = (record: WorkoutRecord): string => (isActivity(record) ? record.location : '')
 
-  return [...new Set(newestFirst.map((activity) => activity.name.trim()))]
+const newestActivitiesFirst = (records: WorkoutRecord[]) =>
+  records.filter(isActivity).sort((first, second) => second.startedAt - first.startedAt)
+
+export function activityNames(records: WorkoutRecord[]): string[] {
+  return [...new Set(newestActivitiesFirst(records).map((activity) => activity.name.trim()))]
+}
+
+export function lastLocation(records: WorkoutRecord[], name: string): string {
+  const located = newestActivitiesFirst(records).find((activity) => activity.name.trim() === name && activity.location !== '')
+
+  return located ? located.location : ''
 }

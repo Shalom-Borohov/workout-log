@@ -72,6 +72,7 @@ export interface Activity {
   startedAt: number
   finishedAt: number
   summary: string
+  location: string
 }
 
 export type WorkoutRecord = Workout | Activity

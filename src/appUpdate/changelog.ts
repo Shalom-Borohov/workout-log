@@ -2,8 +2,13 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
-    version: '1.5.0',
+    version: '1.6.0',
     features: ['לשונית יומי חדשה לתרגילים שעושים כל יום, כמו יציבה: מסמנים את היום בלחיצה, ובלוח החודש אפשר להשלים ימים קודמים'],
+    fixes: [],
+  },
+  {
+    version: '1.5.0',
+    features: ['אפשר להוסיף מיקום לפעילות אחרת, ובפעם הבאה שבוחרים אותה הוא כבר ממולא'],
     fixes: [],
   },
   {

@@ -1,8 +1,10 @@
 import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonList, IonModal, IonTitle, IonToolbar } from '@ionic/react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
+import { useFinishedRecords } from '../../data/hooks'
 import { saveRecord } from '../../data/repo'
+import { activityNames, lastLocation } from '../../domain/activities'
 import { pastTimeProblems } from '../../domain/pastTime'
 import { MINUTE_MS } from '../../domain/time'
 import type { Activity } from '../../domain/types'
@@ -20,17 +22,21 @@ function ActivityForm({ activity, onClose }: FormProps) {
   const now = useNow(MINUTE_MS)
   const [newId] = useState(() => crypto.randomUUID())
   const [name, setName] = useState(activity ? activity.name : '')
+  const [typedLocation, setTypedLocation] = useState<string | null>(activity ? activity.location : null)
   const [pastTime, setPastTime] = useState(() => (activity ? pastTimeOf(activity) : defaultPastTime(now)))
+  const records = useFinishedRecords()
+  const names = useMemo(() => (records ? activityNames(records) : []), [records])
 
   const { startedAt, minutes } = readPastTime(pastTime)
   const problems = pastTimeProblems(startedAt, minutes, now)
   const trimmedName = name.trim()
+  const location = typedLocation ?? (records ? lastLocation(records, trimmedName) : '')
   const valid = trimmedName !== '' && problems.valid
 
   async function save() {
     const base: Pick<Activity, 'kind' | 'id' | 'summary'> = activity ?? { kind: 'activity', id: newId, summary: '' }
 
-    await saveRecord({ ...base, name: trimmedName, startedAt, finishedAt: startedAt + minutes * MINUTE_MS })
+    await saveRecord({ ...base, name: trimmedName, location: location.trim(), startedAt, finishedAt: startedAt + minutes * MINUTE_MS })
     onClose()
   }
 
@@ -59,8 +65,16 @@ function ActivityForm({ activity, onClose }: FormProps) {
               onIonInput={(event) => typeof event.detail.value === 'string' && setName(event.detail.value)}
             />
           </IonItem>
+          <IonItem>
+            <IonInput
+              label={TIMELINE_COPY.location}
+              placeholder={TIMELINE_COPY.locationPlaceholder}
+              value={location}
+              onIonInput={(event) => typeof event.detail.value === 'string' && setTypedLocation(event.detail.value)}
+            />
+          </IonItem>
         </IonList>
-        <ActivityNameSuggestions typed={name} onPick={setName} />
+        <ActivityNameSuggestions names={names} typed={name} onPick={setName} />
         <IonList inset>
           <PastTimeItems value={pastTime} now={now} onChange={setPastTime} />
         </IonList>

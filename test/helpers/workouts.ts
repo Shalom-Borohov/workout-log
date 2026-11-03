@@ -46,10 +46,18 @@ interface ActivityInput {
   startedAt: number
   finishedAt?: number
   summary?: string
+  location?: string
 }
 
-export function activity({ id, name = 'אגרוף תאילנדי', startedAt, finishedAt = startedAt + 3600000, summary = '' }: ActivityInput): Activity {
-  return { kind: 'activity', id, name, startedAt, finishedAt, summary }
+export function activity({
+  id,
+  name = 'אגרוף תאילנדי',
+  startedAt,
+  finishedAt = startedAt + 3600000,
+  summary = '',
+  location = '',
+}: ActivityInput): Activity {
+  return { kind: 'activity', id, name, startedAt, finishedAt, summary, location }
 }
 
 type ExerciseInput = Pick<RoutineExercise, 'name' | 'target'> & Partial<Pick<RoutineExercise, 'weight' | 'tip'>>
