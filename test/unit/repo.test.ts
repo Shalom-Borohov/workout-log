@@ -6,11 +6,13 @@ import {
   beginWorkout,
   finishedRecords,
   finishedWorkouts,
+  dailyLogs,
   saveRecord,
   saveWorkout,
+  toggleDailyLog,
 } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
-import { activity, done, exercise, reps, routine, workout } from '../helpers/workouts'
+import { activity, dailyLog, done, exercise, reps, routine, workout } from '../helpers/workouts'
 
 describe('repo', () => {
   beforeEach(resetDb)
@@ -96,5 +98,15 @@ describe('repo', () => {
     expect(added).toMatchObject({ routineId: 'r1', startedAt: 5_000_000, finishedAt: 8_600_000 })
     expect(added.sections[0].items[0].exercises[0].sets).toEqual([{ weight: 20, amount: 10, done: false }])
     expect((await finishedWorkouts()).map((entry) => entry.id)).toEqual(['after', added.id, 'before'])
+  })
+
+  it('toggling a daily log adds it, and toggling it again removes it, even when the taps overlap', async () => {
+    const log = dailyLog('d1', '2026-10-25')
+
+    await toggleDailyLog(log)
+    expect(await dailyLogs()).toEqual([log])
+
+    await Promise.all([toggleDailyLog(log), toggleDailyLog(log)])
+    expect(await dailyLogs()).toEqual([log])
   })
 })

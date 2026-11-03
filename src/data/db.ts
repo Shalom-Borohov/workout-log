@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable, type Transaction } from 'dexie'
-import type { BackgroundSetting, Routine, WorkoutRecord } from '../domain/types'
+import type { BackgroundSetting, DailyLog, Routine, WorkoutRecord } from '../domain/types'
 import { type LegacyRecord, type LegacyRoutine, type LegacyWorkout, upgradeRecord, upgradeRoutine, upgradeWorkout } from './migrate'
 
 const DB_NAME = 'workout-log'
@@ -26,6 +26,7 @@ class WorkoutDb extends Dexie {
   routines!: EntityTable<Routine, 'id'>
   workouts!: EntityTable<WorkoutRecord, 'id'>
   settings!: EntityTable<BackgroundSetting, 'key'>
+  dailyLogs!: EntityTable<DailyLog, 'id'>
 
   constructor() {
     super(DB_NAME)
@@ -61,6 +62,9 @@ class WorkoutDb extends Dexie {
           }),
       )
     this.version(6).stores({}).upgrade(upgradeActivities)
+    this.version(7)
+      .stores({ dailyLogs: 'id' })
+      .upgrade(upgradeRoutines)
   }
 }
 

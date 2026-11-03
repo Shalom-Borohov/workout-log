@@ -41,7 +41,7 @@ export function ImportNotePage() {
     const id = newId()
 
     await saveRoutine(createRoutine(id, parsed.name, parsed.sections, Date.now()))
-    router.push(routinePath(id), 'forward', 'replace')
+    router.push(routinePath(ROUTINES_PATH, id), 'forward', 'replace')
   }
 
   return (

@@ -1,6 +1,6 @@
 import { isRoutineWorkout } from '../domain/activities'
 import { startWorkout } from '../domain/progress'
-import type { Routine, Workout, WorkoutRecord } from '../domain/types'
+import type { DailyLog, Routine, Workout, WorkoutRecord } from '../domain/types'
 import { db } from './db'
 
 export async function saveRoutine(routine: Routine) {
@@ -72,4 +72,18 @@ export async function addPastWorkout(routine: Routine, startedAt: number, durati
   await saveWorkout(workout)
 
   return workout
+}
+
+export async function toggleDailyLog(log: DailyLog) {
+  await db.transaction('rw', db.dailyLogs, async () => {
+    if (await db.dailyLogs.get(log.id)) {
+      await db.dailyLogs.delete(log.id)
+    } else {
+      await db.dailyLogs.put(log)
+    }
+  })
+}
+
+export function dailyLogs(): Promise<DailyLog[]> {
+  return db.dailyLogs.toArray()
 }

@@ -6,6 +6,7 @@ export async function resetDb() {
   await db.routines.clear()
   await db.workouts.clear()
   await db.settings.clear()
+  await db.dailyLogs.clear()
 }
 
 export async function savedWorkout(id: string): Promise<Workout | undefined> {

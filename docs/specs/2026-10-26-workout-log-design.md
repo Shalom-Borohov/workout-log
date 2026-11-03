@@ -84,6 +84,14 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
     - A location you typed stays when the name changes. "עריכה" opens with the saved location, and changing the name there keeps it.
     - The card, the detail overview and the history export show it after the minutes ("60 דק׳ · פארק הירקון"). Without a location they look as before.
     - Activities logged before this, on the phone or in a backup file, have no location.
+42. **Daily routines (added 2026-11-02, moved to their own tab 2026-11-03):** short drills done every day (posture, mobility), not a gym workout.
+    - A fourth tab, "יומי", sits second in the tab bar (ציר זמן · יומי · אימונים · תרגילים). "+" there creates an empty daily routine and opens it in the editor, under the tab. With none, the tab explains what it is for and points at "+".
+    - "אימון יומי" is a switch in the routine editor and moves a routine between אימונים (gym routines only) and יומי. A daily routine is never started live: it is left out of "התחל אימון" and "אימון קודם". It needs no exercises.
+    - Each daily routine has a card, newest first: its name, its drills ("גשר ישבן 15 · פלאנק 30 שנ׳") and a ✓ (the same check as a set row in a workout) that logs today; a second tap removes it at once. Tapping the rest of the card opens the editor.
+    - Below the cards, a month calendar (Sunday first) shows the days done for one routine. With two or more, a scrollable segmented control above it picks which, starting with the newest. Tapping a past day logs or removes it; days after today are disabled, and today is ringed. ‹ › move between months, back without limit and forward up to the current month. There is no streak or count.
+    - The timeline shows gym workouts only.
+    - A log only records the routine and the day. Logs are not workouts: they never count in the week header, never get ↑/★, never prefill, and never appear in the exercises tab, which also leaves out a daily routine's exercises. The "הוספת תרגיל" picker still offers them, so a drill can be added to a gym routine. The history export leaves them out. Logs of a deleted or no longer daily routine are kept but not shown.
+    - Backups include the logs; older backups import with none, and a restore replaces them.
 
 ## Assumptions (accepted by the user)
 

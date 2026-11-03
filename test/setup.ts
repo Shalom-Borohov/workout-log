@@ -30,6 +30,8 @@ class NoopIntersectionObserver {
 
 Object.defineProperty(window, 'IntersectionObserver', { writable: true, value: NoopIntersectionObserver })
 
+Object.defineProperty(Element.prototype, 'scrollTo', { writable: true, value: () => {} })
+
 setupIonicReact({ mode: 'ios' })
 
 beforeEach(() => {

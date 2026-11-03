@@ -8,8 +8,10 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonNote,
   IonPage,
   IonTitle,
+  IonToggle,
   IonToolbar,
   useIonRouter,
 } from '@ionic/react'
@@ -32,13 +34,13 @@ import {
 } from '../../domain/routineEdit'
 import type { Routine, RoutineExercise } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
-import { ROUTINES_PATH } from '../../navigation/paths'
+import type { RoutineHostPath } from '../../navigation/paths'
 import { ExercisePicker } from '../../components/itemEditor/ExercisePicker'
 import { ItemEditModal } from '../../components/itemEditor/ItemEditModal'
 import { SectionEditor } from './SectionEditor'
 import './routines.css'
 
-function RoutineEditor({ routine }: { routine: Routine }) {
+function RoutineEditor({ routine, tab }: { routine: Routine; tab: RoutineHostPath }) {
   const router = useIonRouter()
   const confirmDelete = useConfirmDelete()
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -69,7 +71,7 @@ function RoutineEditor({ routine }: { routine: Routine }) {
 
   async function removeRoutine() {
     await deleteRoutine(routine.id)
-    router.push(ROUTINES_PATH, 'back', 'pop')
+    router.push(tab, 'back', 'pop')
   }
 
   function rename(name: string) {
@@ -93,7 +95,16 @@ function RoutineEditor({ routine }: { routine: Routine }) {
             onIonChange={(event) => typeof event.detail.value === 'string' && rename(event.detail.value)}
           />
         </IonItem>
+        <IonItem>
+          <IonToggle
+            checked={routine.daily}
+            onIonChange={(event) => edit((current) => ({ ...current, daily: event.detail.checked }))}
+          >
+            {ROUTINES_COPY.dailyToggle}
+          </IonToggle>
+        </IonItem>
       </IonList>
+      <IonNote className="list-footer">{ROUTINES_COPY.dailyHint}</IonNote>
       {routine.sections.map((section) => (
         <SectionEditor
           key={section.id}
@@ -146,7 +157,7 @@ function RoutineEditor({ routine }: { routine: Routine }) {
   )
 }
 
-function RoutineEditView({ id }: { id: string }) {
+function RoutineEditView({ id, tab }: { id: string; tab: RoutineHostPath }) {
   const routine = useRoutine(id)
 
   return (
@@ -154,18 +165,18 @@ function RoutineEditView({ id }: { id: string }) {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton defaultHref={ROUTINES_PATH} text={COMMON_COPY.back} />
+            <IonBackButton defaultHref={tab} text={COMMON_COPY.back} />
           </IonButtons>
           <IonTitle>{routine ? routine.name : ROUTINES_COPY.editRoutine}</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent>{routine && <RoutineEditor routine={routine} />}</IonContent>
+      <IonContent>{routine && <RoutineEditor routine={routine} tab={tab} />}</IonContent>
     </>
   )
 }
 
-export function RoutineEditPage() {
+export function RoutineEditPage({ tab }: { tab: RoutineHostPath }) {
   const { id } = useParams()
 
-  return <IonPage>{id && <RoutineEditView id={id} />}</IonPage>
+  return <IonPage>{id && <RoutineEditView id={id} tab={tab} />}</IonPage>
 }

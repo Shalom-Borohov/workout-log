@@ -26,7 +26,7 @@ import { RoutineRow } from './RoutineRow'
 import './routines.css'
 
 export function RoutinesPage() {
-  const routines = useRoutines()
+  const routines = useRoutines()?.filter((routine) => !routine.daily)
   const now = useNow(HOUR_MS)
   const router = useIonRouter()
   const [presentActionSheet] = useIonActionSheet()
@@ -34,8 +34,8 @@ export function RoutinesPage() {
   async function createEmpty() {
     const id = crypto.randomUUID()
 
-    await saveRoutine(newRoutine(id, crypto.randomUUID(), Date.now()))
-    router.push(routinePath(id))
+    await saveRoutine(newRoutine(id, crypto.randomUUID(), Date.now(), false))
+    router.push(routinePath(ROUTINES_PATH, id))
   }
 
   const openImport = () => router.push(IMPORT_PATH)

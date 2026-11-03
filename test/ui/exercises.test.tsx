@@ -32,6 +32,15 @@ describe('exercises', () => {
     expect(screen.getByText('לחיצת חזה')).toBeInTheDocument()
   })
 
+  it('exercise list leaves out the drills of a daily routine', async () => {
+    await saveRoutine(fullBody)
+    await saveRoutine({ ...routine('d1', 'חטיפי תנועה', [[{ name: 'גשר ישבן', target: reps(15) }]]), daily: true })
+    renderAt('/tabs/exercises')
+
+    expect(await screen.findByText('סקוואט')).toBeInTheDocument()
+    expect(screen.queryByText('גשר ישבן')).not.toBeInTheDocument()
+  })
+
   it('exercise list explains where exercises come from when there are none', async () => {
     renderAt('/tabs/exercises')
 

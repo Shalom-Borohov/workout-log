@@ -1,4 +1,5 @@
-import type { Activity, Routine, RoutineExercise, SetLog, Target, Workout, WorkoutExercise } from '../../src/domain/types'
+import { newDailyLog } from '../../src/domain/daily'
+import type { Activity, DailyLog, Routine, RoutineExercise, SetLog, Target, Workout, WorkoutExercise } from '../../src/domain/types'
 
 export const reps = (count: number): Target => ({ kind: 'reps', reps: count })
 
@@ -72,6 +73,7 @@ export function routine(id: string, name: string, exercises: ExerciseInput[][], 
   return {
     id,
     name,
+    daily: false,
     createdAt: 0,
     updatedAt: 0,
     sections: [
@@ -84,3 +86,5 @@ export function routine(id: string, name: string, exercises: ExerciseInput[][], 
     ],
   }
 }
+
+export const dailyLog = (routineId: string, date: string): DailyLog => newDailyLog(routineId, date)

@@ -23,6 +23,7 @@ export interface RoutineSection {
 export interface Routine {
   id: string
   name: string
+  daily: boolean
   sections: RoutineSection[]
   createdAt: number
   updatedAt: number
@@ -75,6 +76,12 @@ export interface Activity {
 }
 
 export type WorkoutRecord = Workout | Activity
+
+export interface DailyLog {
+  id: string
+  routineId: string
+  date: string
+}
 
 export interface BackgroundSetting {
   key: 'background'
