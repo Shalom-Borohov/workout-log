@@ -220,11 +220,16 @@ export function latestSessions(history: Workout[]): Map<string, ExerciseSession>
 }
 
 export function exerciseNames(routines: Routine[], workouts: Workout[]): string[] {
-  const names = [...routines.flatMap(exercisesOf), ...workouts.flatMap(exercisesOf)].map((exercise) => exercise.name)
+  const gymRoutines = routines.filter((routine) => !routine.daily)
+  const names = [...gymRoutines.flatMap(exercisesOf), ...workouts.flatMap(exercisesOf)].map((exercise) => exercise.name)
 
   return [...new Set(names)].sort((first, second) => first.localeCompare(second, LOCALE))
 }
 
 export function hasExercises(routine: Routine): boolean {
   return routine.sections.some((section) => section.items.length > 0)
+}
+
+export function isStartable(routine: Routine): boolean {
+  return hasExercises(routine) && !routine.daily
 }

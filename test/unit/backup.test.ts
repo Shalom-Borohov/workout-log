@@ -4,7 +4,7 @@ import { db } from '../../src/data/db'
 import { setBackground } from '../../src/data/background'
 import { finishedRecords, finishedWorkouts, saveRecord, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
-import { activity, done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
+import { activity, dailyLog, done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
 
 const fullBody = {
   ...routine('r1', 'אימון גוף מלא', [
@@ -24,6 +24,10 @@ const past = workout({
 })
 
 const boxing = activity({ id: 'a1', startedAt: oct(21, 19), summary: 'ספארינג' })
+
+const drills = { ...routine('d1', 'חטיפי תנועה', [[{ name: 'גשר ישבן', target: reps(15) }]]), daily: true }
+
+const sundayDrills = dailyLog('d1', '2026-10-25')
 
 describe('backup', () => {
   beforeEach(resetDb)
@@ -54,6 +58,48 @@ describe('backup', () => {
     await restoreBackup(parseBackup(json))
 
     expect(await finishedRecords()).toEqual([boxing, past])
+  })
+
+  it('daily routines and their logs round-trip', async () => {
+    await saveRoutine(drills)
+    await db.dailyLogs.put(sundayDrills)
+
+    const json = JSON.parse(JSON.stringify(await exportBackup(oct(26))))
+
+    await resetDb()
+    await db.dailyLogs.put(dailyLog('other', '2026-10-20'))
+    await restoreBackup(parseBackup(json))
+
+    expect(await db.routines.toArray()).toEqual([drills])
+    expect(await db.dailyLogs.toArray()).toEqual([sundayDrills])
+  })
+
+  it('rejects a malformed daily log or daily flag', async () => {
+    const valid = JSON.parse(JSON.stringify(await exportBackup(oct(26))))
+    const { routineId: _routineId, ...unnamed } = sundayDrills
+
+    const invalid = [
+      { ...valid, dailyLogs: 'logs' },
+      { ...valid, dailyLogs: [unnamed] },
+      { ...valid, dailyLogs: [{ ...sundayDrills, date: oct(25) }] },
+      { ...valid, dailyLogs: [{ ...sundayDrills, date: '25.10.2026' }] },
+      { ...valid, dailyLogs: [{ ...sundayDrills, id: 'log-1' }] },
+      { ...valid, routines: [{ ...drills, daily: 'yes' }] },
+    ]
+
+    for (const json of invalid) {
+      expect(() => parseBackup(json)).toThrow('קובץ הגיבוי לא תקין')
+    }
+  })
+
+  it('a backup from before daily routines imports them as not daily, with no daily logs', async () => {
+    const { daily: _daily, ...plain } = fullBody
+    await db.dailyLogs.put(sundayDrills)
+
+    await restoreBackup(parseBackup({ version: 1, exportedAt: oct(26), routines: [plain], workouts: [] }))
+
+    expect(await db.routines.toArray()).toEqual([fullBody])
+    expect(await db.dailyLogs.count()).toBe(0)
   })
 
   it('rejects a malformed activity', async () => {
@@ -179,7 +225,7 @@ describe('backup', () => {
     const json = JSON.parse(JSON.stringify(await exportBackup(oct(26))))
     await restoreBackup(parseBackup(json))
 
-    expect(Object.keys(json).sort()).toEqual(['exportedAt', 'routines', 'version', 'workouts'])
+    expect(Object.keys(json).sort()).toEqual(['dailyLogs', 'exportedAt', 'routines', 'version', 'workouts'])
     expect(await db.settings.count()).toBe(1)
   })
 })

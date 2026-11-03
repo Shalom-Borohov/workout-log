@@ -5,7 +5,7 @@ import { MAX_WEIGHT, maxAmount } from '../../domain/limits'
 import { amountPatch, weightPatch, weightText } from '../../domain/numberInput'
 import type { SetLog, Target } from '../../domain/types'
 import { WEIGHT_STEP, amountStep, stepValue } from '../../domain/workoutEdits'
-import { SetCheck } from './SetCheck'
+import { SetCheck } from '../../components/SetCheck'
 import { Stepper } from './Stepper'
 
 interface CurrentSetProps {

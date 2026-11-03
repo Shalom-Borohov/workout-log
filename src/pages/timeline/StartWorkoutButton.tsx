@@ -3,7 +3,7 @@ import { play } from 'ionicons/icons'
 import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
 import { useRoutines } from '../../data/hooks'
-import { hasExercises } from '../../domain/progress'
+import { isStartable } from '../../domain/progress'
 import { useStartWorkout } from '../../hooks/useStartWorkout'
 import { IMPORT_PATH, TIMELINE_PATH } from '../../navigation/paths'
 
@@ -16,7 +16,7 @@ export function StartWorkoutButton() {
   if (!routines) {
     return null
   }
-  const startable = routines.filter(hasExercises)
+  const startable = routines.filter(isStartable)
 
   function handleClick() {
     if (startable.length === 0) {

@@ -111,6 +111,7 @@ describe('database upgrade', () => {
       {
         id: 'r1',
         name: 'אימון גוף מלא',
+        daily: false,
         createdAt: 5,
         updatedAt: 5,
         sections: [
@@ -176,7 +177,7 @@ describe('database upgrade', () => {
     await legacyDb.table('workouts').put(v3Workout)
     legacyDb.close()
 
-    expect(await db.routines.toArray()).toEqual([{ ...v3Routine, createdAt: 7 }])
+    expect(await db.routines.toArray()).toEqual([{ ...v3Routine, daily: false, createdAt: 7 }])
     expect(await db.workouts.toArray()).toEqual([{ ...v3Workout, kind: 'routine' }])
   })
 
@@ -187,5 +188,15 @@ describe('database upgrade', () => {
     legacyDb.close()
 
     expect(await db.workouts.toArray()).toEqual([{ ...v3Workout, kind: 'routine' }])
+  })
+
+  it('makes every v5 routine a non-daily one and starts with no daily logs', async () => {
+    const legacyDb = new Dexie('workout-log')
+    legacyDb.version(5).stores({ routines: 'id, createdAt', workouts: 'id, startedAt, finishedAt', settings: 'key' })
+    await legacyDb.table('routines').put({ ...v3Routine, createdAt: 7 })
+    legacyDb.close()
+
+    expect(await db.routines.toArray()).toEqual([{ ...v3Routine, createdAt: 7, daily: false }])
+    expect(await db.dailyLogs.count()).toBe(0)
   })
 })

@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.5.0',
+    features: ['לשונית יומי חדשה לתרגילים שעושים כל יום, כמו יציבה: מסמנים את היום בלחיצה, ובלוח החודש אפשר להשלים ימים קודמים'],
+    fixes: [],
+  },
+  {
     version: '1.4.0',
     features: ['אפשר לרשום גם פעילות אחרת, כמו אגרוף תאילנדי או פילאטיס: בכפתור + בציר הזמן'],
     fixes: [],

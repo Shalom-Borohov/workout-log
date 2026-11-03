@@ -5,6 +5,8 @@ export const ROUTINES_COPY = {
   emptyRoutineHint: 'מוסיפים חלקים ותרגילים בעצמכם',
   addRoutine: 'הוספת אימון',
   start: 'התחל',
+  dailyToggle: 'אימון יומי',
+  dailyHint: 'אימון יומי לא מתחילים: הוא עובר ללשונית יומי, ושם מסמנים את הימים שעשיתם אותו.',
   duplicate: 'שכפול',
   oneExercise: 'תרגיל אחד',
   oneSection: 'חלק אחד',

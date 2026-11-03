@@ -1,12 +1,13 @@
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react'
-import { barbell, listOutline, timeOutline } from 'ionicons/icons'
+import { barbell, calendarOutline, listOutline, timeOutline } from 'ionicons/icons'
 import { Navigate, Route, useLocation } from 'react-router-dom'
 import { UpdateBar } from './appUpdate/UpdateBar'
 import { useWhatsNew } from './appUpdate/useWhatsNew'
 import { WhatsNewSheet } from './appUpdate/WhatsNewSheet'
 import { COMMON_COPY } from './copy/common'
 import { LegacyWorkoutLink } from './navigation/LegacyWorkoutLink'
-import { EXERCISES_PATH, isWorkoutPath, ROUTINES_PATH, TIMELINE_PATH } from './navigation/paths'
+import { DAILY_PATH, EXERCISES_PATH, isWorkoutPath, ROUTINES_PATH, TIMELINE_PATH } from './navigation/paths'
+import { DailyPage } from './pages/daily/DailyPage'
 import { ExerciseHistoryPage } from './pages/exercises/ExerciseHistoryPage'
 import { ExercisesPage } from './pages/exercises/ExercisesPage'
 import { LiveWorkoutPage } from './pages/live/LiveWorkoutPage'
@@ -32,7 +33,9 @@ export function Tabs() {
         <Route path="routines/workout/:id" element={<LiveWorkoutPage />} />
         <Route path="routines/import" element={<ImportNotePage />} />
         <Route path="routines/settings" element={<SettingsPage tab={ROUTINES_PATH} />} />
-        <Route path="routines/:id" element={<RoutineEditPage />} />
+        <Route path="routines/:id" element={<RoutineEditPage tab={ROUTINES_PATH} />} />
+        <Route path="daily" element={<DailyPage />} />
+        <Route path="daily/:id" element={<RoutineEditPage tab={DAILY_PATH} />} />
         <Route path="exercises" element={<ExercisesPage />} />
         <Route path="exercises/:name" element={<ExerciseHistoryPage />} />
         <Route path="workout/:id" element={<LegacyWorkoutLink />} />
@@ -43,6 +46,10 @@ export function Tabs() {
         <IonTabButton tab="timeline" href={TIMELINE_PATH}>
           <IonIcon icon={timeOutline} />
           <IonLabel>{COMMON_COPY.timeline}</IonLabel>
+        </IonTabButton>
+        <IonTabButton tab="daily" href={DAILY_PATH}>
+          <IonIcon icon={calendarOutline} />
+          <IonLabel>{COMMON_COPY.daily}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="routines" href={ROUTINES_PATH}>
           <IonIcon icon={listOutline} />
