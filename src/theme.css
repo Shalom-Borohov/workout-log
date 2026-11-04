@@ -133,6 +133,11 @@ ion-label p {
   color: var(--app-label-secondary);
 }
 
+.list-footer-line {
+  display: block;
+  margin-block-start: 4px;
+}
+
 .empty-state {
   max-width: 22rem;
   margin: 3rem auto 0.5rem;

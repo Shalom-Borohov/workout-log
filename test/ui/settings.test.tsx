@@ -6,6 +6,7 @@ import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
 import { ionChange, ionField, ionInput } from '../helpers/ionic'
 import { renderAt } from '../helpers/renderAt'
+import { mockShare } from '../helpers/share'
 import { done, exercise, oct, reps, routine, workout } from '../helpers/workouts'
 
 const { shrunk } = vi.hoisted(() => ({ shrunk: new Blob(['shrunk'], { type: 'image/jpeg' }) }))
@@ -38,6 +39,19 @@ describe('settings', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+  })
+
+  it('shows when the last backup was made', async () => {
+    await saveWorkout(past)
+
+    mockShare()
+    renderAt('/tabs/routines/settings')
+
+    expect(await screen.findByText('עוד לא בוצע גיבוי')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('ייצוא גיבוי'))
+
+    expect(await screen.findByText('גיבוי אחרון: 26.10.2026 09:30')).toBeInTheDocument()
   })
 
   it('exports a backup through the share sheet', async () => {

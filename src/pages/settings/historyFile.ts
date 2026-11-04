@@ -1,7 +1,7 @@
+import { shareFile } from '../../components/shareFile'
 import { finishedRecords } from '../../data/repo'
 import { historyText } from '../../domain/exportText'
 import { isoDate } from '../../domain/format'
-import { shareFile } from './backupFile'
 
 const HISTORY_TYPE = 'text/plain'
 
