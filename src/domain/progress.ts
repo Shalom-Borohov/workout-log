@@ -8,6 +8,10 @@ export function targetAmount(target: Target): number {
   return target.kind === 'reps' ? target.reps : target.seconds
 }
 
+export function withTargetAmount(target: Target, amount: number): Target {
+  return target.kind === 'reps' ? { kind: 'reps', reps: amount } : { kind: 'duration', seconds: amount }
+}
+
 export function exercisesOf<E>(plan: { sections: { items: { exercises: E[] }[] }[] }): E[] {
   return plan.sections.flatMap((section) => section.items).flatMap((item) => item.exercises)
 }

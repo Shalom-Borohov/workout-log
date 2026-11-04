@@ -14,10 +14,14 @@ export function isoDate(timestamp: number): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
-export function formatDateTime(timestamp: number): string {
+export function formatTime(timestamp: number): string {
   const date = new Date(timestamp)
 
-  return `${dayMonth(timestamp)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+export function formatDateTime(timestamp: number): string {
+  return `${dayMonth(timestamp)}.${new Date(timestamp).getFullYear()} ${formatTime(timestamp)}`
 }
 
 export function dayMonth(timestamp: number): string {

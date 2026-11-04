@@ -5,7 +5,7 @@ import { useBackgroundUrl } from '../../data/hooks'
 import { deleteWorkout } from '../../data/repo'
 import type { Workout } from '../../domain/types'
 import { addSet, currentIndex, duplicateSetAt, removeSetAt, setNotes, toggleSkip, workoutProgress } from '../../domain/workoutEdits'
-import { TIMELINE_PATH, workoutDetailPath } from '../../navigation/paths'
+import { TIMELINE_PATH, type WorkoutHostPath, workoutDetailPath } from '../../navigation/paths'
 import { BackToCurrent } from './BackToCurrent'
 import { FinishSheet, type SheetMode } from './FinishSheet'
 import { ItemActions } from './ItemActions'
@@ -21,7 +21,7 @@ import { useWakeLock } from './useWakeLock'
 import './live.css'
 import './photo.css'
 
-export function LiveWorkout({ initial }: { initial: Workout }) {
+export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHostPath }) {
   const router = useIonRouter()
 
   const { workout, index, travel, total, ref, item, active, previous, restTimer, apply, move, step, changeSet, finish } =
@@ -49,7 +49,7 @@ export function LiveWorkout({ initial }: { initial: Workout }) {
       return
     }
     await finish(summary)
-    router.push(workoutDetailPath(workout.id), 'root', 'replace')
+    router.push(workoutDetailPath(tab, workout.id), 'root', 'replace')
   }
 
   async function remove() {
@@ -64,7 +64,7 @@ export function LiveWorkout({ initial }: { initial: Workout }) {
     } else if (router.canGoBack()) {
       router.goBack()
     } else {
-      router.push(workoutDetailPath(workout.id), 'back', 'replace')
+      router.push(workoutDetailPath(tab, workout.id), 'back', 'replace')
     }
   }
 

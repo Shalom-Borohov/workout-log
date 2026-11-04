@@ -22,7 +22,7 @@ import { changesOf } from '../../domain/progress'
 import { summaryLine } from '../../domain/timeline'
 import type { WorkoutRecord } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
-import { TIMELINE_PATH, workoutPath } from '../../navigation/paths'
+import { type DetailHostPath, workoutPath } from '../../navigation/paths'
 import { ActivityEditButton } from './ActivityEditButton'
 import { SummaryEditor } from './SummaryEditor'
 import { WorkoutSections } from './WorkoutSections'
@@ -30,7 +30,7 @@ import './timeline.css'
 
 const overview = (workout: WorkoutRecord) => `${formatDay(workout.startedAt)} · ${summaryLine(workout)}`
 
-export function WorkoutDetail({ id }: { id: string }) {
+export function WorkoutDetail({ id, tab }: { id: string; tab: DetailHostPath }) {
   const workout = useWorkout(id)
   const records = useFinishedRecords()
   const changes = useMemo(() => (records ? changesOf(records, id) : []), [records, id])
@@ -42,7 +42,7 @@ export function WorkoutDetail({ id }: { id: string }) {
     if (router.canGoBack()) {
       router.goBack()
     } else {
-      router.push(TIMELINE_PATH, 'back', 'replace')
+      router.push(tab, 'back', 'replace')
     }
   }
 
@@ -59,7 +59,7 @@ export function WorkoutDetail({ id }: { id: string }) {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton text={COMMON_COPY.back} defaultHref={TIMELINE_PATH} />
+            <IonBackButton text={COMMON_COPY.back} defaultHref={tab} />
           </IonButtons>
           <IonTitle>{workout && recordName(workout)}</IonTitle>
           <IonButtons slot="end">
@@ -67,7 +67,7 @@ export function WorkoutDetail({ id }: { id: string }) {
               (workout.kind === 'activity' ? (
                 <ActivityEditButton activity={workout} />
               ) : (
-                <IonButton routerLink={workoutPath(TIMELINE_PATH, id)}>{COMMON_COPY.edit}</IonButton>
+                <IonButton routerLink={workoutPath(tab, id)}>{COMMON_COPY.edit}</IonButton>
               ))}
           </IonButtons>
         </IonToolbar>

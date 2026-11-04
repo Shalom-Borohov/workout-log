@@ -4,14 +4,14 @@ import { recordName } from '../../domain/activities'
 import { LIST_SEPARATOR } from '../../domain/format'
 import { changeTally, type WorkoutWithChanges } from '../../domain/progress'
 import { summaryLine } from '../../domain/timeline'
-import { workoutDetailPath } from '../../navigation/paths'
+import { TIMELINE_PATH, workoutDetailPath } from '../../navigation/paths'
 import { DateColumn } from './DateColumn'
 
 export function WorkoutCard({ workout }: { workout: WorkoutWithChanges }) {
   const tally = changeTally(workout.changes)
 
   return (
-    <IonItem button detail routerLink={workoutDetailPath(workout.id)}>
+    <IonItem button detail routerLink={workoutDetailPath(TIMELINE_PATH, workout.id)}>
       <DateColumn record={workout} />
       <IonLabel className="workout-card">
         <h2 className="workout-card-title">{recordName(workout)}</h2>
