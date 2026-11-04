@@ -1,3 +1,7 @@
+import type { DrillColor } from './drillColors'
+
+export type { DrillColor }
+
 export type Target = { kind: 'reps'; reps: number } | { kind: 'duration'; seconds: number }
 
 export interface RoutineExercise {
@@ -24,6 +28,8 @@ export interface Routine {
   id: string
   name: string
   daily: boolean
+  color: DrillColor | null
+  archived: boolean
   sections: RoutineSection[]
   createdAt: number
   updatedAt: number
@@ -77,10 +83,17 @@ export interface Activity {
 
 export type WorkoutRecord = Workout | Activity
 
+export interface DailyExercise {
+  name: string
+  sets: number
+  target: Target
+}
+
 export interface DailyLog {
   id: string
   routineId: string
   date: string
+  exercises: DailyExercise[]
 }
 
 export interface BackgroundSetting {

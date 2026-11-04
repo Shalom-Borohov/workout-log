@@ -34,7 +34,7 @@ export function RoutinesPage() {
   async function createEmpty() {
     const id = crypto.randomUUID()
 
-    await saveRoutine(newRoutine(id, crypto.randomUUID(), Date.now(), false))
+    await saveRoutine(newRoutine(id, crypto.randomUUID(), Date.now()))
     router.push(routinePath(ROUTINES_PATH, id))
   }
 

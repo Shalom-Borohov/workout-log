@@ -25,6 +25,14 @@
   --app-fill: rgba(118, 118, 128, 0.12);
   --app-up: #248a3d;
   --app-record: #b34e00;
+  --app-drill-red: #ff3b30;
+  --app-drill-orange: #ff9500;
+  --app-drill-yellow: #ffcc00;
+  --app-drill-green: #34c759;
+  --app-drill-teal: #30b0c7;
+  --app-drill-blue: #007aff;
+  --app-drill-purple: #af52de;
+  --app-drill-pink: #ff2d55;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -54,6 +62,14 @@
     --app-fill: rgba(118, 118, 128, 0.24);
     --app-up: #30d158;
     --app-record: #ff9f0a;
+    --app-drill-red: #ff453a;
+    --app-drill-orange: #ff9f0a;
+    --app-drill-yellow: #ffd60a;
+    --app-drill-green: #30d158;
+    --app-drill-teal: #40c8e0;
+    --app-drill-blue: #0a84ff;
+    --app-drill-purple: #bf5af2;
+    --app-drill-pink: #ff375f;
   }
 }
 

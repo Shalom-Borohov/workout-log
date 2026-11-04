@@ -1,10 +1,13 @@
 import { APP_COPY } from '../copy/app'
 import { dailyLogId } from '../domain/daily'
-import type { DailyLog, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
+import { isDrillColor } from '../domain/drillColors'
+import type { DailyExercise, DailyLog, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
 import { db } from './db'
 import {
   carryNotesForward,
+  colorDailyRoutines,
   type LegacyActivity,
+  type LegacyDailyLog,
   type LegacyRecord,
   type LegacyRoutine,
   type LegacyRoutineExercise,
@@ -14,6 +17,7 @@ import {
   type LegacyWorkoutExercise,
   type LegacyWorkoutItem,
   type LegacyWorkoutSection,
+  upgradeDailyLogs,
   upgradeRecord,
   upgradeRoutine,
 } from './migrate'
@@ -35,7 +39,7 @@ type LegacyBackup = {
   exportedAt: number
   routines: LegacyRoutine[]
   workouts: LegacyRecord[]
-  dailyLogs?: DailyLog[]
+  dailyLogs?: LegacyDailyLog[]
 }
 
 type Guard<T> = (value: unknown) => value is T
@@ -48,12 +52,17 @@ const isNumber = (value: unknown): value is number => typeof value === 'number' 
 
 const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean'
 
-const isNumberOrNull = (value: unknown): value is number | null => value === null || isNumber(value)
-
 const optional =
   <T>(guard: Guard<T>): Guard<T | undefined> =>
   (value: unknown): value is T | undefined =>
     value === undefined || guard(value)
+
+const nullable =
+  <T>(guard: Guard<T>): Guard<T | null> =>
+  (value: unknown): value is T | null =>
+    value === null || guard(value)
+
+const isNumberOrNull = nullable(isNumber)
 
 const arrayOf =
   <T>(guard: Guard<T>): Guard<T[]> =>
@@ -93,6 +102,8 @@ const isRoutine = (routine: unknown): routine is LegacyRoutine =>
   isString(routine.id) &&
   isString(routine.name) &&
   optional(isBoolean)(routine.daily) &&
+  optional(nullable(isDrillColor))(routine.color) &&
+  optional(isBoolean)(routine.archived) &&
   optional(isNumber)(routine.createdAt) &&
   isNumber(routine.updatedAt) &&
   arrayOf(isRoutineSection)(routine.sections)
@@ -140,12 +151,16 @@ const isRecord = (record: unknown): record is LegacyRecord => isActivity(record)
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
-const isDailyLog = (log: unknown): log is DailyLog =>
+const isDailyExercise = (exercise: unknown): exercise is DailyExercise =>
+  isObject(exercise) && isString(exercise.name) && isNumber(exercise.sets) && isTarget(exercise.target)
+
+const isDailyLog = (log: unknown): log is LegacyDailyLog =>
   isObject(log) &&
   isString(log.routineId) &&
   isString(log.date) &&
   ISO_DATE.test(log.date) &&
-  log.id === dailyLogId(log.routineId, log.date)
+  log.id === dailyLogId(log.routineId, log.date) &&
+  optional(arrayOf(isDailyExercise))(log.exercises)
 
 const isBackup = (backup: unknown): backup is LegacyBackup =>
   isObject(backup) &&
@@ -161,13 +176,14 @@ export function parseBackup(json: unknown): Backup {
   }
 
   const workouts = json.workouts.map(upgradeRecord)
+  const routines = colorDailyRoutines(json.routines.map(upgradeRoutine))
 
   return {
     ...json,
     version: BACKUP_VERSION,
-    routines: json.routines.map(upgradeRoutine),
+    routines,
     workouts: json.version === VERSION_BEFORE_CARRIED_NOTES ? carryNotesForward(workouts) : workouts,
-    dailyLogs: json.dailyLogs ?? [],
+    dailyLogs: upgradeDailyLogs(json.dailyLogs ?? [], routines),
   }
 }
 

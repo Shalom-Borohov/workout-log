@@ -103,7 +103,7 @@ export function copyName(name: string): string {
 }
 
 export function createRoutine(id: string, name: string, sections: RoutineSection[], now: number): Routine {
-  return { id, name, daily: false, sections, createdAt: now, updatedAt: now }
+  return { id, name, daily: false, color: null, archived: false, sections, createdAt: now, updatedAt: now }
 }
 
 export function duplicateRoutine(routine: Routine, newId: () => string, now: number): Routine {
@@ -115,9 +115,9 @@ export function duplicateRoutine(routine: Routine, newId: () => string, now: num
     items: section.items.map((item) => ({ ...item, id: newId() })),
   }))
 
-  return { ...createRoutine(id, copyName(routine.name), sections, now), daily: routine.daily }
+  return { ...createRoutine(id, copyName(routine.name), sections, now), daily: routine.daily, color: routine.color }
 }
 
-export function newRoutine(id: string, sectionId: string, now: number, daily: boolean): Routine {
-  return { ...createRoutine(id, DEFAULT_ROUTINE_NAME, [newSection(sectionId, DEFAULT_SECTION_NAME)], now), daily }
+export function newRoutine(id: string, sectionId: string, now: number): Routine {
+  return createRoutine(id, DEFAULT_ROUTINE_NAME, [newSection(sectionId, DEFAULT_SECTION_NAME)], now)
 }

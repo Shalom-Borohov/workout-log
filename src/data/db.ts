@@ -2,9 +2,12 @@ import Dexie, { type EntityTable, type Transaction } from 'dexie'
 import type { BackgroundSetting, DailyLog, Routine, WorkoutRecord } from '../domain/types'
 import {
   carryNotesForward,
+  colorDailyRoutines,
+  type LegacyDailyLog,
   type LegacyRecord,
   type LegacyRoutine,
   type LegacyWorkout,
+  upgradeDailyLogs,
   upgradeRecord,
   upgradeRoutine,
   upgradeWorkout,
@@ -79,6 +82,16 @@ class WorkoutDb extends Dexie {
         const workouts = transaction.table<WorkoutRecord>('workouts')
 
         await workouts.bulkPut(carryNotesForward(await workouts.toArray()))
+      })
+    this.version(9)
+      .stores({})
+      .upgrade(async (transaction) => {
+        const routines = transaction.table<LegacyRoutine>('routines')
+        const logs = transaction.table<LegacyDailyLog>('dailyLogs')
+        const upgraded = colorDailyRoutines((await routines.toArray()).map(upgradeRoutine))
+
+        await routines.bulkPut(upgraded)
+        await logs.bulkPut(upgradeDailyLogs(await logs.toArray(), upgraded))
       })
   }
 }

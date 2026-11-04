@@ -52,6 +52,9 @@ export function ionElement(selector: string, scope = VISIBLE_PAGE) {
 
 export const startTimePicker = () => ionElement('ion-datetime', 'body')
 
+// jsdom applies ion-toggle's shadow `input{display:none}` to every input, so role queries can't see radios.
+export const radioByLabel = (name: string) => screen.findByLabelText(name, { selector: 'input[type="radio"]' })
+
 export const buttonByLabel =(label: string) => ionElement(`ion-button[aria-label="${label}"]`)
 
 export async function expectInOrder(texts: string[]) {

@@ -25,9 +25,14 @@ const past = workout({
 
 const boxing = activity({ id: 'a1', startedAt: oct(21, 19), summary: 'ספארינג', location: 'מועדון הדרום' })
 
-const drills = { ...routine('d1', 'חטיפי תנועה', [[{ name: 'גשר ישבן', target: reps(15) }]]), daily: true }
+const drills = {
+  ...routine('d1', 'חטיפי תנועה', [[{ name: 'גשר ישבן', target: reps(15) }]]),
+  daily: true,
+  color: 'teal' as const,
+  archived: true,
+}
 
-const sundayDrills = dailyLog('d1', '2026-10-25')
+const sundayDrills = dailyLog('d1', '2026-10-25', [{ name: 'גשר ישבן', sets: 2, target: reps(20) }])
 
 describe('backup', () => {
   beforeEach(resetDb)
@@ -85,6 +90,11 @@ describe('backup', () => {
       { ...valid, dailyLogs: [{ ...sundayDrills, date: '25.10.2026' }] },
       { ...valid, dailyLogs: [{ ...sundayDrills, id: 'log-1' }] },
       { ...valid, routines: [{ ...drills, daily: 'yes' }] },
+      { ...valid, routines: [{ ...drills, color: 'magenta' }] },
+      { ...valid, routines: [{ ...drills, archived: 'yes' }] },
+      { ...valid, dailyLogs: [{ ...sundayDrills, exercises: 'all' }] },
+      { ...valid, dailyLogs: [{ ...sundayDrills, exercises: [{ name: 'גשר ישבן', sets: '2', target: reps(20) }] }] },
+      { ...valid, dailyLogs: [{ ...sundayDrills, exercises: [{ name: 'גשר ישבן', sets: 2, target: { kind: 'reps' } }] }] },
     ]
 
     for (const json of invalid) {
@@ -100,6 +110,16 @@ describe('backup', () => {
 
     expect(await db.routines.toArray()).toEqual([fullBody])
     expect(await db.dailyLogs.count()).toBe(0)
+  })
+
+  it('a backup from before drill colours colours its daily routines and fills its logs from them', async () => {
+    const { color: _color, archived: _archived, ...uncoloured } = drills
+    const { exercises: _exercises, ...bare } = sundayDrills
+
+    const backup = parseBackup({ version: 2, exportedAt: oct(26), routines: [uncoloured], workouts: [], dailyLogs: [bare] })
+
+    expect(backup.routines).toEqual([{ ...drills, color: 'red', archived: false }])
+    expect(backup.dailyLogs).toEqual([{ ...bare, exercises: [{ name: 'גשר ישבן', sets: 3, target: reps(15) }] }])
   })
 
   it('rejects a malformed activity', async () => {

@@ -29,7 +29,7 @@ interface Props {
 const UNITS = [
   { value: 'reps', label: COMMON_COPY.reps },
   { value: 'minutes', label: ITEM_EDITOR_COPY.minutes },
-  { value: 'seconds', label: ITEM_EDITOR_COPY.seconds },
+  { value: 'seconds', label: COMMON_COPY.seconds },
 ] as const
 
 type Unit = (typeof UNITS)[number]['value']

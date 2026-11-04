@@ -1,5 +1,8 @@
+import { plannedExercises } from '../domain/daily'
+import { nextDrillColor } from '../domain/drillColors'
 import type {
   Activity,
+  DailyLog,
   Routine,
   RoutineExercise,
   RoutineItem,
@@ -19,7 +22,11 @@ export type LegacyRoutineItem = Omit<Legacy<RoutineItem, 'sets'>, 'exercises'> &
 
 export type LegacyRoutineSection = Omit<RoutineSection, 'items'> & { items: LegacyRoutineItem[] }
 
-export type LegacyRoutine = Omit<Legacy<Routine, 'createdAt' | 'daily'>, 'sections'> & { sections: LegacyRoutineSection[] }
+export type LegacyRoutine = Omit<Legacy<Routine, 'createdAt' | 'daily' | 'color' | 'archived'>, 'sections'> & {
+  sections: LegacyRoutineSection[]
+}
+
+export type LegacyDailyLog = Legacy<DailyLog, 'exercises'>
 
 export type LegacyWorkoutExercise = Legacy<WorkoutExercise, 'tip' | 'note'>
 
@@ -37,6 +44,8 @@ export function upgradeRoutine(routine: LegacyRoutine): Routine {
   return {
     ...routine,
     daily: routine.daily ?? false,
+    color: routine.color ?? null,
+    archived: routine.archived ?? false,
     createdAt: routine.createdAt ?? routine.updatedAt,
     sections: routine.sections.map((section) => ({
       ...section,
@@ -47,6 +56,26 @@ export function upgradeRoutine(routine: LegacyRoutine): Routine {
       })),
     })),
   }
+}
+
+export function colorDailyRoutines(routines: Routine[]): Routine[] {
+  const colored = new Map(routines.map((routine) => [routine.id, routine]))
+
+  for (const routine of [...routines].sort((first, second) => first.createdAt - second.createdAt)) {
+    if (routine.daily && routine.color === null) {
+      colored.set(routine.id, { ...routine, color: nextDrillColor([...colored.values()]) })
+    }
+  }
+
+  return [...colored.values()]
+}
+
+export function upgradeDailyLogs(logs: LegacyDailyLog[], routines: Routine[]): DailyLog[] {
+  return logs.map((log) => {
+    const routine = routines.find((candidate) => candidate.id === log.routineId)
+
+    return { ...log, exercises: log.exercises ?? (routine ? plannedExercises(routine) : []) }
+  })
 }
 
 export function upgradeWorkout(workout: LegacyWorkout): Workout {
