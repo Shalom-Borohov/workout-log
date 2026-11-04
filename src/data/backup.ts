@@ -1,6 +1,7 @@
 import { APP_COPY } from '../copy/app'
 import { dailyLogId } from '../domain/daily'
 import type { DailyLog, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
+import { markBackedUp } from './backupStatus'
 import { db } from './db'
 import { isNumber, isObject, isString } from './guards'
 import {
@@ -177,12 +178,13 @@ export async function exportBackup(now: number): Promise<Backup> {
 }
 
 export async function restoreBackup(backup: Backup): Promise<void> {
-  await db.transaction('rw', db.routines, db.workouts, db.dailyLogs, async () => {
+  await db.transaction('rw', db.routines, db.workouts, db.dailyLogs, db.settings, async () => {
     await db.routines.clear()
     await db.workouts.clear()
     await db.dailyLogs.clear()
     await db.routines.bulkPut(backup.routines)
     await db.workouts.bulkPut(backup.workouts)
     await db.dailyLogs.bulkPut(backup.dailyLogs)
+    await markBackedUp(backup.exportedAt)
   })
 }

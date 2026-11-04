@@ -106,7 +106,14 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 45. **Back to the current exercise (added 2026-11-03):** the current exercise is the first one that is neither skipped nor done (where the workout resumes). When you move off it, a "חזרה לתרגיל הנוכחי" pill above the footer takes you back. It is hidden once everything is done and when editing a finished workout.
 46. **Feedback form (added 2026-11-03):** "דיווח על באג / הצעה" comes right after the backup section in Settings and opens on "הצעה". The version line stays at the bottom (item 35).
 47. **Exercise header (added 2026-11-03):** the line above the exercise name shows the section and position together ("עיקרי · 3 מתוך 8"), then the name and its tips.
-48. **Skip moves on (added 2026-11-04):** in a running workout, "דלג" moves straight to the next exercise that is neither skipped nor done, as auto-advance does (item 26). If there is none after it, it stays, and "חזרה לתרגיל הנוכחי" leads to any earlier one. Un-skipping, and skipping while editing a finished workout, stay put. Swiping back undoes an accidental skip. Skipping never starts a rest; a skip that leaves nothing to do stops a running one.
+48. **Backup reminder (added 2026-11-03):** a web app can't save to iCloud Drive by itself, so the app reminds you instead.
+    - A card at the top of ציר זמן shows when the last backup is at least 7 days (7 × 24 h) old and a workout or activity was logged since. With no backup on record it shows once anything is logged. It reads "הגיבוי האחרון לפני N ימים" or "עוד לא גיבית", and "גיבוי" opens the share sheet with the backup file, as in Settings. It is never a sheet or alert.
+    - "Logged since" counts finished workouts and activities: more than at the last backup means something new, whatever times they were given. Daily logs, routine edits and edits to old workouts don't count on their own.
+    - A completed share (or download) from the card or Settings counts as a backup; cancelling the share sheet doesn't. Restoring a backup counts as a backup made when that file was exported.
+    - × hides the card until another workout or activity is logged.
+    - The backup section's footer in Settings ends with "גיבוי אחרון: 29.10.2026 14:05", or "עוד לא בוצע גיבוי".
+    - The last backup is kept on the phone and is not in the backup.
+49. **Skip moves on (added 2026-11-04):** in a running workout, "דלג" moves straight to the next exercise that is neither skipped nor done, as auto-advance does (item 26). If there is none after it, it stays, and "חזרה לתרגיל הנוכחי" leads to any earlier one. Un-skipping, and skipping while editing a finished workout, stay put. Swiping back undoes an accidental skip. Skipping never starts a rest; a skip that leaves nothing to do stops a running one.
 
 ## Assumptions (accepted by the user)
 

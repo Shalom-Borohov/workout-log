@@ -19,19 +19,20 @@ import { documentTextOutline, downloadOutline, shareOutline } from 'ionicons/ico
 import { type ChangeEvent, useRef, useState } from 'react'
 import { CHANGELOG } from '../../appUpdate/changelog'
 import { WhatsNewSheet } from '../../appUpdate/WhatsNewSheet'
-import { TOAST_OPTIONS } from '../../components/toast'
+import { errorMessage, TOAST_OPTIONS } from '../../components/toast'
 import { COMMON_COPY } from '../../copy/common'
 import { SETTINGS_COPY } from './copy'
-import { type Backup, exportBackup, restoreBackup } from '../../data/backup'
+import { type Backup, restoreBackup } from '../../data/backup'
 import { formatDateTime } from '../../domain/format'
 import { newestFirst } from '../../domain/releases'
+import { useBackUp } from '../../hooks/useBackUp'
+import { useShare } from '../../hooks/useShare'
 import type { HostTabPath } from '../../navigation/paths'
-import { isShareCancel, readBackup, shareBackup } from './backupFile'
+import { readBackup } from './backupFile'
 import { BackgroundSettings } from './BackgroundSettings'
+import { BackupFooter } from './BackupFooter'
 import { FeedbackSettings } from './FeedbackSettings'
 import { shareHistory } from './historyFile'
-
-const errorMessage = (error: unknown) => (error instanceof Error ? error.message : SETTINGS_COPY.actionFailed)
 
 const ALL_RELEASES = newestFirst(CHANGELOG)
 
@@ -40,18 +41,10 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
   const [showingChangelog, setShowingChangelog] = useState(false)
   const [presentAlert] = useIonAlert()
   const [presentToast] = useIonToast()
+  const backUp = useBackUp()
+  const share = useShare()
 
   const toast = (message: string) => presentToast({ message, ...TOAST_OPTIONS })
-
-  async function share(run: () => Promise<void>) {
-    try {
-      await run()
-    } catch (error) {
-      if (!isShareCancel(error)) {
-        void toast(errorMessage(error))
-      }
-    }
-  }
 
   async function restore(backup: Backup) {
     try {
@@ -100,14 +93,10 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
       </IonHeader>
       <IonContent>
         <IonListHeader>
-          <IonLabel>{SETTINGS_COPY.backup}</IonLabel>
+          <IonLabel>{COMMON_COPY.backup}</IonLabel>
         </IonListHeader>
         <IonList inset>
-          <IonItem
-            button
-            detail={false}
-            onClick={() => void share(async () => shareBackup(await exportBackup(Date.now())))}
-          >
+          <IonItem button detail={false} onClick={() => void backUp()}>
             <IonIcon slot="start" color="primary" icon={shareOutline} />
             <IonLabel>{SETTINGS_COPY.exportBackup}</IonLabel>
           </IonItem>
@@ -116,7 +105,7 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
             <IonLabel>{SETTINGS_COPY.importBackup}</IonLabel>
           </IonItem>
         </IonList>
-        <IonNote className="list-footer">{SETTINGS_COPY.backupFooter}</IonNote>
+        <BackupFooter />
         <FeedbackSettings />
         <IonListHeader>
           <IonLabel>{SETTINGS_COPY.history}</IonLabel>

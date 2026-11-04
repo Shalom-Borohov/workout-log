@@ -1,7 +1,8 @@
 import { liveQuery } from 'dexie'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useState } from 'react'
-import { BACKGROUND_KEY } from './background'
+import { background } from './background'
+import { backupStatus } from './backupStatus'
 import { db } from './db'
 import { activeWorkout, dailyLogs, finishedRecords, finishedWorkouts } from './repo'
 
@@ -39,8 +40,12 @@ export function useActiveWorkout() {
   return useLiveQuery(async () => (await activeWorkout()) ?? null)
 }
 
+export function useBackupStatus() {
+  return useLiveQuery(backupStatus)
+}
+
 export function useBackground() {
-  return useLiveQuery(() => db.settings.get(BACKGROUND_KEY))
+  return useLiveQuery(background)
 }
 
 export function useBackgroundUrl(): string | null {
@@ -55,7 +60,7 @@ export function useBackgroundUrl(): string | null {
       }
     }
 
-    const subscription = liveQuery(() => db.settings.get(BACKGROUND_KEY)).subscribe((setting) => {
+    const subscription = liveQuery(background).subscribe((setting) => {
       release()
       current = setting ? URL.createObjectURL(setting.image) : null
       setUrl(current)
