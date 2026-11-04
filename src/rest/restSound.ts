@@ -14,12 +14,11 @@ export function unlockRestSound() {
   if (navigator.audioSession) {
     navigator.audioSession.type = 'transient'
   }
-
-  if (unlocked) {
-    return
-  }
   const audio = restSound()
 
+  if (unlocked || !audio.paused) {
+    return
+  }
   audio.muted = true
   void audio
     .play()
@@ -28,6 +27,10 @@ export function unlockRestSound() {
       unlocked = true
     })
     .catch(() => {})
+}
+
+export function relockRestSound() {
+  unlocked = false
 }
 
 export function playRestSound() {

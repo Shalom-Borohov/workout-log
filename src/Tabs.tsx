@@ -17,6 +17,7 @@ import { RoutinesPage } from './pages/routines/RoutinesPage'
 import { SettingsPage } from './pages/settings/SettingsPage'
 import { TimelinePage } from './pages/timeline/TimelinePage'
 import { WorkoutDetailPage } from './pages/timeline/WorkoutDetailPage'
+import { RestClock } from './rest/restClock'
 
 export function Tabs() {
   const inWorkout = isWorkoutPath(useLocation().pathname)
@@ -61,6 +62,7 @@ export function Tabs() {
         </IonTabButton>
       </IonTabBar>
       <WhatsNewSheet isOpen={whatsNew.isOpen} releases={whatsNew.releases} onClose={whatsNew.close} />
+      <RestClock />
     </IonTabs>
   )
 }

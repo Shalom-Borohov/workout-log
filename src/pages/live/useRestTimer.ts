@@ -1,42 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { readRestSeconds, readRestSound, saveRestSeconds, saveRestSound } from '../../data/restSettings'
 import { stepRest } from '../../domain/rest'
 import { SECOND_MS } from '../../domain/time'
-import { playRestSound, unlockRestSound } from './restSound'
-
-const LATE_SOUND_MS = 2 * SECOND_MS
-
-export type Rest = { endsAt: number; ended: boolean }
+import { moveRest, startRest, useRunningRest } from '../../rest/restClock'
+import { unlockRestSound } from '../../rest/restSound'
 
 export type RestTimer = ReturnType<typeof useRestTimer>
 
-export function useRestTimer() {
-  const [rest, setRest] = useState<Rest | null>(null)
+export function useRestTimer(workoutId: string) {
+  const running = useRunningRest()
+  const rest = running?.workoutId === workoutId ? running : null
   const [seconds, setSeconds] = useState(readRestSeconds)
   const [sound, setSound] = useState(readRestSound)
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
-
-  function schedule(endsAt: number) {
-    clearTimeout(timer.current)
-    setRest({ endsAt, ended: false })
-    timer.current = setTimeout(() => {
-      if (readRestSound() && Date.now() - endsAt < LATE_SOUND_MS) {
-        playRestSound()
-      }
-      setRest({ endsAt, ended: true })
-    }, endsAt - Date.now())
-  }
 
   function start() {
     if (sound) {
       unlockRestSound()
     }
-    schedule(Date.now() + seconds * SECOND_MS)
-  }
-
-  function stop() {
-    clearTimeout(timer.current)
-    setRest(null)
+    startRest(workoutId, seconds)
   }
 
   function adjust(direction: 1 | -1) {
@@ -44,10 +25,7 @@ export function useRestTimer() {
 
     setSeconds(next)
     saveRestSeconds(next)
-
-    if (rest && !rest.ended) {
-      schedule(Math.max(rest.endsAt + (next - seconds) * SECOND_MS, Date.now()))
-    }
+    moveRest((next - seconds) * SECOND_MS)
   }
 
   function toggleSound() {
@@ -58,7 +36,5 @@ export function useRestTimer() {
     saveRestSound(!sound)
   }
 
-  useEffect(() => () => clearTimeout(timer.current), [])
-
-  return { rest, seconds, sound, start, stop, adjust, toggleSound }
+  return { rest, seconds, sound, start, adjust, toggleSound }
 }

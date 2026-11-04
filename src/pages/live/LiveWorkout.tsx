@@ -4,7 +4,7 @@ import { LIVE_COPY } from './copy'
 import { useBackgroundUrl } from '../../data/hooks'
 import { deleteWorkout } from '../../data/repo'
 import type { Workout } from '../../domain/types'
-import { addSet, currentIndex, duplicateSetAt, removeSetAt, setNotes, toggleSkip, workoutProgress } from '../../domain/workoutEdits'
+import { addSet, currentIndex, duplicateSetAt, removeSetAt, setNotes, workoutProgress } from '../../domain/workoutEdits'
 import { TIMELINE_PATH, workoutDetailPath } from '../../navigation/paths'
 import { BackToCurrent } from './BackToCurrent'
 import { FinishSheet, type SheetMode } from './FinishSheet'
@@ -17,15 +17,30 @@ import { NoteSheet } from './NoteSheet'
 import { useItemMenu } from './useItemMenu'
 import { useLiveWorkout } from './useLiveWorkout'
 import { useItemSwipe } from './useSwipe'
-import { useWakeLock } from './useWakeLock'
+import { useWakeLock } from '../../hooks/useWakeLock'
 import './live.css'
 import './photo.css'
 
 export function LiveWorkout({ initial }: { initial: Workout }) {
   const router = useIonRouter()
 
-  const { workout, index, travel, total, ref, item, active, previous, restTimer, apply, move, step, changeSet, finish } =
-    useLiveWorkout(initial)
+  const {
+    workout,
+    index,
+    travel,
+    total,
+    ref,
+    item,
+    active,
+    previous,
+    restTimer,
+    apply,
+    move,
+    step,
+    changeSet,
+    toggleItemSkip,
+    finish,
+  } = useLiveWorkout(initial)
 
   const [sheet, setSheet] = useState<SheetMode | null>(null)
   const [listing, setListing] = useState(false)
@@ -97,7 +112,7 @@ export function LiveWorkout({ initial }: { initial: Workout }) {
         >
           <ItemActions
             item={item}
-            onToggleSkip={() => apply((current) => toggleSkip(current, ref))}
+            onToggleSkip={toggleItemSkip}
             onAddSet={() => apply((current) => addSet(current, ref))}
           />
         </ItemCard>
