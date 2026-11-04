@@ -52,7 +52,7 @@ describe('backup reminder', () => {
     await markBackedUp(oct(10, 12))
 
     await waitFor(() => expect(screen.getAllByText('אימון גוף מלא')).toHaveLength(2))
-    expect(screen.queryByText('גיבוי')).not.toBeInTheDocument()
+    await waitFor(() => expect(screen.queryByText('גיבוי')).not.toBeInTheDocument())
   })
 
   it('shares the backup file and goes away', async () => {
