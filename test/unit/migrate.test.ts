@@ -1,9 +1,9 @@
 import Dexie from 'dexie'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
-import { carryNotesForward } from '../../src/data/migrate'
+import { carryNotesForward, colorDailyRoutines } from '../../src/data/migrate'
 import { exercisesOf } from '../../src/domain/progress'
-import { activity, done, exercise, oct, open, workout } from '../helpers/workouts'
+import { activity, dailyRoutine, done, exercise, oct, open, workout } from '../helpers/workouts'
 
 const v2Routine = {
   id: 'r1',
@@ -115,6 +115,8 @@ describe('database upgrade', () => {
         id: 'r1',
         name: 'אימון גוף מלא',
         daily: false,
+        color: null,
+        archived: false,
         createdAt: 5,
         updatedAt: 5,
         sections: [
@@ -180,7 +182,7 @@ describe('database upgrade', () => {
     await legacyDb.table('workouts').put(v3Workout)
     legacyDb.close()
 
-    expect(await db.routines.toArray()).toEqual([{ ...v3Routine, daily: false, createdAt: 7 }])
+    expect(await db.routines.toArray()).toEqual([{ ...v3Routine, daily: false, color: null, archived: false, createdAt: 7 }])
     expect(await db.workouts.toArray()).toEqual([{ ...v3Workout, kind: 'routine' }])
   })
 
@@ -214,7 +216,7 @@ describe('database upgrade', () => {
     await legacyDb.table('workouts').put(v6Activity)
     legacyDb.close()
 
-    expect(await db.routines.toArray()).toEqual([{ ...v3Routine, createdAt: 7, daily: false }])
+    expect(await db.routines.toArray()).toEqual([{ ...v3Routine, createdAt: 7, daily: false, color: null, archived: false }])
     expect(await db.workouts.toArray()).toEqual([v6Activity])
     expect(await db.dailyLogs.count()).toBe(0)
   })
@@ -229,6 +231,29 @@ describe('database upgrade', () => {
 
     expect(await db.workouts.get('w3')).toEqual(withNote(later, 'לעלות ל-45'))
   })
+
+  it('colours the daily routines of a v8 database in creation order and fills each log from its routine', async () => {
+    const posture = { ...v3Routine, id: 'd1', name: 'יציבה', daily: true, createdAt: 20 }
+    const mobility = { ...v3Routine, id: 'd2', name: 'מוביליות', daily: true, createdAt: 10 }
+    const gym = { ...v3Routine, daily: false, createdAt: 7 }
+
+    const legacyDb = new Dexie('workout-log')
+    legacyDb.version(8).stores({ routines: 'id, createdAt', workouts: 'id, startedAt, finishedAt', settings: 'key', dailyLogs: 'id' })
+    await legacyDb.table('routines').bulkPut([posture, mobility, gym])
+    await legacyDb.table('dailyLogs').bulkPut([
+      { id: 'd1|2026-10-25', routineId: 'd1', date: '2026-10-25' },
+      { id: 'gone|2026-10-25', routineId: 'gone', date: '2026-10-25' },
+    ])
+    legacyDb.close()
+
+    expect(await db.routines.get('d2')).toMatchObject({ color: 'red', archived: false })
+    expect(await db.routines.get('d1')).toMatchObject({ color: 'orange', archived: false })
+    expect(await db.routines.get('r2')).toMatchObject({ color: null, archived: false })
+    expect(await db.dailyLogs.toArray()).toEqual([
+      { id: 'd1|2026-10-25', routineId: 'd1', date: '2026-10-25', exercises: [{ name: 'סקוואט', sets: 4, target: { kind: 'reps', reps: 12 } }] },
+      { id: 'gone|2026-10-25', routineId: 'gone', date: '2026-10-25', exercises: [] },
+    ])
+  })
 })
 
 function withNote<W extends typeof v3Workout>(record: W, note: string): W {
@@ -236,6 +261,15 @@ function withNote<W extends typeof v3Workout>(record: W, note: string): W {
 
   return { ...record, sections: [{ ...record.sections[0], items: [{ ...record.sections[0].items[0], exercises: [{ ...exercise, note }] }] }] }
 }
+
+describe('colorDailyRoutines', () => {
+  it('counts colours already taken by later daily routines', () => {
+    const uncolored = { ...dailyRoutine('d1', 'יציבה'), color: null, createdAt: 1 }
+    const colored = { ...dailyRoutine('d2', 'מוביליות', [], { color: 'red' }), createdAt: 2 }
+
+    expect(colorDailyRoutines([uncolored, colored]).map((routine) => routine.color)).toEqual(['orange', 'red'])
+  })
+})
 
 describe('carryNotesForward', () => {
   it('fills an empty note from the latest earlier note of the same exercise, and keeps written ones', () => {

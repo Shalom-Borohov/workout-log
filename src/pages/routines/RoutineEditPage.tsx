@@ -21,7 +21,7 @@ import { useParams } from 'react-router-dom'
 import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import { useRoutine } from '../../data/hooks'
-import { deleteRoutine, updateRoutine } from '../../data/repo'
+import { deleteRoutine, setRoutineDaily, updateRoutine } from '../../data/repo'
 import {
   type Change,
   findItem,
@@ -37,6 +37,7 @@ import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import type { RoutineHostPath } from '../../navigation/paths'
 import { ExercisePicker } from '../../components/itemEditor/ExercisePicker'
 import { ItemEditModal } from '../../components/itemEditor/ItemEditModal'
+import { DrillColorPicker } from './DrillColorPicker'
 import { SectionEditor } from './SectionEditor'
 import './routines.css'
 
@@ -98,11 +99,16 @@ function RoutineEditor({ routine, tab }: { routine: Routine; tab: RoutineHostPat
         <IonItem>
           <IonToggle
             checked={routine.daily}
-            onIonChange={(event) => edit((current) => ({ ...current, daily: event.detail.checked }))}
+            onIonChange={(event) => void setRoutineDaily(routine.id, event.detail.checked)}
           >
             {ROUTINES_COPY.dailyToggle}
           </IonToggle>
         </IonItem>
+        {routine.daily && (
+          <IonItem>
+            <DrillColorPicker value={routine.color} onChange={(color) => edit((current) => ({ ...current, color }))} />
+          </IonItem>
+        )}
       </IonList>
       <IonNote className="list-footer">{ROUTINES_COPY.dailyHint}</IonNote>
       {routine.sections.map((section) => (

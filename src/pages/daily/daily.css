@@ -2,11 +2,6 @@
   opacity: 0.6;
 }
 
-.daily-picker {
-  width: auto;
-  margin: 0.5rem 16px 0;
-}
-
 .month-calendar {
   margin: 1rem 16px 2rem;
 }
@@ -40,7 +35,9 @@
 
 .month-day {
   display: grid;
-  place-items: center;
+  justify-items: center;
+  align-content: center;
+  row-gap: 2px;
   min-height: 44px;
 }
 
@@ -52,8 +49,8 @@
 .month-day-number {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   font-size: 1.0625rem;
   color: var(--app-label);
@@ -65,7 +62,97 @@
   font-weight: 600;
 }
 
-.month-day[aria-pressed='true'] .month-day-number {
-  background: var(--ion-color-success);
-  color: var(--ion-color-success-contrast);
+.month-day-dots {
+  display: flex;
+  gap: 2px;
+  height: 6px;
+}
+
+.month-day-dots .drill-dot {
+  width: 6px;
+  height: 6px;
+}
+
+.daily-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.daily-drill-toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding-block: 10px;
+  color: var(--app-label);
+  text-align: start;
+}
+
+.daily-drill-text {
+  display: grid;
+  flex: 1;
+  row-gap: 2px;
+}
+
+.daily-drill-name {
+  font-size: 1.0625rem;
+}
+
+.daily-drill-summary {
+  font-size: 0.875rem;
+  color: var(--app-label-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.daily-drill-chevron {
+  flex: none;
+  font-size: 1rem;
+  color: var(--app-label-tertiary);
+  transition: transform 0.2s ease-out;
+}
+
+.daily-drill-toggle[aria-expanded='true'] .daily-drill-chevron {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daily-drill-chevron {
+    transition: none;
+  }
+}
+
+.daily-exercise-name {
+  --min-height: 32px;
+  font-size: 0.8125rem;
+  color: var(--app-label-secondary);
+}
+
+.month-grid[data-slide='back'] {
+  animation: month-from-right 0.2s ease-out;
+}
+
+.month-grid[data-slide='forward'] {
+  animation: month-from-left 0.2s ease-out;
+}
+
+@keyframes month-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes month-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .month-grid[data-slide] {
+    animation: none;
+  }
 }

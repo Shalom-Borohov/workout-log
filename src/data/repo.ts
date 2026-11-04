@@ -1,4 +1,5 @@
 import { isRoutineWorkout } from '../domain/activities'
+import { makeDaily } from '../domain/drillColors'
 import { startWorkout } from '../domain/progress'
 import type { DailyLog, Routine, Workout, WorkoutRecord } from '../domain/types'
 import { db } from './db'
@@ -14,6 +15,20 @@ export async function updateRoutine(id: string, change: (routine: Routine) => Ro
     if (current) {
       await saveRoutine({ ...change(current), updatedAt: Date.now() })
     }
+  })
+}
+
+export async function setRoutineDaily(id: string, daily: boolean) {
+  await db.transaction('rw', db.routines, async () => {
+    const routines = await db.routines.toArray()
+
+    await updateRoutine(id, (current) => makeDaily(current, daily, routines))
+  })
+}
+
+export async function addDailyRoutine(routine: Routine) {
+  await db.transaction('rw', db.routines, async () => {
+    await saveRoutine(makeDaily(routine, true, await db.routines.toArray()))
   })
 }
 
@@ -86,6 +101,18 @@ export async function toggleDailyLog(log: DailyLog) {
       await db.dailyLogs.put(log)
     }
   })
+}
+
+export async function logDailyDay(log: DailyLog) {
+  await db.transaction('rw', db.dailyLogs, async () => {
+    if (!(await db.dailyLogs.get(log.id))) {
+      await db.dailyLogs.put(log)
+    }
+  })
+}
+
+export async function updateDailyLog(log: DailyLog) {
+  await db.dailyLogs.update(log.id, { exercises: log.exercises })
 }
 
 export function dailyLogs(): Promise<DailyLog[]> {

@@ -1,4 +1,4 @@
-import { isoDate, pad } from '../../domain/format'
+import { formatTime, isoDate } from '../../domain/format'
 import { HOUR_MS } from '../../domain/time'
 import { summarize } from '../../domain/timeline'
 import type { Activity } from '../../domain/types'
@@ -11,15 +11,9 @@ export interface PastTime {
 
 const DEFAULT_DURATION_MINUTES = 60
 
-function timeValue(timestamp: number): string {
-  const date = new Date(timestamp)
-
-  return `${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
-
 const pastTimeAt = (startedAt: number, minutes: number): PastTime => ({
   date: isoDate(startedAt),
-  time: timeValue(startedAt),
+  time: formatTime(startedAt),
   duration: String(minutes),
 })
 

@@ -10,6 +10,8 @@ const legs: Routine = {
   id: 'r1',
   name: 'אימון רגליים',
   daily: false,
+  color: null,
+  archived: false,
   createdAt: 50,
   updatedAt: 100,
   sections: [
@@ -24,6 +26,8 @@ describe('duplicateRoutine', () => {
       id: 'n1',
       name: 'אימון רגליים (עותק)',
       daily: false,
+      color: null,
+      archived: false,
       createdAt: 500,
       updatedAt: 500,
       sections: [
@@ -33,8 +37,12 @@ describe('duplicateRoutine', () => {
     })
   })
 
-  it('a copy of a daily routine is daily too', () => {
-    expect(duplicateRoutine({ ...legs, daily: true }, counter(), 500).daily).toBe(true)
+  it('a copy of a daily routine is daily too, in the same colour and out of the archive', () => {
+    expect(duplicateRoutine({ ...legs, daily: true, color: 'teal', archived: true }, counter(), 500)).toMatchObject({
+      daily: true,
+      color: 'teal',
+      archived: false,
+    })
   })
 
   it('leaves the original routine unchanged', () => {
@@ -48,7 +56,14 @@ describe('duplicateRoutine', () => {
 
 describe('newRoutine', () => {
   it('is created now', () => {
-    expect(newRoutine('r2', 's1', 700, false)).toMatchObject({ id: 'r2', daily: false, createdAt: 700, updatedAt: 700 })
+    expect(newRoutine('r2', 's1', 700)).toMatchObject({
+      id: 'r2',
+      daily: false,
+      color: null,
+      archived: false,
+      createdAt: 700,
+      updatedAt: 700,
+    })
   })
 })
 

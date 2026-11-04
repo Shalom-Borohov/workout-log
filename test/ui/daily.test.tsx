@@ -1,24 +1,40 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
-import { activeWorkout, saveRoutine } from '../../src/data/repo'
+import { activeWorkout, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
-import { buttonByLabel, ionChange, ionElement, ionEvent } from '../helpers/ionic'
+import { buttonByLabel, ionElement, ionEvent } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
-import { dailyLog, oct, reps, routine, seconds } from '../helpers/workouts'
+import { dailyLog, done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
 
 const gym = { ...routine('r1', 'אימון גוף מלא', [[{ name: 'סקוואט', target: reps(12) }]]), createdAt: oct(1) }
 
 const drills = {
   ...routine('d1', 'חטיפי תנועה', [[{ name: 'גשר ישבן', target: reps(15) }], [{ name: 'פלאנק', target: seconds(30) }]]),
   daily: true,
+  color: 'red' as const,
   createdAt: oct(20),
 }
 
-const stretches = { ...routine('d2', 'מתיחות', [[{ name: 'פרפר', target: seconds(30) }]]), daily: true, createdAt: oct(22) }
+const stretches = {
+  ...routine('d2', 'מתיחות', [[{ name: 'פרפר', target: seconds(30) }]]),
+  daily: true,
+  color: 'blue' as const,
+  createdAt: oct(22),
+}
 
-const dayButton = (name: string) => screen.findByRole('button', { name })
+const plannedDrills = [
+  { name: 'גשר ישבן', sets: 3, target: reps(15) },
+  { name: 'פלאנק', sets: 3, target: seconds(30) },
+]
+
+const dayButton = (name: string | RegExp) => screen.findByRole('button', { name })
+
+function swipe(element: Element, dx: number, dy: number) {
+  fireEvent.touchStart(element, { touches: [{ clientX: 200, clientY: 300 }] })
+  fireEvent.touchEnd(element, { changedTouches: [{ clientX: 200 + dx, clientY: 300 + dy }] })
+}
 
 describe('daily tab', () => {
   beforeEach(resetDb)
@@ -32,6 +48,7 @@ describe('daily tab', () => {
 
   it('"+" creates a daily routine and opens it in the editor', async () => {
     renderAt('/tabs/daily')
+    await screen.findByText('עוד אין אימון יומי')
 
     fireEvent.click(await buttonByLabel('הוספת אימון יומי'))
 
@@ -59,8 +76,8 @@ describe('daily tab', () => {
     fireEvent.click(today)
 
     await waitFor(() => expect(today).toHaveAttribute('aria-pressed', 'true'))
-    expect(await db.dailyLogs.toArray()).toEqual([dailyLog('d1', '2026-10-26')])
-    expect(await dayButton('יום ב׳ 26.10')).toHaveAttribute('aria-pressed', 'true')
+    expect(await db.dailyLogs.toArray()).toEqual([dailyLog('d1', '2026-10-26', plannedDrills)])
+    expect(await dayButton('יום ב׳ 26.10, חטיפי תנועה')).toBeInTheDocument()
 
     fireEvent.click(today)
 
@@ -77,44 +94,105 @@ describe('daily tab', () => {
     await waitFor(() => expect(currentPath()).toBe('/tabs/daily/d1'))
   })
 
-  it('the calendar logs past days, but not future ones', async () => {
+  it('names every drill done on a day in its label, and mentions a workout', async () => {
+    await saveRoutine(drills)
+    await saveRoutine(stretches)
+    await db.dailyLogs.put(dailyLog('d1', '2026-10-25'))
+    await db.dailyLogs.put(dailyLog('d2', '2026-10-25'))
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(24, 18), exercises: [exercise('סקוואט', [done(60, 12)])] }))
+    renderAt('/tabs/daily')
+
+    expect(await dayButton('יום א׳ 25.10, מתיחות, חטיפי תנועה')).toBeInTheDocument()
+    expect(await dayButton('יום ש׳ 24.10, אימון')).toBeInTheDocument()
+    expect(await dayButton('יום ו׳ 23.10')).toBeInTheDocument()
+  })
+
+  it('disables days after today', async () => {
     await saveRoutine(drills)
     renderAt('/tabs/daily')
 
-    const sunday = await dayButton('יום א׳ 25.10')
-    fireEvent.click(sunday)
-
-    await waitFor(() => expect(sunday).toHaveAttribute('aria-pressed', 'true'))
-    expect(await db.dailyLogs.toArray()).toEqual([dailyLog('d1', '2026-10-25')])
-    expect(await dayButton('יום ש׳ 31.10')).toBeDisabled()
     expect(await buttonByLabel('החודש הבא')).toHaveProperty('disabled', true)
+    expect(await dayButton('יום ש׳ 31.10')).toBeDisabled()
   })
 
-  it('goes back a month to fill in an older day', async () => {
+  it('goes back a month, which re-enables the next month', async () => {
     await saveRoutine(drills)
     renderAt('/tabs/daily')
 
     fireEvent.click(await buttonByLabel('החודש הקודם'))
 
     expect(await screen.findByText('ספטמבר 2026')).toBeInTheDocument()
-    fireEvent.click(await dayButton('יום ג׳ 15.9'))
-    await waitFor(async () => expect(await db.dailyLogs.toArray()).toEqual([dailyLog('d1', '2026-09-15')]))
+    expect(await dayButton('יום ג׳ 15.9')).toBeEnabled()
     expect(await buttonByLabel('החודש הבא')).toHaveProperty('disabled', false)
   })
 
-  it('with two daily routines, a card for each and a picker for the calendar', async () => {
+  it('a sideways swipe on the calendar moves between months, forward up to the current one', async () => {
     await saveRoutine(drills)
-    await saveRoutine(stretches)
+    renderAt('/tabs/daily')
+    const calendar = (await screen.findByText('אוקטובר 2026')).closest('section')
+    expect(calendar).not.toBeNull()
+    if (!calendar) {
+      return
+    }
+
+    swipe(calendar, -120, 10)
+    expect(await screen.findByText('ספטמבר 2026')).toBeInTheDocument()
+
+    swipe(calendar, 120, -10)
+    expect(await screen.findByText('אוקטובר 2026')).toBeInTheDocument()
+
+    swipe(calendar, 120, 0)
+    swipe(calendar, -30, 0)
+    swipe(calendar, -80, 120)
+    expect(screen.getByText('אוקטובר 2026')).toBeInTheDocument()
+  })
+
+  it('archiving a card from its swipe hides it, and its days stay in the calendar', async () => {
+    await saveRoutine(drills)
     await db.dailyLogs.put(dailyLog('d1', '2026-10-25'))
     renderAt('/tabs/daily')
 
-    expect(await dayButton('מתיחות, היום')).toBeInTheDocument()
-    expect(await dayButton('חטיפי תנועה, היום')).toBeInTheDocument()
-    expect(await dayButton('יום א׳ 25.10')).toHaveAttribute('aria-pressed', 'false')
+    fireEvent.click(await screen.findByText('ארכיון', { selector: 'ion-item-option' }))
 
-    ionChange(await ionElement('ion-segment'), 'd1')
+    await waitFor(async () => expect((await db.routines.get('d1'))?.archived).toBe(true))
+    await waitFor(() => expect(screen.queryByText('חטיפי תנועה', { selector: 'h2' })).not.toBeInTheDocument())
+    expect(await dayButton('יום א׳ 25.10, חטיפי תנועה')).toBeInTheDocument()
+    expect(screen.queryByText('עוד אין אימון יומי')).not.toBeInTheDocument()
+  })
 
-    await waitFor(async () => expect(await dayButton('יום א׳ 25.10')).toHaveAttribute('aria-pressed', 'true'))
+  it('a full swipe on a card archives it', async () => {
+    await saveRoutine(drills)
+    renderAt('/tabs/daily')
+
+    expect(await screen.findByText('ארכיון', { selector: 'ion-item-option' })).toBeInTheDocument()
+    fireEvent(await ionElement('ion-item-options'), new CustomEvent('ionSwipe', { detail: { side: 'end' }, bubbles: true }))
+
+    await waitFor(async () => expect((await db.routines.get('d1'))?.archived).toBe(true))
+  })
+
+  it('a "בארכיון" row opens the archive, where "החזרה" brings a drill back', async () => {
+    await saveRoutine({ ...drills, archived: true })
+    await saveRoutine(stretches)
+    renderAt('/tabs/daily')
+
+    expect(await screen.findByText('מתיחות', { selector: 'h2' })).toBeInTheDocument()
+    fireEvent.click(await screen.findByText('בארכיון'))
+
+    await waitFor(() => expect(currentPath()).toBe('/tabs/daily/archive'))
+    expect(await screen.findByText('חטיפי תנועה', { selector: '.ion-page:not(.ion-page-hidden) h2' })).toBeInTheDocument()
+    fireEvent.click(await screen.findByText('החזרה', { selector: 'ion-item-option' }))
+
+    await waitFor(async () => expect((await db.routines.get('d1'))?.archived).toBe(false))
+    await waitFor(() => expect(currentPath()).toBe('/tabs/daily'))
+  })
+
+  it('an archived drill opens in the editor from the archive', async () => {
+    await saveRoutine({ ...drills, archived: true })
+    renderAt('/tabs/daily/archive')
+
+    fireEvent.click(await screen.findByText('חטיפי תנועה', { selector: 'h2' }))
+
+    await waitFor(() => expect(currentPath()).toBe('/tabs/daily/d1'))
   })
 
   it('the routine editor switch makes a routine daily', async () => {
