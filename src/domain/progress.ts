@@ -127,7 +127,9 @@ export function bestSet(sets: SetLog[]): SetLog | null {
   return sets.filter((set) => set.done).reduce<SetLog | null>((best, set) => (!best || beats(set, best) ? set : best), null)
 }
 
-export type Change = { name: string; kind: 'up' | 'record'; set: SetLog; target: Target }
+const CHANGE_KINDS = ['up', 'record'] as const
+
+export type Change = { name: string; kind: (typeof CHANGE_KINDS)[number]; set: SetLog; target: Target }
 
 type ExerciseState = { heaviest: number; previousBest: SetLog }
 
@@ -176,6 +178,24 @@ export function withChanges(history: WorkoutRecord[]): WorkoutWithChanges[] {
   return chronological(history, Infinity)
     .map((workout) => ({ ...workout, changes: track(workout) }))
     .reverse()
+}
+
+export function changesOf(history: WorkoutRecord[], id: string): Change[] {
+  const track = changeTracker()
+  for (const workout of chronological(history, Infinity)) {
+    const changes = track(workout)
+    if (workout.id === id) {
+      return changes
+    }
+  }
+
+  return []
+}
+
+export function changeTally(changes: Change[]): { kind: Change['kind']; count: number }[] {
+  return CHANGE_KINDS.map((kind) => ({ kind, count: changes.filter((change) => change.kind === kind).length })).filter(
+    ({ count }) => count > 0,
+  )
 }
 
 function weightsOf(sets: SetLog[]): number[] {

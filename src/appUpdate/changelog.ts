@@ -2,6 +2,14 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.11.0',
+    features: [
+      'ציר הזמן נקי יותר: התאריך בצד, ושיפורים ושיאים מופיעים כמספר',
+      'בדף האימון רואים ↑ ו-★ ליד כל תרגיל שהשתפר',
+    ],
+    fixes: [],
+  },
+  {
     version: '1.10.0',
     features: ['דלג עובר מיד לתרגיל הבא'],
     fixes: [

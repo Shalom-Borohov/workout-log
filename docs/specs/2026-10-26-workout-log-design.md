@@ -12,10 +12,10 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
 6. **Routines:** paste a note → app parses it → user fixes the result; routines also editable in-app (add / reorder / delete exercises).
 7. **Timer:** workout clock (elapsed time), plus a rest timer that stays out of sight (item 43, updated 2026-11-03).
 8. **Hosting:** public GitHub repo, GitHub Pages, auto-deploy on push to `main`.
-9. **Timeline entry:** routine, day + date, duration, sets done, plus a line of what improved (↑) and new bests (★). Tap → full workout. Other activities show name, day and duration only (item 40).
+9. **Timeline entry (updated 2026-11-04, item 50):** routine, day + date, duration, sets done, plus how many exercises improved (↑) and set new bests (★). Tap → full workout. Other activities show name, day and duration only (item 40).
 10. **Tabs:** ציר זמן (home, with "התחל אימון") · אימונים (routines; settings/backup inside) · תרגילים (exercise list with history).
 11. **Name:** אימונים. Repo: `workout-log`.
-12. **סיכום note (added 2026-10-26):** optional free-text note per workout. Tapping "סיום" opens a "סיכום האימון" sheet with a text box (may be left empty) and "שמירה"; the note can also be added/edited later from the workout's detail page. The timeline card shows its first line (truncated with …) under the changes line; the detail page shows the full text.
+12. **סיכום note (added 2026-10-26):** optional free-text note per workout. Tapping "סיום" opens a "סיכום האימון" sheet with a text box (may be left empty) and "שמירה"; the note can also be added/edited later from the workout's detail page. The detail page shows the full text; the timeline card doesn't show it (updated 2026-11-04, item 50).
 
 13. **One workout at a time (added 2026-10-27):** tapping התחל on a routine while a different workout is in progress shows an action sheet "יש אימון בתהליך" with "המשך את <routine>" (opens the workout in progress) and "ביטול". A new one starts only after the old one is finished or deleted.
 14. **Prefill after a type change (added 2026-10-27):** if the last session of an exercise used a different target type (reps vs time) than the routine now has, prefill from the routine's target with no weight, not from that session.
@@ -118,6 +118,11 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
     - The backup section's footer in Settings ends with "גיבוי אחרון: 29.10.2026 14:05", or "עוד לא בוצע גיבוי".
     - The last backup is kept on the phone and is not in the backup.
 49. **Skip moves on (added 2026-11-04):** in a running workout, "דלג" moves straight to the next exercise that is neither skipped nor done, as auto-advance does (item 26). If there is none after it, it stays, and "חזרה לתרגיל הנוכחי" leads to any earlier one. Un-skipping, and skipping while editing a finished workout, stay put. Swiping back undoes an accidental skip. Skipping never starts a rest; a skip that leaves nothing to do stops a running one.
+50. **Timeline cards (added 2026-11-04):** less text, so the timeline is easy to scan (issue #35, PRODUCT.md principle 10).
+    - A card starts with a date column: the weekday letter over the day number. There is no month: older week headers show their date range, and השבוע and שבוע שעבר are recent enough not to need one. VoiceOver reads the full date ("יום ב׳ 26.10").
+    - The day number is orange for gym workouts and grey for other activities; the weekday letter is grey for both. Why: you can tell them apart while scrolling, and the stats line still tells them apart without colour.
+    - Next to it are the name and one line: "52 דק׳ · 18 סטים · ↑3 ★1" for a gym workout, "60 דק׳ · פארק הירקון" for an activity. ↑ and ★ show how many exercises improved or set a new best, and a count of 0 is left out.
+    - The card no longer names the exercises or shows the סיכום. The detail page shows each exercise's ↑ or ★ after its name with the value ("↑ 22 ק״ג"), and the full סיכום. When an exercise appears twice in a workout, only the row holding that best set gets the badge, so the value next to it matches that row's sets and the detail page agrees with the card's count.
 
 ## Assumptions (accepted by the user)
 

@@ -53,7 +53,7 @@ Used mid-workout: one hand, sweaty fingers, quick glances between sets, screen k
 7. Never lose what's running: leaving a page, switching apps, a reload or a locked phone doesn't drop progress or a running timer. It picks up where it left off.
 8. Signals are reliable: when the app must tell the owner something, like the end of a rest, it works on any tab and over music, even at a small battery cost. It never relies on sound alone; something visible changes too.
 9. Gestures are shortcuts: swipes speed up common actions, and every swipe action can also be reached with a tap (WCAG 2.5.1). Common actions sit on the card, and ⋯ is for rare ones.
-10. Calm screens: grouping, colour and icons over more text. Keep a text label where an icon alone would be ambiguous.
+10. Calm screens: grouping, colour and icons over more text. A list row is a title and one short line; names, values and free text (סיכום, notes) sit one tap away on the detail page. When a change adds text, first look for text to remove or move. Keep a text label where an icon alone would be ambiguous, and colour is never the only cue (WCAG 1.4.1).
 
 ## Accessibility & Inclusion
 

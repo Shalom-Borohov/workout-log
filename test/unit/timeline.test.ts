@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { groupByWeek, summarize, summaryLine } from '../../src/domain/timeline'
-import { activity, done, exercise, oct, open, workout } from '../helpers/workouts'
+import type { Change } from '../../src/domain/progress'
+import { changeHolders, groupByWeek, summarize, summaryLine } from '../../src/domain/timeline'
+import { activity, done, exercise, oct, open, reps, workout } from '../helpers/workouts'
 
 describe('summarize', () => {
   it('summary counts done sets only', () => {
@@ -73,5 +74,18 @@ describe('groupByWeek', () => {
       ['11.10–17.10', ['oct15', 'oct13', 'oct11']],
       ['27.9–3.10', ['sep30']],
     ])
+  })
+})
+
+describe('changeHolders', () => {
+  it('puts a change on the row that holds its best set, once per exercise', () => {
+    const light = exercise('סקוואט', [done(20, 10)])
+    const heavy = exercise('סקוואט', [done(22, 10), open(24, 10)])
+    const unchanged = exercise('חתירה', [done(30, 10)])
+    const change: Change = { name: 'סקוואט', kind: 'up', set: done(22, 10), target: reps(10) }
+
+    const holders = changeHolders([light, heavy, unchanged], [change])
+
+    expect([...holders]).toEqual([[heavy, change]])
   })
 })

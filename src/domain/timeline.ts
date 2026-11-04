@@ -1,9 +1,9 @@
 import { FORMAT_COPY } from '../copy/format'
 import { isRoutineWorkout, locationOf, sectionsOf } from './activities'
 import { dayMonth, formatSummary, LIST_SEPARATOR } from './format'
-import { completedSets, exercisesOf } from './progress'
+import { type Change, completedSets, exercisesOf } from './progress'
 import { DAYS_PER_WEEK, MINUTE_MS } from './time'
-import type { WorkoutRecord } from './types'
+import type { SetLog, WorkoutExercise, WorkoutRecord } from './types'
 
 export function summarize(record: WorkoutRecord): { minutes: number; doneSets: number } {
   const doneSets = exercisesOf({ sections: sectionsOf(record) }).flatMap(completedSets).length
@@ -26,6 +26,21 @@ export function summaryLine(record: WorkoutRecord): string {
   const { minutes, doneSets } = summarize(record)
 
   return formatSummary(minutes, doneSets)
+}
+
+const holdsSet = (exercise: WorkoutExercise, best: SetLog) =>
+  exercise.sets.some((set) => set.done && set.weight === best.weight && set.amount === best.amount)
+
+export function changeHolders(exercises: WorkoutExercise[], changes: Change[]): Map<WorkoutExercise, Change> {
+  const holders = new Map<WorkoutExercise, Change>()
+  for (const change of changes) {
+    const holder = exercises.find((exercise) => exercise.name === change.name && holdsSet(exercise, change.set))
+    if (holder) {
+      holders.set(holder, change)
+    }
+  }
+
+  return holders
 }
 
 function weekStart(timestamp: number): number {

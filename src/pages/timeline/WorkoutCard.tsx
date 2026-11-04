@@ -1,38 +1,27 @@
 import { IonItem, IonLabel } from '@ionic/react'
 import { ChangeBadge } from '../../components/ChangeBadge'
 import { recordName } from '../../domain/activities'
-import { formatAmount, formatDay, formatWeight } from '../../domain/format'
-import type { Change, WorkoutWithChanges } from '../../domain/progress'
+import { LIST_SEPARATOR } from '../../domain/format'
+import { changeTally, type WorkoutWithChanges } from '../../domain/progress'
 import { summaryLine } from '../../domain/timeline'
 import { TIMELINE_PATH, workoutDetailPath } from '../../navigation/paths'
-
-const MAX_CARD_CHANGES = 3
-
-function changeLabel({ name, set, target }: Change): string {
-  const value = set.weight === null ? formatAmount(set.amount, target) : formatWeight(set.weight)
-
-  return `${name} ${value}`
-}
+import { DateColumn } from './DateColumn'
 
 export function WorkoutCard({ workout }: { workout: WorkoutWithChanges }) {
-  const [firstSummaryLine] = workout.summary.trim().split('\n')
+  const tally = changeTally(workout.changes)
 
   return (
     <IonItem button detail routerLink={workoutDetailPath(TIMELINE_PATH, workout.id)}>
+      <DateColumn record={workout} />
       <IonLabel className="workout-card">
-        <div className="workout-card-heading">
-          <h2 className="workout-card-title">{recordName(workout)}</h2>
-          <span className="workout-card-date">{formatDay(workout.startedAt)}</span>
-        </div>
-        <p className="workout-card-meta">{summaryLine(workout)}</p>
-        {workout.changes.length > 0 && (
-          <div className="workout-card-changes">
-            {workout.changes.slice(0, MAX_CARD_CHANGES).map((change) => (
-              <ChangeBadge key={change.name} kind={change.kind} label={changeLabel(change)} />
-            ))}
-          </div>
-        )}
-        {firstSummaryLine && <p className="workout-card-summary">{firstSummaryLine}</p>}
+        <h2 className="workout-card-title">{recordName(workout)}</h2>
+        <p className="workout-card-meta">
+          <span className="workout-card-stats">{summaryLine(workout)}</span>
+          {tally.length > 0 && LIST_SEPARATOR}
+          {tally.map(({ kind, count }) => (
+            <ChangeBadge key={kind} kind={kind} label={String(count)} />
+          ))}
+        </p>
       </IonLabel>
     </IonItem>
   )
