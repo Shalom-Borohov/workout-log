@@ -4,6 +4,7 @@ import { isDrillColor } from '../domain/drillColors'
 import type { DailyExercise, DailyLog, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
 import { markBackedUp } from './backupStatus'
 import { db } from './db'
+import { isNumber, isObject, isString } from './guards'
 import {
   carryNotesForward,
   colorDailyRoutines,
@@ -44,12 +45,6 @@ type LegacyBackup = {
 }
 
 type Guard<T> = (value: unknown) => value is T
-
-const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
-
-const isString = (value: unknown): value is string => typeof value === 'string'
-
-const isNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
 
 const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean'
 

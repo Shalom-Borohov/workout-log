@@ -3,7 +3,17 @@ import { useFinishedWorkouts } from '../../data/hooks'
 import { saveWorkout } from '../../data/repo'
 import { previousExerciseLookup } from '../../domain/progress'
 import type { SetLog, Workout } from '../../domain/types'
-import { currentIndex, editSet, firstUnfinished, isDone, itemAt, itemRefs, nextUnfinished } from '../../domain/workoutEdits'
+import {
+  currentIndex,
+  editSet,
+  firstUnfinished,
+  isDone,
+  isSkipped,
+  itemAt,
+  itemRefs,
+  nextUnfinished,
+  toggleSkip,
+} from '../../domain/workoutEdits'
 import { followIndex } from '../../domain/workoutStructure'
 import { useRestTimer } from './useRestTimer'
 
@@ -21,7 +31,7 @@ export function useLiveWorkout(initial: Workout) {
   const item = itemAt(workout, ref)
   const active = workout.finishedAt === null
   const history = useFinishedWorkouts()
-  const restTimer = useRestTimer()
+  const restTimer = useRestTimer(initial.id)
 
   const previous = useMemo(
     () => history && previousExerciseLookup(history, workout.startedAt),
@@ -62,15 +72,24 @@ export function useLiveWorkout(initial: Workout) {
     }
 
     if (currentIndex(latest.current) === null) {
-      restTimer.stop()
-
       return
     }
     restTimer.start()
 
-    if (!isDone(itemAt(latest.current, ref))) {
-      return
+    if (isDone(itemAt(latest.current, ref))) {
+      moveOn()
     }
+  }
+
+  function toggleItemSkip() {
+    apply((current) => toggleSkip(current, ref))
+
+    if (active && isSkipped(itemAt(latest.current, ref))) {
+      moveOn()
+    }
+  }
+
+  function moveOn() {
     const next = nextUnfinished(latest.current, index)
 
     if (next !== null) {
@@ -82,5 +101,21 @@ export function useLiveWorkout(initial: Workout) {
     return saveWorkout({ ...latest.current, summary, finishedAt: Date.now() })
   }
 
-  return { workout, index, travel, total, ref, item, active, previous, restTimer, apply, move, step, changeSet, finish }
+  return {
+    workout,
+    index,
+    travel,
+    total,
+    ref,
+    item,
+    active,
+    previous,
+    restTimer,
+    apply,
+    move,
+    step,
+    changeSet,
+    toggleItemSkip,
+    finish,
+  }
 }

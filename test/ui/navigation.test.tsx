@@ -1,20 +1,10 @@
-import { useIonRouter } from '@ionic/react'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
+import { BackGesture } from '../helpers/BackGesture'
 import { resetDb } from '../helpers/db'
 import { renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, open, reps, routine, workout } from '../helpers/workouts'
-
-function BackGesture() {
-  const router = useIonRouter()
-
-  return (
-    <button type="button" data-testid="swipe-back" onClick={() => router.goBack()}>
-      back
-    </button>
-  )
-}
 
 const renderApp = (path: string) => renderAt(path, <BackGesture />)
 

@@ -1,10 +1,11 @@
-import { act, screen } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
 import { ionElement } from '../helpers/ionic'
+import { cardButton, heading, openRest, restButton, spyPlayed, tickSquat as tick } from '../helpers/live'
 import { renderAt } from '../helpers/renderAt'
 import { exercise, oct, open, workout } from '../helpers/workouts'
 
@@ -16,14 +17,6 @@ const squats = (finishedAt: number | null, sets = 3) =>
     finishedAt,
     exercises: [exercise('סקוואט', Array.from({ length: sets }, () => open(60, 10)))],
   })
-
-const restButton = () => document.querySelector('ion-button.rest-button')
-
-const openRest = async (user: ReturnType<typeof userEvent.setup>) => user.click(await ionElement('ion-button.rest-button'))
-
-async function tick(user: ReturnType<typeof userEvent.setup>, set: number) {
-  await user.click(await screen.findByRole('button', { name: `סקוואט סט ${set}`, pressed: false }))
-}
 
 beforeEach(async () => {
   await resetDb()
@@ -71,13 +64,7 @@ describe('live rest timer', () => {
 
   it('plays a sound and marks the timer when the rest is over', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
-    const played: boolean[] = []
-
-    vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(function (this: HTMLMediaElement) {
-      played.push(this.muted)
-
-      return Promise.resolve()
-    })
+    const played = spyPlayed()
     await saveWorkout(squats(null))
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     renderAt('/tabs/timeline/workout/w1')
@@ -114,13 +101,7 @@ describe('live rest timer', () => {
 
   it('ends the rest with the sound when − cuts it shorter than the time left', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
-    const played: boolean[] = []
-
-    vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(function (this: HTMLMediaElement) {
-      played.push(this.muted)
-
-      return Promise.resolve()
-    })
+    const played = spyPlayed()
     await saveWorkout(squats(null))
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     renderAt('/tabs/timeline/workout/w1')
@@ -200,7 +181,29 @@ describe('live rest timer', () => {
     await tick(user, 2)
 
     expect(await screen.findByRole('button', { name: 'סקוואט סט 2', pressed: true })).toBeInTheDocument()
-    expect(restButton()).toBeNull()
+    await waitFor(() => expect(restButton()).toBeNull())
+  })
+
+  it('stops a running rest when skipping the last exercise left', async () => {
+    await saveWorkout(
+      workout({
+        id: 'w1',
+        startedAt: oct(26),
+        finishedAt: null,
+        exercises: [exercise('סקוואט', [open(60, 10)]), exercise('חתירה', [open(30, 12)])],
+      }),
+    )
+    const user = userEvent.setup()
+    renderAt('/tabs/timeline/workout/w1')
+
+    await tick(user, 1)
+    expect(await heading('חתירה')).toBeInTheDocument()
+    expect(await ionElement('ion-button.rest-button')).toBeInTheDocument()
+
+    await user.click(await cardButton('דלג'))
+
+    expect(await screen.findByText('דילגת על התרגיל')).toBeInTheDocument()
+    await waitFor(() => expect(restButton()).toBeNull())
   })
 
   it('does not rest after the last set of the workout', async () => {

@@ -5,7 +5,7 @@ import { MIN_REST_SECONDS } from '../../domain/rest'
 import { SECOND_MS } from '../../domain/time'
 import { useNow } from '../../hooks/useNow'
 import { LIVE_COPY } from './copy'
-import type { Rest } from './useRestTimer'
+import type { Rest } from '../../rest/restClock'
 import './controls.css'
 
 export function RestButton({ rest, onToggle }: { rest: Rest; onToggle: () => void }) {
