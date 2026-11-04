@@ -21,4 +21,6 @@ export const TIMELINE_COPY = {
   startTimeMustBePast: 'שעת ההתחלה צריכה להיות בעבר',
   mustEndByNow: 'האימון צריך להסתיים עד עכשיו',
   maxDuration: (minutes: number) => `משך האימון עד ${minutes} דקות`,
+  neverBackedUp: 'עוד לא גיבית',
+  lastBackup: (days: number) => `הגיבוי האחרון לפני ${days} ימים`,
 } as const

@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable, type Transaction } from 'dexie'
-import type { BackgroundSetting, DailyLog, Routine, WorkoutRecord } from '../domain/types'
+import type { DailyLog, Routine, Setting, WorkoutRecord } from '../domain/types'
 import {
   carryNotesForward,
   type LegacyRecord,
@@ -33,7 +33,8 @@ function upgradeActivities(transaction: Transaction) {
 class WorkoutDb extends Dexie {
   routines!: EntityTable<Routine, 'id'>
   workouts!: EntityTable<WorkoutRecord, 'id'>
-  settings!: EntityTable<BackgroundSetting, 'key'>
+  // Dexie's default insert type doesn't distribute over a union, so inserts take a whole Setting.
+  settings!: EntityTable<Setting, 'key', Setting>
   dailyLogs!: EntityTable<DailyLog, 'id'>
 
   constructor() {

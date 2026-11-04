@@ -1,7 +1,5 @@
 export const SETTINGS_COPY = {
-  actionFailed: 'הפעולה נכשלה',
   backupRestored: 'הגיבוי שוחזר',
-  backup: 'גיבוי',
   exportBackup: 'ייצוא גיבוי',
   importBackup: 'ייבוא גיבוי',
   importReplacesAllData: 'הייבוא יחליף את כל הנתונים',
@@ -9,6 +7,8 @@ export const SETTINGS_COPY = {
   backupFooter:
     'הנתונים נשמרים רק במכשיר הזה. הייצוא יוצר קובץ עם כל האימונים וההיסטוריה, שאפשר לשמור בקבצים ולשחזר ממנו בייבוא.',
   backupFile: 'קובץ גיבוי',
+  noBackupYet: 'עוד לא בוצע גיבוי',
+  lastBackup: (when: string) => `גיבוי אחרון: ${when}`,
   history: 'היסטוריה',
   exportHistory: 'ייצוא היסטוריה',
   historyFooter: 'קובץ טקסט עם כל האימונים, לקריאה או לשמירה בפתקים.',
