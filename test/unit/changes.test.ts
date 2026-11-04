@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { withChanges } from '../../src/domain/progress'
+import { type Change, changeTally, withChanges } from '../../src/domain/progress'
 import type { Workout } from '../../src/domain/types'
 import { activity, done, exercise, oct, reps, workout } from '../helpers/workouts'
 
@@ -89,5 +89,18 @@ describe('withChanges', () => {
       ['boxing', []],
       ['a', []],
     ])
+  })
+})
+
+describe('changeTally', () => {
+  const change = (name: string, kind: Change['kind']): Change => ({ name, kind, set: done(20, 10), target: reps(10) })
+
+  it('counts improvements before new bests and leaves out kinds with none', () => {
+    expect(changeTally([change('סקוואט', 'record'), change('לחיצה', 'up'), change('חתירה', 'up')])).toEqual([
+      { kind: 'up', count: 2 },
+      { kind: 'record', count: 1 },
+    ])
+    expect(changeTally([change('סקוואט', 'record')])).toEqual([{ kind: 'record', count: 1 }])
+    expect(changeTally([])).toEqual([])
   })
 })

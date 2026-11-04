@@ -3,6 +3,7 @@ import {
   amountUnit,
   countLabel,
   formatAmount,
+  formatChange,
   formatClock,
   formatDateTime,
   formatDay,
@@ -14,6 +15,7 @@ import {
   isoDate,
   shortDate,
   toDisplayAmount,
+  weekdayLetter,
 } from '../../src/domain/format'
 import { done, oct, reps, seconds } from '../helpers/workouts'
 
@@ -53,6 +55,21 @@ describe('formatClock', () => {
     expect(formatClock(0)).toBe('0:00')
     expect(formatClock(245999)).toBe('4:05')
     expect(formatClock(3729000)).toBe('1:02:09')
+  })
+})
+
+describe('weekdayLetter', () => {
+  it('shows the Hebrew weekday letter', () => {
+    expect(weekdayLetter(oct(26))).toBe('ב׳')
+    expect(weekdayLetter(oct(31, 23, 59))).toBe('ש׳')
+  })
+})
+
+describe('formatChange', () => {
+  it('shows the weight, or the amount when there is none', () => {
+    expect(formatChange({ name: 'סקוואט', kind: 'up', set: done(22.5, 10), target: reps(10) })).toBe('22.5 ק״ג')
+    expect(formatChange({ name: 'מתח', kind: 'record', set: done(null, 8), target: reps(8) })).toBe('8')
+    expect(formatChange({ name: 'פלאנק', kind: 'up', set: done(null, 90), target: seconds(60) })).toBe('90 שנ׳')
   })
 })
 

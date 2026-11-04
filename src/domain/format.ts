@@ -1,6 +1,6 @@
 import { COMMON_COPY } from '../copy/common'
 import { FORMAT_COPY } from '../copy/format'
-import { completedSets } from './progress'
+import { type Change, completedSets } from './progress'
 import { SECOND_MS, SECONDS_PER_HOUR, SECONDS_PER_MINUTE } from './time'
 import type { SetLog, Target, WorkoutExercise } from './types'
 
@@ -38,8 +38,12 @@ export function shortDate(timestamp: number, now: number): string {
   return `${dayMonth(timestamp)}.${pad(year % YEARS_PER_CENTURY)}`
 }
 
+export function weekdayLetter(timestamp: number): string {
+  return FORMAT_COPY.weekdays[new Date(timestamp).getDay()]
+}
+
 export function formatDay(timestamp: number): string {
-  return FORMAT_COPY.day(FORMAT_COPY.weekdays[new Date(timestamp).getDay()], dayMonth(timestamp))
+  return FORMAT_COPY.day(weekdayLetter(timestamp), dayMonth(timestamp))
 }
 
 export function formatClock(durationMs: number): string {
@@ -87,6 +91,10 @@ export function formatAmount(amount: number, target: Target): string {
   }
 
   return amount % SECONDS_PER_MINUTE === 0 ? FORMAT_COPY.minutes(amount / SECONDS_PER_MINUTE) : FORMAT_COPY.seconds(amount)
+}
+
+export function formatChange({ set, target }: Change): string {
+  return set.weight === null ? formatAmount(set.amount, target) : formatWeight(set.weight)
 }
 
 export function formatSet(set: SetLog, target: Target): string {

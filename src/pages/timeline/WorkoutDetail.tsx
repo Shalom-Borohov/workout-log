@@ -11,12 +11,14 @@ import {
   IonToolbar,
   useIonRouter,
 } from '@ionic/react'
+import { useMemo } from 'react'
 import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
-import { useWorkout } from '../../data/hooks'
+import { useFinishedRecords, useWorkout } from '../../data/hooks'
 import { deleteWorkout } from '../../data/repo'
 import { recordName, sectionsOf } from '../../domain/activities'
 import { formatDay } from '../../domain/format'
+import { changesOf } from '../../domain/progress'
 import { summaryLine } from '../../domain/timeline'
 import type { WorkoutRecord } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
@@ -30,6 +32,8 @@ const overview = (workout: WorkoutRecord) => `${formatDay(workout.startedAt)} ·
 
 export function WorkoutDetail({ id }: { id: string }) {
   const workout = useWorkout(id)
+  const records = useFinishedRecords()
+  const changes = useMemo(() => (records ? changesOf(records, id) : []), [records, id])
   const router = useIonRouter()
   const confirmDelete = useConfirmDelete()
 
@@ -78,7 +82,7 @@ export function WorkoutDetail({ id }: { id: string }) {
             </IonHeader>
             <p className="workout-overview">{overview(workout)}</p>
             <SummaryEditor workout={workout} />
-            <WorkoutSections sections={sectionsOf(workout)} />
+            <WorkoutSections sections={sectionsOf(workout)} changes={changes} />
             <IonList inset className="workout-delete">
               <IonItem button detail={false} onClick={confirmRemove}>
                 <IonLabel color="danger" className="ion-text-center">

@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { activeWorkout, finishedWorkouts, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
@@ -30,7 +30,7 @@ describe('timeline', () => {
     expect((await screen.findByText('התחל אימון')).closest('ion-footer')).not.toBeNull()
   })
 
-  it('shows workouts grouped by week with changes', async () => {
+  it('shows workouts grouped by week', async () => {
     await saveWorkout(
       workout({ id: 'w0', startedAt: oct(5), exercises: [exercise('סקוואט', [done(25, 10)]), exercise('לחיצה', [done(28, 8)])] }),
     )
@@ -47,18 +47,6 @@ describe('timeline', () => {
 
     await expectInOrder(['השבוע', 'יום ב׳ 26.10', 'שבוע שעבר', 'יום ב׳ 19.10', '4.10–10.10', 'יום ב׳ 5.10'])
     expect(screen.getByText('45 דק׳ · 3 סטים')).toBeInTheDocument()
-    expect(within(screen.getByText('סקוואט 22 ק״ג')).getByLabelText('שיפור')).toBeInTheDocument()
-    expect(within(screen.getByText('לחיצה 30 ק״ג')).getByLabelText('שיא חדש')).toBeInTheDocument()
-  })
-
-  it('card shows at most three change badges', async () => {
-    const names = ['סקוואט', 'לחיצה', 'חתירה', 'מתח']
-    await saveWorkout(workout({ id: 'w0', startedAt: oct(19), exercises: names.map((name) => exercise(name, [done(20, 10)])) }))
-    await saveWorkout(workout({ id: 'w1', startedAt: oct(26, 8), exercises: names.map((name) => exercise(name, [done(20, 12)])) }))
-    renderAt('/tabs/timeline')
-
-    expect(await screen.findAllByLabelText('שיפור')).toHaveLength(3)
-    expect(screen.queryByText('מתח 20 ק״ג')).not.toBeInTheDocument()
   })
 
   it('week header shows workouts and sets count', async () => {
@@ -68,17 +56,6 @@ describe('timeline', () => {
     renderAt('/tabs/timeline')
 
     await expectInOrder(['השבוע', '2 אימונים · 3 סטים', 'שבוע שעבר', 'אימון אחד · סט אחד'])
-  })
-
-  it('card shows first line of summary', async () => {
-    await saveWorkout({
-      ...workout({ id: 'w1', startedAt: oct(26, 8), exercises: [exercise('סקוואט', [done(20, 10)])] }),
-      summary: 'הרגשתי חזק\nהברך קצת כאבה',
-    })
-    renderAt('/tabs/timeline')
-
-    expect(await screen.findByText('הרגשתי חזק')).toBeInTheDocument()
-    expect(screen.queryByText(/הברך קצת כאבה/)).not.toBeInTheDocument()
   })
 
   it('start with one routine opens live workout', async () => {
