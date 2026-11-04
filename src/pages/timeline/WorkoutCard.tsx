@@ -4,7 +4,7 @@ import { recordName } from '../../domain/activities'
 import { formatAmount, formatDay, formatWeight } from '../../domain/format'
 import type { Change, WorkoutWithChanges } from '../../domain/progress'
 import { summaryLine } from '../../domain/timeline'
-import { workoutDetailPath } from '../../navigation/paths'
+import { TIMELINE_PATH, workoutDetailPath } from '../../navigation/paths'
 
 const MAX_CARD_CHANGES = 3
 
@@ -18,7 +18,7 @@ export function WorkoutCard({ workout }: { workout: WorkoutWithChanges }) {
   const [firstSummaryLine] = workout.summary.trim().split('\n')
 
   return (
-    <IonItem button detail routerLink={workoutDetailPath(workout.id)}>
+    <IonItem button detail routerLink={workoutDetailPath(TIMELINE_PATH, workout.id)}>
       <IonLabel className="workout-card">
         <div className="workout-card-heading">
           <h2 className="workout-card-title">{recordName(workout)}</h2>

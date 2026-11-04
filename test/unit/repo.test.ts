@@ -7,12 +7,18 @@ import {
   finishedRecords,
   finishedWorkouts,
   dailyLogs,
+  logDailyDay,
   saveRecord,
+  saveRoutine,
   saveWorkout,
+  addDailyRoutine,
+  setRoutineDaily,
   toggleDailyLog,
+  updateDailyLog,
 } from '../../src/data/repo'
+import { db } from '../../src/data/db'
 import { resetDb } from '../helpers/db'
-import { activity, dailyLog, done, exercise, reps, routine, workout } from '../helpers/workouts'
+import { activity, dailyLog, dailyRoutine, done, exercise, reps, routine, workout } from '../helpers/workouts'
 
 describe('repo', () => {
   beforeEach(resetDb)
@@ -108,5 +114,41 @@ describe('repo', () => {
 
     await Promise.all([toggleDailyLog(log), toggleDailyLog(log)])
     expect(await dailyLogs()).toEqual([log])
+  })
+
+  it('logging a day adds it once, and never replaces or removes a log already there', async () => {
+    const log = dailyLog('d1', '2026-10-25', [{ name: 'גשר ישבן', sets: 3, target: reps(15) }])
+    const edited = { ...log, exercises: [{ name: 'גשר ישבן', sets: 2, target: reps(15) }] }
+
+    await Promise.all([logDailyDay(log), logDailyDay(log)])
+    expect(await dailyLogs()).toEqual([log])
+
+    await updateDailyLog(edited)
+    await logDailyDay(log)
+    expect(await dailyLogs()).toEqual([edited])
+  })
+
+  it('a new daily routine and one switched to daily take the least used colour', async () => {
+    await saveRoutine(dailyRoutine('d1', 'יציבה'))
+    await saveRoutine(routine('r1', 'גוף מלא', []))
+
+    await addDailyRoutine(routine('d2', 'מוביליות', []))
+    await setRoutineDaily('r1', true)
+
+    expect(await db.routines.get('d2')).toMatchObject({ daily: true, color: 'orange' })
+    expect(await db.routines.get('r1')).toMatchObject({ daily: true, color: 'yellow' })
+  })
+
+  it('updating a daily log changes its drills, but never brings back a log already removed', async () => {
+    const log = dailyLog('d1', '2026-10-25', [{ name: 'גשר ישבן', sets: 3, target: reps(15) }])
+    const edited = { ...log, exercises: [{ name: 'גשר ישבן', sets: 2, target: reps(15) }] }
+
+    await toggleDailyLog(log)
+    await updateDailyLog(edited)
+    expect(await dailyLogs()).toEqual([edited])
+
+    await toggleDailyLog(log)
+    await updateDailyLog(edited)
+    expect(await dailyLogs()).toEqual([])
   })
 })

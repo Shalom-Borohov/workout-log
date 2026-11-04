@@ -7,6 +7,7 @@ import { WhatsNewSheet } from './appUpdate/WhatsNewSheet'
 import { COMMON_COPY } from './copy/common'
 import { LegacyWorkoutLink } from './navigation/LegacyWorkoutLink'
 import { DAILY_PATH, EXERCISES_PATH, isWorkoutPath, ROUTINES_PATH, TIMELINE_PATH } from './navigation/paths'
+import { DailyArchivePage } from './pages/daily/DailyArchivePage'
 import { DailyPage } from './pages/daily/DailyPage'
 import { ExerciseHistoryPage } from './pages/exercises/ExerciseHistoryPage'
 import { ExercisesPage } from './pages/exercises/ExercisesPage'
@@ -27,7 +28,7 @@ export function Tabs() {
     <IonTabs>
       <IonRouterOutlet>
         <Route path="timeline" element={<TimelinePage />} />
-        <Route path="timeline/:id" element={<WorkoutDetailPage />} />
+        <Route path="timeline/:id" element={<WorkoutDetailPage tab={TIMELINE_PATH} />} />
         <Route path="timeline/workout/:id" element={<LiveWorkoutPage tab={TIMELINE_PATH} />} />
         <Route path="timeline/settings" element={<SettingsPage tab={TIMELINE_PATH} />} />
         <Route path="routines" element={<RoutinesPage />} />
@@ -36,6 +37,9 @@ export function Tabs() {
         <Route path="routines/settings" element={<SettingsPage tab={ROUTINES_PATH} />} />
         <Route path="routines/:id" element={<RoutineEditPage tab={ROUTINES_PATH} />} />
         <Route path="daily" element={<DailyPage />} />
+        <Route path="daily/record/:id" element={<WorkoutDetailPage tab={DAILY_PATH} />} />
+        <Route path="daily/workout/:id" element={<LiveWorkoutPage tab={DAILY_PATH} />} />
+        <Route path="daily/archive" element={<DailyArchivePage />} />
         <Route path="daily/:id" element={<RoutineEditPage tab={DAILY_PATH} />} />
         <Route path="exercises" element={<ExercisesPage />} />
         <Route path="exercises/:name" element={<ExerciseHistoryPage />} />

@@ -1,12 +1,13 @@
-import { IonItem, IonLabel, useIonRouter } from '@ionic/react'
+import { IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, useIonRouter } from '@ionic/react'
 import type { MouseEvent } from 'react'
 import { SetCheck } from '../../components/SetCheck'
-import { toggleDailyLog } from '../../data/repo'
+import { toggleDailyLog, updateRoutine } from '../../data/repo'
 import { drillsLine, newDailyLog } from '../../domain/daily'
 import { isoDate } from '../../domain/format'
 import type { Routine } from '../../domain/types'
 import { DAILY_PATH, routinePath } from '../../navigation/paths'
 import { DAILY_COPY } from './copy'
+import { DrillName } from './DrillName'
 
 interface TodayCardProps {
   routine: Routine
@@ -19,16 +20,27 @@ export function TodayCard({ routine, done }: TodayCardProps) {
 
   function toggle(event: MouseEvent) {
     event.stopPropagation()
-    void toggleDailyLog(newDailyLog(routine.id, isoDate(Date.now())))
+    void toggleDailyLog(newDailyLog(routine, isoDate(Date.now())))
+  }
+
+  function archive() {
+    void updateRoutine(routine.id, (current) => ({ ...current, archived: true }))
   }
 
   return (
-    <IonItem button detail={false} onClick={() => router.push(routinePath(DAILY_PATH, routine.id))}>
-      <IonLabel>
-        <h2>{routine.name}</h2>
-        {drills && <p>{drills}</p>}
-      </IonLabel>
-      <SetCheck label={DAILY_COPY.today(routine.name)} done={done} size="small" onToggle={toggle} />
-    </IonItem>
+    <IonItemSliding>
+      <IonItem button detail={false} onClick={() => router.push(routinePath(DAILY_PATH, routine.id))}>
+        <IonLabel>
+          <DrillName routine={routine} />
+          {drills && <p>{drills}</p>}
+        </IonLabel>
+        <SetCheck label={DAILY_COPY.today(routine.name)} done={done} size="small" onToggle={toggle} />
+      </IonItem>
+      <IonItemOptions side="end" onIonSwipe={archive}>
+        <IonItemOption color="medium" expandable onClick={archive}>
+          {DAILY_COPY.archive}
+        </IonItemOption>
+      </IonItemOptions>
+    </IonItemSliding>
   )
 }

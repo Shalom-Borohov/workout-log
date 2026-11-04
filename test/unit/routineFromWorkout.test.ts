@@ -34,6 +34,8 @@ const base: Routine = {
   id: 'r1',
   name: 'גוף מלא',
   daily: false,
+  color: null,
+  archived: false,
   createdAt: 3,
   updatedAt: 5,
   sections: [
@@ -52,6 +54,8 @@ describe('routineFromWorkout', () => {
       id: 'r1',
       name: 'גוף מלא',
       daily: false,
+      color: null,
+      archived: false,
       createdAt: 3,
       updatedAt: 900,
       sections: [

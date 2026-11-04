@@ -16,6 +16,7 @@ export const COMMON_COPY = {
   settings: 'הגדרות',
   sets: 'סטים',
   reps: 'חזרות',
+  seconds: 'שניות',
   skipped: 'דילגת',
   summary: 'סיכום',
   workoutSummary: 'סיכום האימון',
