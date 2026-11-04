@@ -48,9 +48,13 @@ export async function deleteWorkout(id: string) {
   await db.workouts.delete(id)
 }
 
+const finished = () => db.workouts.where('finishedAt').above(0)
+
 export function finishedRecords(): Promise<WorkoutRecord[]> {
-  return db.workouts.where('finishedAt').above(0).reverse().sortBy('startedAt')
+  return finished().reverse().sortBy('startedAt')
 }
+
+export const finishedCount = () => finished().count()
 
 export async function finishedWorkouts(): Promise<Workout[]> {
   return (await finishedRecords()).filter(isRoutineWorkout)

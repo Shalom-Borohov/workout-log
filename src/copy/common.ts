@@ -1,4 +1,6 @@
 export const COMMON_COPY = {
+  actionFailed: 'הפעולה נכשלה',
+  backup: 'גיבוי',
   cancel: 'ביטול',
   save: 'שמירה',
   edit: 'עריכה',

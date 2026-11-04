@@ -24,6 +24,7 @@ import { groupByWeek } from '../../domain/timeline'
 import { TIMELINE_PATH } from '../../navigation/paths'
 import { ActiveWorkoutBanner } from './ActiveWorkoutBanner'
 import { ActivityModal } from './ActivityModal'
+import { BackupReminder } from './BackupReminder'
 import { PastWorkoutModal } from './PastWorkoutModal'
 import { StartWorkoutButton } from './StartWorkoutButton'
 import { WeekSection } from './WeekSection'
@@ -69,6 +70,7 @@ export function TimelinePage() {
             <IonTitle size="large">{COMMON_COPY.timeline}</IonTitle>
           </IonToolbar>
         </IonHeader>
+        <BackupReminder records={workouts?.length} now={now} />
         {workouts?.length === 0 && <EmptyState title={TIMELINE_COPY.emptyTitle} body={TIMELINE_COPY.emptyBody} />}
         {groups.map((group) => (
           <WeekSection key={group.title} title={group.title} workouts={group.workouts} />

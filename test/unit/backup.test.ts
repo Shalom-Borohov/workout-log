@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { exportBackup, parseBackup, restoreBackup } from '../../src/data/backup'
 import { db } from '../../src/data/db'
-import { setBackground } from '../../src/data/background'
+import { background, setBackground } from '../../src/data/background'
+import { backupStatus } from '../../src/data/backupStatus'
 import { finishedRecords, finishedWorkouts, saveRecord, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
 import { activity, dailyLog, done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
@@ -254,7 +255,15 @@ describe('backup', () => {
     await restoreBackup(parseBackup(json))
 
     expect(Object.keys(json).sort()).toEqual(['dailyLogs', 'exportedAt', 'routines', 'version', 'workouts'])
-    expect(await db.settings.count()).toBe(1)
+    expect(await background()).toBeDefined()
+  })
+
+  it('a restore counts as a backup made when the file was exported', async () => {
+    const active = workout({ id: 'w2', startedAt: oct(25), finishedAt: null, exercises: [] })
+
+    await restoreBackup(parseBackup({ version: 2, exportedAt: oct(25, 12), routines: [], workouts: [past, boxing, active] }))
+
+    expect(await backupStatus()).toEqual({ backedUpAt: oct(25, 12), records: 2 })
   })
 
   it('carries next-time notes forward from a backup made before notes carried over, but not from a newer one', () => {

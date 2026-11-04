@@ -100,3 +100,14 @@ export interface BackgroundSetting {
   key: 'background'
   image: Blob
 }
+
+export interface BackupStatus {
+  backedUpAt: number | null
+  records: number
+}
+
+export interface BackupSetting extends BackupStatus {
+  key: 'backup'
+}
+
+export type Setting = BackgroundSetting | BackupSetting
