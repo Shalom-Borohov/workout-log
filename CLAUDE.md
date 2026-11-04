@@ -8,7 +8,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `docs/specs/2026-10-26-workout-log-design.md` is the source of truth for behaviour. Read it before changing a flow. Record new product decisions there as numbered items marked "(added YYYY-MM-DD)".
 - `PRODUCT.md` holds the product context: users, principles, Hebrew terms, and the iOS-native design commitments. Where Apple HIG and the Impeccable design guidance conflict, HIG wins.
-
 ## Commands
 
 ```bash
@@ -43,6 +42,7 @@ Code is in three layers, and dependencies point downward only:
 - `src/pages/<feature>/` (`live`, `routines`, `timeline`, `exercises`, `settings`): grouped by feature. Each folder holds that screen's components, hooks, CSS and copy, and features don't import from each other.
 - Shared UI goes in `src/components/`, `src/hooks/`, `src/navigation/` and `src/copy/`. Move code there only once a second feature needs it.
 - `src/appUpdate/`: the update bar, the "מה חדש" sheet and `changelog.ts`, rendered by `Tabs.tsx` and Settings.
+- `src/rest/`: the rest timer's app-level clock and its sound. `Tabs.tsx` mounts it (`RestClock`), so a rest keeps running and rings on any tab. The running rest is saved in localStorage (`src/data/runningRest.ts`), and the clock re-syncs from it when the app returns from the background. It stops itself when the active workout is finished, deleted or done.
 
 Updates:
 

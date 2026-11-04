@@ -48,6 +48,12 @@ Used mid-workout: one hand, sweaty fingers, quick glances between sets, screen k
    - Wherever iOS uses a swipe, offer it too: swipe actions on list rows, swiping between periods such as months, and swipe-down to close a sheet. A swipe is always a shortcut for a visible control, never the only way. Swipes never start within 20px of the screen edges, which belong to swipe-back.
 3. Progress at a glance.
 4. The phone owns the data: nothing leaves the device unless the owner exports it.
+5. Move on by itself: after the action that finishes something (the last set, a skip), go to the next thing at once. Undo is a swipe back, not a dialog or a toast.
+6. Out of sight until it matters: secondary information sits behind one small sign, and the screen shows the current set.
+7. Never lose what's running: leaving a page, switching apps, a reload or a locked phone doesn't drop progress or a running timer. It picks up where it left off.
+8. Signals are reliable: when the app must tell the owner something, like the end of a rest, it works on any tab and over music, even at a small battery cost. It never relies on sound alone; something visible changes too.
+9. Gestures are shortcuts: swipes speed up common actions, and every swipe action can also be reached with a tap (WCAG 2.5.1). Common actions sit on the card, and ⋯ is for rare ones.
+10. Calm screens: grouping, colour and icons over more text. Keep a text label where an icon alone would be ambiguous.
 
 ## Accessibility & Inclusion
 
