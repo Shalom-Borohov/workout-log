@@ -2,6 +2,7 @@ import { prefill, type PreviousExerciseLookup, targetAmount, toWorkoutExercise }
 import {
   type Change,
   DEFAULT_SETS,
+  insertAfter,
   itemSets,
   moveItem as moveInList,
   newItem,
@@ -25,15 +26,29 @@ export function commonSets(section: WorkoutSection): number {
   )
 }
 
-export function addItem(workout: Workout, sectionIndex: number, routineItem: RoutineItem, previous: PreviousExerciseLookup): Workout {
-  const count = itemSets(routineItem, commonSets(workout.sections[sectionIndex]))
+function workoutItem(routineItem: RoutineItem, section: WorkoutSection, previous: PreviousExerciseLookup): WorkoutItem {
+  const count = itemSets(routineItem, commonSets(section))
 
-  const item: WorkoutItem = {
+  return {
     id: routineItem.id,
     exercises: routineItem.exercises.map((exercise) => toWorkoutExercise(exercise, count, previous)),
   }
+}
+
+export function addItem(workout: Workout, sectionIndex: number, routineItem: RoutineItem, previous: PreviousExerciseLookup): Workout {
+  const item = workoutItem(routineItem, workout.sections[sectionIndex], previous)
 
   return mapItems(workout, sectionIndex, (items) => [...items, item])
+}
+
+export function insertItemAfter(workout: Workout, afterId: string, routineItem: RoutineItem, previous: PreviousExerciseLookup): Workout {
+  const located = locateItem(workout, afterId)
+  if (!located) {
+    return workout
+  }
+  const item = workoutItem(routineItem, workout.sections[located.ref.section], previous)
+
+  return mapItems(workout, located.ref.section, (items) => insertAfter(items, afterId, item))
 }
 
 function mapItems(workout: Workout, sectionIndex: number, change: (items: WorkoutItem[]) => WorkoutItem[]): Workout {

@@ -2,59 +2,50 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonTo
 import { useState } from 'react'
 import { HALF_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
-import type { PreviousExerciseLookup } from '../../domain/progress'
-import type { RoutineExercise, Workout } from '../../domain/types'
+import type { Workout } from '../../domain/types'
 import { canRemoveItem, moveItem } from '../../domain/workoutStructure'
-import { ExercisePicker } from '../../components/itemEditor/ExercisePicker'
-import { ItemEditModal } from '../../components/itemEditor/ItemEditModal'
 import { OverviewSection } from './OverviewSection'
 import { RoutineActions } from './RoutineActions'
-import { useOverviewEditor, type WorkoutEdit } from './useOverviewEditor'
+import type { OverviewEditor, WorkoutEdit } from './useOverviewEditor'
+
+export type ListMode = 'progress' | 'editing'
 
 interface ItemListModalProps {
-  isOpen: boolean
+  mode: ListMode | null
   workout: Workout
   current: number
-  previous: PreviousExerciseLookup | undefined
+  editor: OverviewEditor
   onSelect: (index: number) => void
   onEdit: WorkoutEdit
-  onClose: () => void
+  onModeChange: (mode: ListMode | null) => void
 }
 
-export function ItemListModal({ isOpen, workout, current, previous, onSelect, onEdit, onClose }: ItemListModalProps) {
-  const [editing, setEditing] = useState(false)
-  const [addingTo, setAddingTo] = useState<number | null>(null)
-  const editor = useOverviewEditor(workout, previous, onEdit)
+export function ItemListModal({ mode, workout, current, editor, onSelect, onEdit, onModeChange }: ItemListModalProps) {
+  const close = () => onModeChange(null)
+  const [shown, setShown] = useState<ListMode>('progress')
   const canDelete = canRemoveItem(workout)
+  const editing = shown === 'editing'
 
   const offsets = workout.sections.map((_, sectionIndex) =>
     workout.sections.slice(0, sectionIndex).reduce((count, section) => count + section.items.length, 0),
   )
 
-  function dismiss() {
-    setEditing(false)
-    onClose()
-  }
-
-  function pick(exercise?: RoutineExercise) {
-    if (addingTo !== null) {
-      editor.add(addingTo, exercise)
-    }
-    setAddingTo(null)
+  if (mode !== null && mode !== shown) {
+    setShown(mode)
   }
 
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={dismiss} {...HALF_SHEET}>
+    <IonModal isOpen={mode !== null} onDidDismiss={close} {...HALF_SHEET}>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton strong={editing} onClick={() => setEditing(!editing)}>
+            <IonButton strong={editing} onClick={() => onModeChange(editing ? 'progress' : 'editing')}>
               {editing ? COMMON_COPY.done : COMMON_COPY.edit}
             </IonButton>
           </IonButtons>
           <IonTitle>{COMMON_COPY.exercises}</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={onClose}>{COMMON_COPY.close}</IonButton>
+            <IonButton onClick={close}>{COMMON_COPY.close}</IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -68,26 +59,14 @@ export function ItemListModal({ isOpen, workout, current, previous, onSelect, on
             editing={editing}
             canDelete={canDelete}
             onSelect={onSelect}
-            onEditItem={editor.open}
+            onEditItem={editor.flow.open}
             onDeleteItem={editor.remove}
             onReorder={(from, to) => onEdit((current) => moveItem(current, sectionIndex, from, to))}
-            onAdd={() => setAddingTo(sectionIndex)}
+            onAdd={() => editor.flow.addTo(sectionIndex)}
           />
         ))}
-        {editing && <RoutineActions workout={workout} />}
+        {editing && <RoutineActions workout={workout} onEdit={onEdit} />}
       </IonContent>
-      <ExercisePicker
-        isOpen={addingTo !== null}
-        onPick={pick}
-        onClose={() => setAddingTo(null)}
-      />
-      <ItemEditModal
-        editing={editor.editing}
-        showStartWeight={false}
-        onChange={editor.change}
-        onDelete={editor.remove}
-        onClose={editor.close}
-      />
     </IonModal>
   )
 }

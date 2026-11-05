@@ -30,7 +30,9 @@ Code is in three layers, and dependencies point downward only:
   - `parseNote.ts`: pasted Apple Notes text → routine.
   - `progress.ts`: workout start/prefill, history, ↑/★ changes.
   - `workoutEdits.ts`: set and skip edits on a workout, plus navigation helpers.
+  - `workoutStructure.ts`: adding, inserting, moving, editing and removing exercises in a workout, without touching its routine.
   - `routineEdit.ts`: routine editor operations.
+  - `routineFromWorkout.ts`: an edited workout → routine (for "עדכון"/"שמירה כאימון חדש" at סיום), and `matchesRoutine` for whether to offer it.
   - `timeline.ts`: week grouping.
   - `format.ts`: display formatting.
 - `src/data/`:

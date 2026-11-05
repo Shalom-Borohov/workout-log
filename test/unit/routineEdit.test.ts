@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { duplicateRoutine, newRoutine, setSectionSets } from '../../src/domain/routineEdit'
+import { addItemAfter, duplicateRoutine, newRoutine, setSectionSets } from '../../src/domain/routineEdit'
 import type { Routine } from '../../src/domain/types'
 import { counter } from '../helpers/ids'
 import { reps, routineExercise } from '../helpers/workouts'
@@ -87,5 +87,30 @@ describe('setSectionSets', () => {
         { id: 'b', sets: 4, exercises: [squat] },
       ],
     })
+  })
+})
+
+describe('addItemAfter', () => {
+  const press = routineExercise({ name: 'לחיצת חזה', target: reps(10), weight: null })
+  const added = { id: 'new', sets: null, exercises: [press] }
+
+  it('puts the item right after the given one, in its section', () => {
+    const withThree: Routine = {
+      ...legs,
+      sections: [
+        legs.sections[0],
+        { ...legs.sections[1], items: [legs.sections[1].items[0], { id: 'i3', sets: null, exercises: [squat] }] },
+      ],
+    }
+
+    const ids = addItemAfter(withThree, 'i2', added).sections.map((section) => section.items.map((item) => item.id))
+
+    expect(ids).toEqual([['i1'], ['i2', 'new', 'i3']])
+  })
+
+  it('after the last item of a section, ends that section', () => {
+    const ids = addItemAfter(legs, 'i1', added).sections.map((section) => section.items.map((item) => item.id))
+
+    expect(ids).toEqual([['i1', 'new'], ['i2']])
   })
 })

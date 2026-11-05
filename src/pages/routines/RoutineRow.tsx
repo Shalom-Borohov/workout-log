@@ -13,14 +13,14 @@ import type { MouseEvent } from 'react'
 import { useRef } from 'react'
 import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
-import { deleteRoutine, saveRoutine } from '../../data/repo'
+import { deleteRoutine } from '../../data/repo'
 import { countLabel, LIST_SEPARATOR, shortDate } from '../../domain/format'
 import { exercisesOf, hasExercises } from '../../domain/progress'
-import { duplicateRoutine } from '../../domain/routineEdit'
 import type { Routine } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import { useStartWorkout } from '../../hooks/useStartWorkout'
 import { ROUTINES_PATH, routinePath } from '../../navigation/paths'
+import { useDuplicateRoutine } from './useDuplicateRoutine'
 
 function counts(routine: Routine, now: number): string {
   return [
@@ -34,6 +34,7 @@ export function RoutineRow({ routine, now }: { routine: Routine; now: number }) 
   const router = useIonRouter()
   const confirmDelete = useConfirmDelete()
   const startWorkout = useStartWorkout(ROUTINES_PATH)
+  const duplicateRoutine = useDuplicateRoutine(ROUTINES_PATH)
   const sliding = useRef<HTMLIonItemSlidingElement>(null)
 
   function start(event: MouseEvent) {
@@ -50,12 +51,9 @@ export function RoutineRow({ routine, now }: { routine: Routine; now: number }) 
     })
   }
 
-  async function duplicate() {
-    const copy = duplicateRoutine(routine, () => crypto.randomUUID(), Date.now())
-
-    await saveRoutine(copy)
+  function duplicate() {
     void sliding.current?.close()
-    router.push(routinePath(ROUTINES_PATH, copy.id))
+    void duplicateRoutine(routine)
   }
 
   return (
@@ -78,7 +76,7 @@ export function RoutineRow({ routine, now }: { routine: Routine; now: number }) 
         </IonButton>
       </IonItem>
       <IonItemOptions side="end">
-        <IonItemOption color="medium" onClick={() => void duplicate()}>
+        <IonItemOption color="medium" onClick={duplicate}>
           {ROUTINES_COPY.duplicate}
         </IonItemOption>
         <IonItemOption color="danger" expandable onClick={remove}>

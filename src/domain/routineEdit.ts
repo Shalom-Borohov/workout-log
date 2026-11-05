@@ -57,6 +57,19 @@ export function updateItem(routine: Routine, id: string, change: Change<RoutineI
   }
 }
 
+export function insertAfter<T extends { id: string }>(list: T[], afterId: string, added: T): T[] {
+  const index = list.findIndex((entry) => entry.id === afterId)
+
+  return index === -1 ? list : [...list.slice(0, index + 1), added, ...list.slice(index + 1)]
+}
+
+export function addItemAfter(routine: Routine, afterId: string, item: RoutineItem): Routine {
+  return {
+    ...routine,
+    sections: routine.sections.map((section) => ({ ...section, items: insertAfter(section.items, afterId, item) })),
+  }
+}
+
 export function removeItem(routine: Routine, id: string): Routine {
   return {
     ...routine,

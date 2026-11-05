@@ -106,6 +106,10 @@ export function isDone(item: WorkoutItem): boolean {
   return !isSkipped(item) && item.exercises.every((exercise) => exercise.sets.every((set) => set.done))
 }
 
+export function hasTickedSet(item: WorkoutItem): boolean {
+  return item.exercises.some((exercise) => exercise.sets.some((set) => set.done))
+}
+
 export function workoutProgress(workout: Workout): { done: number; total: number } {
   const sets = exercisesOf(workout)
     .filter((exercise) => !exercise.skipped)
