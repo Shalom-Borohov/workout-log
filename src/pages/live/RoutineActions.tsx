@@ -5,12 +5,19 @@ import { LIVE_COPY } from './copy'
 import { useRoutine } from '../../data/hooks'
 import { saveRoutine, updateRoutine } from '../../data/repo'
 import { copyName, duplicateRoutine } from '../../domain/routineEdit'
-import { routineFromWorkout } from '../../domain/routineFromWorkout'
+import { matchesRoutine, routineFromWorkout } from '../../domain/routineFromWorkout'
 import type { Workout } from '../../domain/types'
+import type { WorkoutEdit } from './useOverviewEditor'
 
 const newId = () => crypto.randomUUID()
 
-export function RoutineActions({ workout }: { workout: Workout }) {
+interface Props {
+  workout: Workout
+  onEdit: WorkoutEdit
+  unsavedOnly?: boolean
+}
+
+export function RoutineActions({ workout, onEdit, unsavedOnly = false }: Props) {
   const routine = useRoutine(workout.routineId)
   const [presentAlert] = useIonAlert()
   const [presentToast] = useIonToast()
@@ -26,6 +33,7 @@ export function RoutineActions({ workout }: { workout: Workout }) {
     const now = Date.now()
     const copy = duplicateRoutine(routineFromWorkout(workout, routine, newId, now), newId, now)
 
+    onEdit((current) => ({ ...current, routineId: copy.id, routineName: name }))
     await saveRoutine({ ...copy, name })
     void toast(LIVE_COPY.savedNewRoutine)
   }
@@ -51,6 +59,10 @@ export function RoutineActions({ workout }: { workout: Workout }) {
         },
       ],
     })
+  }
+
+  if (unsavedOnly && (!routine || matchesRoutine(workout, routine))) {
+    return null
   }
 
   return (

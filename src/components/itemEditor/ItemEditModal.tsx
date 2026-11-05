@@ -3,6 +3,7 @@ import {
   IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonItem,
   IonLabel,
   IonList,
@@ -11,6 +12,7 @@ import {
   IonToggle,
   IonToolbar,
 } from '@ionic/react'
+import { addCircle } from 'ionicons/icons'
 import { COMMON_COPY } from '../../copy/common'
 import { ITEM_EDITOR_COPY } from './copy'
 import type { RoutineExercise, RoutineItem } from '../../domain/types'
@@ -32,12 +34,13 @@ interface Props {
   showStartWeight?: boolean
   onChange: (id: string, change: Change<RoutineItem>) => void
   onDelete: (id: string) => void
+  onAddAfter: (id: string) => void
   onClose: () => void
 }
 
 type FormProps = Omit<Props, 'editing' | 'onClose'> & ItemInSection & { showStartWeight: boolean }
 
-function ItemForm({ item, sectionSets, showStartWeight, onChange, onDelete }: FormProps) {
+function ItemForm({ item, sectionSets, showStartWeight, onChange, onDelete, onAddAfter }: FormProps) {
   function changeExercise(index: number, change: Change<RoutineExercise>) {
     onChange(item.id, (current) => ({
       ...current,
@@ -79,6 +82,12 @@ function ItemForm({ item, sectionSets, showStartWeight, onChange, onDelete }: Fo
         </IonItem>
       </IonList>
       <IonList inset>
+        <IonItem button detail={false} onClick={() => onAddAfter(item.id)}>
+          <IonIcon slot="start" color="primary" icon={addCircle} />
+          <IonLabel color="primary">{ITEM_EDITOR_COPY.addExerciseAfter}</IonLabel>
+        </IonItem>
+      </IonList>
+      <IonList inset>
         <IonItem button detail={false} onClick={() => onDelete(item.id)}>
           <IonLabel color="danger">{ITEM_EDITOR_COPY.deleteExercise}</IonLabel>
         </IonItem>
@@ -87,7 +96,7 @@ function ItemForm({ item, sectionSets, showStartWeight, onChange, onDelete }: Fo
   )
 }
 
-export function ItemEditModal({ editing, showStartWeight = true, onChange, onDelete, onClose }: Props) {
+export function ItemEditModal({ editing, showStartWeight = true, onClose, ...handlers }: Props) {
   return (
     <IonModal isOpen={editing !== undefined} onDidDismiss={onClose} {...FULL_SHEET}>
       <IonHeader>
@@ -102,7 +111,7 @@ export function ItemEditModal({ editing, showStartWeight = true, onChange, onDel
       </IonHeader>
       <IonContent>
         {editing && (
-          <ItemForm {...editing} showStartWeight={showStartWeight} onChange={onChange} onDelete={onDelete} />
+          <ItemForm {...editing} {...handlers} showStartWeight={showStartWeight} />
         )}
       </IonContent>
     </IonModal>

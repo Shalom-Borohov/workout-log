@@ -1,10 +1,11 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveWorkout } from '../../src/data/repo'
 import { resetDb, savedWorkout } from '../helpers/db'
 import { userEvent } from '@testing-library/user-event'
-import { actionSheetPresented, ionInput, visibleAll } from '../helpers/ionic'
+import { ionInput, visibleAll } from '../helpers/ionic'
+import { chooseFromMenu } from '../helpers/live'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { exercise, oct, open, workout } from '../helpers/workouts'
 
@@ -13,14 +14,6 @@ const tips = () => visibleAll('.item-tip').map((line) => line.textContent)
 beforeEach(async () => {
   await resetDb()
 })
-
-async function chooseFromMenu(text: string) {
-  const presented = actionSheetPresented()
-
-  fireEvent.click(await screen.findByLabelText('פעולות לתרגיל'))
-  await presented
-  fireEvent.click(screen.getByText(text, { selector: '.action-sheet-button-label' }))
-}
 
 const savedExercises = async () => (await savedWorkout('w1'))?.sections[0].items[0].exercises
 

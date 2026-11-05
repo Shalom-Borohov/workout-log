@@ -5,7 +5,7 @@ import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb, savedWorkout } from '../helpers/db'
-import { alertPresented, ionChange, ionElement, ionEvent, ionField, ionInput, OPEN_MODAL } from '../helpers/ionic'
+import { alertPresented, ionChange, ionElement, ionEvent, ionField, ionInput, OPEN_MODAL, toasts } from '../helpers/ionic'
 import { exercisePicker, pickerRows, pickerSearch } from '../helpers/picker'
 import { renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, open, reps, routine, seconds, workout } from '../helpers/workouts'
@@ -69,8 +69,11 @@ describe('overview editing', () => {
 
   it('deletes the current exercise and moves on to the next one', async () => {
     await openOverviewEditing()
+    const asked = alertPresented()
 
     fireEvent.click(await screen.findByLabelText('מחיקת סקוואט'))
+    await asked
+    fireEvent.click(screen.getByText('מחיקה', { selector: '.alert-button-inner' }))
 
     await waitFor(async () => expect(await savedNames()).toEqual([['לחיצת חזה', 'חתירה']]))
     expect(await screen.findByText('לחיצת חזה', { selector: 'h1' })).toBeInTheDocument()
@@ -168,8 +171,6 @@ describe('adding an existing exercise', () => {
   })
 })
 
-const toasts =() => Array.from(document.querySelectorAll('ion-toast'), (toast) => toast.message)
-
 describe('saving the workout as a routine', () => {
   beforeEach(async () => {
     await resetDb()
@@ -200,7 +201,7 @@ describe('saving the workout as a routine', () => {
     await waitFor(() => expect(toasts()).toContain('האימון עודכן'))
   })
 
-  it('saves a new routine under the given name and keeps the workout on its routine', async () => {
+  it('saves a new routine under the given name and moves the workout to it', async () => {
     await openOverviewEditing()
     const presented = alertPresented()
 
@@ -221,7 +222,7 @@ describe('saving the workout as a routine', () => {
     expect(created?.sections[0].items.map((item) => item.exercises[0].name)).toEqual(['סקוואט', 'לחיצת חזה', 'חתירה'])
     expect(created?.sections[0].items[0].exercises[0].weight).toBe(50)
     expect((await db.routines.get('r1'))?.sections[0].items).toHaveLength(1)
-    expect((await savedWorkout('w1'))?.routineId).toBe('r1')
+    await waitFor(async () => expect((await savedWorkout('w1'))?.routineId).toBe(created?.id))
     await waitFor(() => expect(toasts()).toContain('נשמר אימון חדש'))
   })
 

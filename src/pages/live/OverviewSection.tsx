@@ -13,7 +13,7 @@ import { COMMON_COPY } from '../../copy/common'
 import { LIVE_COPY } from './copy'
 import type { WorkoutSection } from '../../domain/types'
 import { isDone, isSkipped, itemTitle } from '../../domain/workoutEdits'
-import { OverviewEditRow } from './OverviewEditRow'
+import { EditableItemRow } from '../../components/itemEditor/EditableItemRow'
 
 interface Props {
   section: WorkoutSection
@@ -39,15 +39,21 @@ function EditableItems({ section, canDelete, onEditItem, onDeleteItem, onReorder
   return (
     <>
       <IonReorderGroup disabled={false} onIonReorderEnd={reorder}>
-        {section.items.map((item) => (
-          <OverviewEditRow
-            key={item.id}
-            item={item}
-            canDelete={canDelete}
-            onEdit={() => onEditItem(item.id)}
-            onDelete={() => onDeleteItem(item.id)}
-          />
-        ))}
+        {section.items.map((item) => {
+          const title = itemTitle(item)
+
+          return (
+            <EditableItemRow
+              key={item.id}
+              title={title}
+              canDelete={canDelete}
+              onEdit={() => onEditItem(item.id)}
+              onDelete={() => onDeleteItem(item.id)}
+            >
+              <IonLabel>{title}</IonLabel>
+            </EditableItemRow>
+          )
+        })}
       </IonReorderGroup>
       <IonItem button detail={false} onClick={onAdd}>
         <IonIcon slot="start" color="primary" icon={addCircle} />

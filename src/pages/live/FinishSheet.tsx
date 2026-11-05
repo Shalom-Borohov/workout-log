@@ -1,5 +1,5 @@
 import { IonContent, IonItem, IonList, IonModal, IonTextarea } from '@ionic/react'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import { HALF_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
 import { LIVE_COPY } from './copy'
@@ -14,6 +14,7 @@ type FinishFormProps = {
   onCancel: () => void
   onSave: (summary: string) => void
   onDelete: () => void
+  children?: ReactNode
 }
 
 function DeleteRow({ onDelete }: { onDelete: () => void }) {
@@ -38,7 +39,7 @@ function DeleteRow({ onDelete }: { onDelete: () => void }) {
   )
 }
 
-function FinishForm({ mode, initialSummary, onCancel, onSave, onDelete }: FinishFormProps) {
+function FinishForm({ mode, initialSummary, onCancel, onSave, onDelete, children }: FinishFormProps) {
   const [summary, setSummary] = useState(initialSummary)
 
   return (
@@ -61,6 +62,7 @@ function FinishForm({ mode, initialSummary, onCancel, onSave, onDelete }: Finish
             />
           </IonItem>
         </IonList>
+        {mode === 'finish' && children}
         {mode === 'finish' && <DeleteRow onDelete={onDelete} />}
       </IonContent>
     </>
