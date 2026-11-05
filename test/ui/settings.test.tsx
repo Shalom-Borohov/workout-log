@@ -75,6 +75,7 @@ describe('settings', () => {
       routines: [legs],
       workouts: [past],
       dailyLogs: [],
+      exerciseAreas: [],
     })
   })
 

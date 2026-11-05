@@ -254,7 +254,7 @@ describe('backup', () => {
     const json = JSON.parse(JSON.stringify(await exportBackup(oct(26))))
     await restoreBackup(parseBackup(json))
 
-    expect(Object.keys(json).sort()).toEqual(['dailyLogs', 'exportedAt', 'routines', 'version', 'workouts'])
+    expect(Object.keys(json).sort()).toEqual(['dailyLogs', 'exerciseAreas', 'exportedAt', 'routines', 'version', 'workouts'])
     expect(await background()).toBeDefined()
   })
 

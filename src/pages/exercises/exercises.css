@@ -52,6 +52,12 @@
   font-size: 0.75rem;
 }
 
+.body-area-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .exercise-best {
   font-size: 1.0625rem;
   white-space: nowrap;

@@ -16,13 +16,15 @@ import {
 import { addCircle } from 'ionicons/icons'
 import { useMemo } from 'react'
 import { COMMON_COPY } from '../../copy/common'
-import { useFinishedWorkouts, useRoutines } from '../../data/hooks'
+import { useExerciseAreas, useFinishedWorkouts, useRoutines } from '../../data/hooks'
+import { areaOf } from '../../domain/bodyAreas'
 import { exerciseChoices } from '../../domain/exerciseChoices'
 import { shortDate } from '../../domain/format'
 import { HOUR_MS } from '../../domain/time'
 import type { RoutineExercise } from '../../domain/types'
 import { useNow } from '../../hooks/useNow'
 import { useSearch } from '../../hooks/useSearch'
+import { BodyAreaIcon } from '../bodyArea/BodyAreaIcon'
 import { FULL_SHEET } from '../sheet'
 import { ITEM_EDITOR_COPY } from './copy'
 
@@ -40,6 +42,7 @@ interface ChoiceRowsProps {
 function ChoiceRows({ matches, onPick }: ChoiceRowsProps) {
   const routines = useRoutines()
   const finishedWorkouts = useFinishedWorkouts()
+  const areas = useExerciseAreas()
   const now = useNow(HOUR_MS)
 
   const choices = useMemo(
@@ -51,6 +54,7 @@ function ChoiceRows({ matches, onPick }: ChoiceRowsProps) {
     .filter(({ exercise }) => matches(exercise.name))
     .map(({ exercise, lastDone }) => (
       <IonItem key={exercise.name} button detail={false} onClick={() => onPick(exercise)}>
+        {areas && <BodyAreaIcon slot="start" area={areaOf(areas, exercise.name)} />}
         <IonLabel>{exercise.name}</IonLabel>
         {lastDone !== null && <IonNote slot="end">{shortDate(lastDone, now)}</IonNote>}
       </IonItem>

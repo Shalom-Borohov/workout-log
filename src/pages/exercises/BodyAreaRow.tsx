@@ -1,0 +1,69 @@
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonNote,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/react'
+import { useState } from 'react'
+import { BodyAreaIcon } from '../../components/bodyArea/BodyAreaIcon'
+import { BodyAreaPicker } from '../../components/bodyArea/BodyAreaPicker'
+import { HALF_SHEET } from '../../components/sheet'
+import { BODY_AREA_COPY } from '../../copy/bodyAreas'
+import { COMMON_COPY } from '../../copy/common'
+import { setExerciseArea } from '../../data/exerciseAreas'
+import { useExerciseAreas } from '../../data/hooks'
+import { areaOf, type BodyArea } from '../../domain/bodyAreas'
+
+export function BodyAreaRow({ name }: { name: string }) {
+  const areas = useExerciseAreas()
+  const [isOpen, setIsOpen] = useState(false)
+
+  if (!areas) {
+    return null
+  }
+
+  const area = areaOf(areas, name)
+
+  function pick(picked: BodyArea | null) {
+    void setExerciseArea(name, picked)
+    setIsOpen(false)
+  }
+
+  return (
+    <>
+      <IonList inset>
+        <IonItem button detail onClick={() => setIsOpen(true)}>
+          <IonLabel>{BODY_AREA_COPY.label}</IonLabel>
+          <IonNote slot="end" className="body-area-value">
+            <BodyAreaIcon area={area} />
+            {BODY_AREA_COPY.name(area)}
+          </IonNote>
+        </IonItem>
+      </IonList>
+      <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)} {...HALF_SHEET}>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>{BODY_AREA_COPY.label}</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={() => setIsOpen(false)}>{COMMON_COPY.close}</IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent>
+          <IonList inset>
+            <IonItem>
+              <BodyAreaPicker value={area} onChange={pick} />
+            </IonItem>
+          </IonList>
+        </IonContent>
+      </IonModal>
+    </>
+  )
+}

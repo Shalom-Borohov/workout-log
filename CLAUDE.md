@@ -36,7 +36,7 @@ Code is in three layers, and dependencies point downward only:
   - `timeline.ts`: week grouping.
   - `format.ts`: display formatting.
 - `src/data/`:
-  - `db.ts`: the Dexie database (`routines`, `workouts`, and `settings` for the background photo).
+  - `db.ts`: the Dexie database (`routines`, `workouts`, `dailyLogs`, `exerciseAreas`, and `settings` for the background photo and backup status).
   - `migrate.ts`: `Legacy*` types and `upgrade*` functions, shared by the Dexie upgrade and backup import.
   - `repo.ts`: thin write and query functions.
   - `hooks.ts`: `useLiveQuery` hooks the pages read from.
@@ -59,7 +59,7 @@ Data model essentials:
   - An item with two exercises is a pair (superset). There is no discriminator field.
   - A target is `{kind:'reps'}` or `{kind:'duration', seconds}`. Weights are kg, `number | null`.
 - A workout is a snapshot copied from the routine when it starts (`startWorkout`). It carries its own `SetLog`s, prefilled from the last session of the same exercise.
-- Exercises are identified by exact name across routines and workouts. There is no exercise table, and history is derived.
+- Exercises are identified by exact name across routines and workouts. There is no exercise table, and history is derived. The only per-exercise data is the body area, in `exerciseAreas`, keyed by name (`src/data/exerciseAreas.ts`).
 - A workout is active while `finishedAt === null`. Only one can be active at a time (`beginWorkout`).
 
 Routing:
