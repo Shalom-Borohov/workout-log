@@ -15,6 +15,7 @@ import { useFinishedWorkouts } from '../../data/hooks'
 import { formatDay, formatSets } from '../../domain/format'
 import { exerciseHistory, recordSessionId, weightTrend } from '../../domain/progress'
 import { EXERCISES_PATH } from '../../navigation/paths'
+import { BodyAreaRow } from './BodyAreaRow'
 import { MIN_TREND_POINTS } from './trendGeometry'
 import { WeightChart } from './WeightChart'
 import './exercises.css'
@@ -41,6 +42,7 @@ export function ExerciseHistory({ name }: { name: string }) {
             <IonTitle size="large">{name}</IonTitle>
           </IonToolbar>
         </IonHeader>
+        <BodyAreaRow name={name} />
         {trend.length >= MIN_TREND_POINTS && <WeightChart points={trend} />}
         {sessions.length > 0 && (
           <IonList inset>

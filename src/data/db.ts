@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable, type Transaction } from 'dexie'
-import type { DailyLog, Routine, Setting, WorkoutRecord } from '../domain/types'
+import type { DailyLog, ExerciseArea, Routine, Setting, WorkoutRecord } from '../domain/types'
 import {
   carryNotesForward,
   colorDailyRoutines,
@@ -39,6 +39,7 @@ class WorkoutDb extends Dexie {
   // Dexie's default insert type doesn't distribute over a union, so inserts take a whole Setting.
   settings!: EntityTable<Setting, 'key', Setting>
   dailyLogs!: EntityTable<DailyLog, 'id'>
+  exerciseAreas!: EntityTable<ExerciseArea, 'name'>
 
   constructor() {
     super(DB_NAME)
@@ -94,6 +95,7 @@ class WorkoutDb extends Dexie {
         await routines.bulkPut(upgraded)
         await logs.bulkPut(upgradeDailyLogs(await logs.toArray(), upgraded))
       })
+    this.version(10).stores({ exerciseAreas: 'name' })
   }
 }
 

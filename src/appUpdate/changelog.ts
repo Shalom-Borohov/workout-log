@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.12.0',
+    features: ['לכל תרגיל אפשר לבחור אזור בגוף, ורשימת התרגילים מקובצת לפיו עם ציור קטן'],
+    fixes: [],
+  },
+  {
     version: '1.11.0',
     features: [
       'ציר הזמן נקי יותר: התאריך בצד, ושיפורים ושיאים מופיעים כמספר',

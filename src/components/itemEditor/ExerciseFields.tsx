@@ -10,12 +10,16 @@ import {
 } from '@ionic/react'
 import { useState } from 'react'
 import { COMMON_COPY } from '../../copy/common'
+import { carryExerciseArea, claimExerciseArea, setExerciseArea } from '../../data/exerciseAreas'
+import { useExerciseAreas } from '../../data/hooks'
+import { areaOf, type BodyArea } from '../../domain/bodyAreas'
+import { BodyAreaPicker } from '../bodyArea/BodyAreaPicker'
 import { ITEM_EDITOR_COPY } from './copy'
 import { durationUnit } from '../../domain/format'
 import { clampAmount } from '../../domain/limits'
 import { weightPatch } from '../../domain/numberInput'
 import { targetAmount } from '../../domain/progress'
-import type { Change } from '../../domain/routineEdit'
+import { type Change, DEFAULT_EXERCISE_NAME } from '../../domain/routineEdit'
 import { SECONDS_PER_MINUTE } from '../../domain/time'
 import type { RoutineExercise, Target } from '../../domain/types'
 import './itemEditor.css'
@@ -63,6 +67,9 @@ function parseAmount(text: string | null | undefined): number | null {
 
 export function ExerciseFields({ exercise, showStartWeight, onChange }: Props) {
   const [unit, setUnit] = useState(() => unitOf(exercise.target))
+  const areas = useExerciseAreas()
+  const [unnamedArea, setUnnamedArea] = useState<BodyArea | null>(null)
+  const isUnnamed = exercise.name === DEFAULT_EXERCISE_NAME
 
   function changeUnit(next: SegmentValue | undefined) {
     if (!isUnit(next)) {
@@ -92,7 +99,23 @@ export function ExerciseFields({ exercise, showStartWeight, onChange }: Props) {
     }
   }
 
+  function pickArea(picked: BodyArea | null) {
+    if (isUnnamed) {
+      setUnnamedArea(picked)
+
+      return
+    }
+    void setExerciseArea(exercise.name, picked)
+  }
+
   function rename(name: string) {
+    if (isUnnamed && unnamedArea !== null) {
+      void claimExerciseArea(name, unnamedArea)
+    }
+    if (!isUnnamed && name !== DEFAULT_EXERCISE_NAME) {
+      void carryExerciseArea(exercise.name, name)
+    }
+    setUnnamedArea(null)
     onChange((current) => ({ ...current, name }))
   }
 
@@ -111,6 +134,11 @@ export function ExerciseFields({ exercise, showStartWeight, onChange }: Props) {
           onIonChange={(event) => typeof event.detail.value === 'string' && rename(event.detail.value)}
         />
       </IonItem>
+      {areas && (
+        <IonItem>
+          <BodyAreaPicker value={isUnnamed ? unnamedArea : areaOf(areas, exercise.name)} onChange={pickArea} />
+        </IonItem>
+      )}
       <IonItem>
         <IonSegment value={unit} onIonChange={(event) => changeUnit(event.detail.value)}>
           {UNITS.map((option) => (

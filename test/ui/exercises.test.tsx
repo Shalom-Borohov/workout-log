@@ -1,9 +1,11 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { setExerciseArea } from '../../src/data/exerciseAreas'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
-import { expectInOrder, ionElement, ionInput } from '../helpers/ionic'
+import { areaIconOf } from '../helpers/areas'
+import { expectInOrder, ionElement, ionInput, OPEN_MODAL, radioByLabel } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, reps, routine, workout } from '../helpers/workouts'
 
@@ -30,6 +32,57 @@ describe('exercises', () => {
 
     await waitFor(() => expect(screen.queryByText('סקוואט')).not.toBeInTheDocument())
     expect(screen.getByText('לחיצת חזה')).toBeInTheDocument()
+  })
+
+  it('exercise list groups exercises by body area with their icons, untagged last', async () => {
+    await saveRoutine(routine('r1', 'אימון גוף מלא', [
+      [{ name: 'סקוואט', target: reps(10) }],
+      [{ name: 'לחיצת חזה', target: reps(8) }],
+      [{ name: 'הכנסת סנטר', target: reps(10) }],
+      [{ name: 'לאנג׳', target: reps(10) }],
+    ]))
+    await setExerciseArea('סקוואט', 'legs')
+    await setExerciseArea('לאנג׳', 'legs')
+    await setExerciseArea('לחיצת חזה', 'chest')
+    renderAt('/tabs/exercises')
+
+    await expectInOrder(['חזה', 'לחיצת חזה', 'רגליים', 'לאנג׳', 'סקוואט', 'ללא', 'הכנסת סנטר'])
+    expect(areaIconOf(await screen.findByText('סקוואט'))).toBe('legs')
+    expect(areaIconOf(screen.getByText('הכנסת סנטר'))).toBe('none')
+
+    ionInput(await ionElement('ion-searchbar'), 'לחי')
+
+    await waitFor(() => expect(screen.queryByText('רגליים')).not.toBeInTheDocument())
+    expect(screen.queryByText('ללא')).not.toBeInTheDocument()
+    expect(screen.getByText('חזה')).toBeInTheDocument()
+  })
+
+  it('exercise page sets the body area from a sheet', async () => {
+    await saveRoutine(fullBody)
+    renderAt(`/tabs/exercises/${encodeURIComponent('סקוואט')}`)
+
+    const label = await screen.findByText('אזור בגוף', { selector: 'ion-label' })
+    const row = label.closest('ion-item')
+
+    expect(row).toHaveTextContent('ללא')
+    fireEvent.click(label)
+    fireEvent.click(await radioByLabel('רגליים'))
+
+    await waitFor(() => expect(row).toHaveTextContent('רגליים'))
+    await waitFor(() => expect(document.querySelector(OPEN_MODAL)).toBeNull())
+    expect(areaIconOf(label)).toBe('legs')
+  })
+
+  it('exercise page closes the area sheet when the current area is tapped again', async () => {
+    await saveRoutine(fullBody)
+    await setExerciseArea('סקוואט', 'legs')
+    renderAt(`/tabs/exercises/${encodeURIComponent('סקוואט')}`)
+
+    fireEvent.click(await screen.findByText('אזור בגוף', { selector: 'ion-label' }))
+    await waitFor(() => expect(document.querySelector(OPEN_MODAL)).not.toBeNull())
+    fireEvent.click(await radioByLabel('רגליים'))
+
+    await waitFor(() => expect(document.querySelector(OPEN_MODAL)).toBeNull())
   })
 
   it('exercise list leaves out the drills of a daily routine', async () => {

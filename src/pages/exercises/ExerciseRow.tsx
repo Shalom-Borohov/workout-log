@@ -1,13 +1,22 @@
 import { IonItem, IonLabel, IonNote } from '@ionic/react'
+import { BodyAreaIcon } from '../../components/bodyArea/BodyAreaIcon'
+import type { BodyArea } from '../../domain/bodyAreas'
 import { formatDay, formatSets } from '../../domain/format'
 import { bestSet, type ExerciseSession } from '../../domain/progress'
 import { exerciseHistoryPath } from '../../navigation/paths'
 
-export function ExerciseRow({ name, last }: { name: string; last?: ExerciseSession }) {
+interface Props {
+  name: string
+  area: BodyArea | null
+  last?: ExerciseSession
+}
+
+export function ExerciseRow({ name, area, last }: Props) {
   const best = last && bestSet(last.sets)
 
   return (
     <IonItem button detail routerLink={exerciseHistoryPath(name)}>
+      <BodyAreaIcon slot="start" area={area} />
       <IonLabel className="ion-text-wrap">
         <h2>{name}</h2>
         {last && <p>{formatDay(last.startedAt)}</p>}

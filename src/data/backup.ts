@@ -1,7 +1,8 @@
 import { APP_COPY } from '../copy/app'
+import { isBodyArea } from '../domain/bodyAreas'
 import { dailyLogId } from '../domain/daily'
 import { isDrillColor } from '../domain/drillColors'
-import type { DailyExercise, DailyLog, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
+import type { DailyExercise, DailyLog, ExerciseArea, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
 import { markBackedUp } from './backupStatus'
 import { db } from './db'
 import { isNumber, isObject, isString } from './guards'
@@ -34,6 +35,7 @@ export type Backup = {
   routines: Routine[]
   workouts: WorkoutRecord[]
   dailyLogs: DailyLog[]
+  exerciseAreas: ExerciseArea[]
 }
 
 type LegacyBackup = {
@@ -42,6 +44,7 @@ type LegacyBackup = {
   routines: LegacyRoutine[]
   workouts: LegacyRecord[]
   dailyLogs?: LegacyDailyLog[]
+  exerciseAreas?: ExerciseArea[]
 }
 
 type Guard<T> = (value: unknown) => value is T
@@ -158,13 +161,17 @@ const isDailyLog = (log: unknown): log is LegacyDailyLog =>
   log.id === dailyLogId(log.routineId, log.date) &&
   optional(arrayOf(isDailyExercise))(log.exercises)
 
+const isExerciseArea = (exerciseArea: unknown): exerciseArea is ExerciseArea =>
+  isObject(exerciseArea) && isString(exerciseArea.name) && isBodyArea(exerciseArea.area)
+
 const isBackup = (backup: unknown): backup is LegacyBackup =>
   isObject(backup) &&
   (backup.version === VERSION_BEFORE_CARRIED_NOTES || backup.version === BACKUP_VERSION) &&
   isNumber(backup.exportedAt) &&
   arrayOf(isRoutine)(backup.routines) &&
   arrayOf(isRecord)(backup.workouts) &&
-  optional(arrayOf(isDailyLog))(backup.dailyLogs)
+  optional(arrayOf(isDailyLog))(backup.dailyLogs) &&
+  optional(arrayOf(isExerciseArea))(backup.exerciseAreas)
 
 export function parseBackup(json: unknown): Backup {
   if (!isBackup(json)) {
@@ -180,27 +187,31 @@ export function parseBackup(json: unknown): Backup {
     routines,
     workouts: json.version === VERSION_BEFORE_CARRIED_NOTES ? carryNotesForward(workouts) : workouts,
     dailyLogs: upgradeDailyLogs(json.dailyLogs ?? [], routines),
+    exerciseAreas: json.exerciseAreas ?? [],
   }
 }
 
 export async function exportBackup(now: number): Promise<Backup> {
-  const [routines, workouts, dailyLogs] = await Promise.all([
+  const [routines, workouts, dailyLogs, exerciseAreas] = await Promise.all([
     db.routines.toArray(),
     db.workouts.toArray(),
     db.dailyLogs.toArray(),
+    db.exerciseAreas.toArray(),
   ])
 
-  return { version: BACKUP_VERSION, exportedAt: now, routines, workouts, dailyLogs }
+  return { version: BACKUP_VERSION, exportedAt: now, routines, workouts, dailyLogs, exerciseAreas }
 }
 
 export async function restoreBackup(backup: Backup): Promise<void> {
-  await db.transaction('rw', db.routines, db.workouts, db.dailyLogs, db.settings, async () => {
+  await db.transaction('rw', db.routines, db.workouts, db.dailyLogs, db.exerciseAreas, db.settings, async () => {
     await db.routines.clear()
     await db.workouts.clear()
     await db.dailyLogs.clear()
+    await db.exerciseAreas.clear()
     await db.routines.bulkPut(backup.routines)
     await db.workouts.bulkPut(backup.workouts)
     await db.dailyLogs.bulkPut(backup.dailyLogs)
+    await db.exerciseAreas.bulkPut(backup.exerciseAreas)
     await markBackedUp(backup.exportedAt)
   })
 }

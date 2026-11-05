@@ -26,7 +26,7 @@ Used mid-workout: one hand, sweaty fingers, quick glances between sets, screen k
 
 - PWA built with React and Ionic in iOS mode, hosted on GitHub Pages. No backend; data in IndexedDB on the device, with export/import of a JSON backup file.
 - No vibration/haptics or background notifications (iOS web limits).
-- Hebrew UI, full RTL. Terms: אימון (routine and workout), חלק (section), סט, חזרות, ציר זמן, תרגילים, סיכום.
+- Hebrew UI, full RTL. Terms: אימון (routine and workout), חלק (section), סט, חזרות, ציר זמן, תרגילים, סיכום, אזור בגוף (body area an exercise works; not "חלק גוף", which clashes with חלק).
 - Straight sets; pairs (supersets) are logged together; each exercise targets reps or time; weights in kg.
 - Exercises are identified by exact name across routines and workouts.
 

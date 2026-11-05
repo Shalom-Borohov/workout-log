@@ -1,3 +1,4 @@
+import type { BodyArea } from './bodyAreas'
 import type { DrillColor } from './drillColors'
 
 export type { DrillColor }
@@ -9,6 +10,11 @@ export interface RoutineExercise {
   target: Target
   weight: number | null
   tip: string
+}
+
+export interface ExerciseArea {
+  name: string
+  area: BodyArea
 }
 
 export interface RoutineItem {

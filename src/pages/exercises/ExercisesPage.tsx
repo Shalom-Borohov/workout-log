@@ -1,7 +1,9 @@
 import {
   IonContent,
   IonHeader,
+  IonLabel,
   IonList,
+  IonListHeader,
   IonPage,
   IonSearchbar,
   IonTitle,
@@ -9,9 +11,11 @@ import {
 } from '@ionic/react'
 import { useMemo } from 'react'
 import { EmptyState } from '../../components/EmptyState'
+import { BODY_AREA_COPY } from '../../copy/bodyAreas'
 import { COMMON_COPY } from '../../copy/common'
 import { EXERCISES_COPY } from './copy'
-import { useFinishedWorkouts, useRoutines } from '../../data/hooks'
+import { useExerciseAreas, useFinishedWorkouts, useRoutines } from '../../data/hooks'
+import { areaKey, groupByArea } from '../../domain/bodyAreas'
 import { exerciseNames, latestSessions } from '../../domain/progress'
 import { useSearch } from '../../hooks/useSearch'
 import { ExerciseRow } from './ExerciseRow'
@@ -23,6 +27,7 @@ export function ExercisesPage() {
   const search = useSearch()
   const allNames = useMemo(() => (routines && workouts ? exerciseNames(routines, workouts) : []), [routines, workouts])
   const latest = useMemo(() => workouts && latestSessions(workouts), [workouts])
+  const areas = useExerciseAreas()
   const names = allNames.filter(search.matches)
 
   return (
@@ -45,13 +50,20 @@ export function ExercisesPage() {
             />
           </IonToolbar>
         </IonHeader>
-        {latest && names.length > 0 && (
-          <IonList inset>
-            {names.map((name) => (
-              <ExerciseRow key={name} name={name} last={latest.get(name)} />
-            ))}
-          </IonList>
-        )}
+        {latest &&
+          areas &&
+          groupByArea(names, areas).map((group) => (
+            <section key={areaKey(group.area)}>
+              <IonListHeader>
+                <IonLabel>{BODY_AREA_COPY.name(group.area)}</IonLabel>
+              </IonListHeader>
+              <IonList inset>
+                {group.names.map((name) => (
+                  <ExerciseRow key={name} name={name} area={group.area} last={latest.get(name)} />
+                ))}
+              </IonList>
+            </section>
+          ))}
         {routines && latest && allNames.length === 0 && (
           <EmptyState title={EXERCISES_COPY.emptyTitle} body={EXERCISES_COPY.emptyBody} />
         )}

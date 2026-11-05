@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { background } from './background'
 import { backupStatus } from './backupStatus'
 import { db } from './db'
+import { exerciseAreaMap } from './exerciseAreas'
 import { activeWorkout, dailyLogs, finishedRecords, finishedWorkouts } from './repo'
 
 export function useRoutines() {
@@ -42,6 +43,10 @@ export function useActiveWorkout() {
 
 export function useBackupStatus() {
   return useLiveQuery(backupStatus)
+}
+
+export function useExerciseAreas() {
+  return useLiveQuery(exerciseAreaMap)
 }
 
 export function useBackground() {
