@@ -4,8 +4,9 @@ import { LIVE_COPY } from './copy'
 import type { WorkoutItem } from '../../domain/types'
 import { isSkipped, itemTitle } from '../../domain/workoutEdits'
 import { ExerciseNotes, Tips } from './ItemNotes'
-import { ItemSets, type SetAction, type SetChange } from './ItemSets'
+import { ItemSets } from './ItemSets'
 import type { Travel } from './useLiveWorkout'
+import type { SetSelection } from './useSetSelection'
 import './motion.css'
 
 interface ItemCardProps {
@@ -14,14 +15,12 @@ interface ItemCardProps {
   sectionName: string
   position: number
   total: number
-  onSetChange: SetChange
-  onSetDuplicate: SetAction
-  onSetRemove: SetAction
+  selection: SetSelection
   onNote: () => void
   children: ReactNode
 }
 
-export function ItemCard({ travel, item, sectionName, position, total, onSetChange, onSetDuplicate, onSetRemove, onNote, children }: ItemCardProps) {
+export function ItemCard({ travel, item, sectionName, position, total, selection, onNote, children }: ItemCardProps) {
   return (
     <div className={travel ? `item-card item-enter-${travel}` : 'item-card'}>
       <div className="item-heading">
@@ -34,7 +33,7 @@ export function ItemCard({ travel, item, sectionName, position, total, onSetChan
         <Tips item={item} />
         {isSkipped(item) && <IonNote className="item-skipped">{LIVE_COPY.skippedExercise}</IonNote>}
       </div>
-      <ItemSets item={item} onSetChange={onSetChange} onSetDuplicate={onSetDuplicate} onSetRemove={onSetRemove} />
+      <ItemSets item={item} selection={selection} />
       <ExerciseNotes item={item} onNote={onNote} />
       {children}
     </div>

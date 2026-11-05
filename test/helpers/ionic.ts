@@ -28,7 +28,7 @@ export function visibleAll(selector: string) {
   return Array.from(document.querySelectorAll(`${VISIBLE_PAGE} ${selector}`))
 }
 
-function presented(event: 'ionActionSheetDidPresent' | 'ionAlertDidPresent') {
+function presented(event: 'ionActionSheetDidPresent' | 'ionAlertDidPresent' | 'ionModalDidPresent') {
   return new Promise((resolve) => {
     document.addEventListener(event, resolve, { once: true })
   })
@@ -37,6 +37,10 @@ function presented(event: 'ionActionSheetDidPresent' | 'ionAlertDidPresent') {
 export const actionSheetPresented = () => presented('ionActionSheetDidPresent')
 
 export const alertPresented = () => presented('ionAlertDidPresent')
+
+export const modalPresented = () => presented('ionModalDidPresent')
+
+export const toasts = () => Array.from(document.querySelectorAll('ion-toast'), (toast) => toast.message)
 
 export function ionElement(selector: string, scope = VISIBLE_PAGE) {
   return waitFor(() => {

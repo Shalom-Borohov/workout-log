@@ -15,3 +15,6 @@ export async function savedWorkout(id: string): Promise<Workout | undefined> {
 
   return record && isRoutineWorkout(record) ? record : undefined
 }
+
+export const firstSectionNames = async (id: string) =>
+  (await savedWorkout(id))?.sections[0].items.map((item) => item.exercises[0].name)

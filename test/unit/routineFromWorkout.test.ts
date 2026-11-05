@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { routineFromWorkout } from '../../src/domain/routineFromWorkout'
-import type { Routine, Workout } from '../../src/domain/types'
+import { matchesRoutine, routineFromWorkout } from '../../src/domain/routineFromWorkout'
+import type { Routine, Workout, WorkoutExercise } from '../../src/domain/types'
 import { counter } from '../helpers/ids'
 import { done, exercise, oct, open, reps, routineExercise, seconds } from '../helpers/workouts'
 
@@ -94,5 +94,84 @@ describe('routineFromWorkout', () => {
     expect([routine.id, routine.name, routine.createdAt]).toEqual(['n3', 'אימון גוף מלא', 900])
     expect(routine.sections.map((section) => section.id)).toEqual(['n1', 'n2'])
     expect(routine.sections[1].items[0].exercises[0].weight).toBeNull()
+  })
+})
+
+describe('matchesRoutine', () => {
+  const plan: Routine = {
+    ...base,
+    sections: [
+      {
+        id: 's1',
+        name: 'חימום',
+        sets: 1,
+        items: [{ id: 'x1', sets: null, exercises: [{ name: 'אופניים', target: seconds(300), weight: 20, tip: 'קצב קל' }] }],
+      },
+      {
+        id: 's2',
+        name: 'עיקרי',
+        sets: 3,
+        items: [
+          { id: 'x2', sets: 4, exercises: [{ name: 'סקוואט', target: reps(8), weight: 60, tip: '' }] },
+          {
+            id: 'x3',
+            sets: null,
+            exercises: [
+              { name: 'לחיצת חזה', target: reps(10), weight: 40, tip: '' },
+              { name: 'פלאנק', target: seconds(30), weight: null, tip: '' },
+            ],
+          },
+          { id: 'x4', sets: 3, exercises: [{ name: 'מתח', target: reps(6), weight: null, tip: '' }] },
+        ],
+      },
+    ],
+  }
+
+  const main = session.sections[1]
+
+  const withMain = (items: Workout['sections'][number]['items']): Workout => ({
+    ...session,
+    sections: [session.sections[0], { ...main, items }],
+  })
+
+  it('matches when only weights, ticks and skips differ', () => {
+    expect(matchesRoutine(session, plan)).toBe(true)
+  })
+
+  it('matches a target stored with its keys in another order', () => {
+    const warmUp = plan.sections[0]
+    const bike = warmUp.items[0]
+    const reordered = { ...bike, exercises: [{ ...bike.exercises[0], target: { seconds: 300, kind: 'duration' as const } }] }
+
+    expect(matchesRoutine(session, { ...plan, sections: [{ ...warmUp, items: [reordered] }, plan.sections[1]] })).toBe(true)
+  })
+
+  it('matches when only set counts differ, since an extra set is usually a one-off', () => {
+    const squat = main.items[0]
+    const extraSet = withMain([{ ...squat, exercises: [{ ...squat.exercises[0], sets: sets(5) }] }, main.items[1], main.items[2]])
+
+    expect(matchesRoutine(extraSet, plan)).toBe(true)
+  })
+
+  it('differs when an exercise is added, removed or moved', () => {
+    expect(matchesRoutine(withMain(main.items.slice(0, 2)), plan)).toBe(false)
+    expect(matchesRoutine(withMain([main.items[1], main.items[0], main.items[2]]), plan)).toBe(false)
+  })
+
+  it('differs when a name, target or tip changes', () => {
+    const squat = main.items[0]
+
+    const edited = (change: Partial<WorkoutExercise>) =>
+      withMain([{ ...squat, exercises: [{ ...squat.exercises[0], ...change }] }, main.items[1], main.items[2]])
+
+    expect(matchesRoutine(edited({ name: 'דדליפט' }), plan)).toBe(false)
+    expect(matchesRoutine(edited({ target: reps(5) }), plan)).toBe(false)
+    expect(matchesRoutine(edited({ tip: 'עמוק' }), plan)).toBe(false)
+  })
+
+  it('differs when a section is renamed', () => {
+    const renamed = { ...session, sections: [{ ...session.sections[0], name: 'פתיחה' }, main] }
+
+    expect(matchesRoutine(renamed, plan)).toBe(false)
   })
 })

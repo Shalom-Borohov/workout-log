@@ -1,30 +1,25 @@
-import {
-  IonButton,
-  IonIcon,
-  IonItem,
-  IonItemOption,
-  IonItemOptions,
-  IonItemSliding,
-  IonLabel,
-  IonReorder,
-} from '@ionic/react'
+import { IonButton, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonReorder } from '@ionic/react'
 import { removeCircle } from 'ionicons/icons'
+import type { ReactNode } from 'react'
 import { useRef } from 'react'
 import { COMMON_COPY } from '../../copy/common'
-import { LIVE_COPY } from './copy'
-import type { WorkoutItem } from '../../domain/types'
-import { itemTitle } from '../../domain/workoutEdits'
+import { ITEM_EDITOR_COPY } from './copy'
 
 interface Props {
-  item: WorkoutItem
+  title: string
   canDelete: boolean
   onEdit: () => void
   onDelete: () => void
+  children: ReactNode
 }
 
-export function OverviewEditRow({ item, canDelete, onEdit, onDelete }: Props) {
+export function EditableItemRow({ title, canDelete, onEdit, onDelete, children }: Props) {
   const sliding = useRef<HTMLIonItemSlidingElement>(null)
-  const title = itemTitle(item)
+
+  function remove() {
+    void sliding.current?.close()
+    onDelete()
+  }
 
   return (
     <IonItemSliding ref={sliding} disabled={!canDelete}>
@@ -33,7 +28,7 @@ export function OverviewEditRow({ item, canDelete, onEdit, onDelete }: Props) {
           <IonButton
             slot="start"
             fill="clear"
-            aria-label={LIVE_COPY.revealDelete(title)}
+            aria-label={ITEM_EDITOR_COPY.revealDelete(title)}
             onClick={(event) => {
               event.stopPropagation()
               void sliding.current?.open('end')
@@ -42,11 +37,11 @@ export function OverviewEditRow({ item, canDelete, onEdit, onDelete }: Props) {
             <IonIcon slot="icon-only" color="danger" icon={removeCircle} />
           </IonButton>
         )}
-        <IonLabel>{title}</IonLabel>
+        {children}
         <IonReorder slot="end" />
       </IonItem>
       <IonItemOptions side="end">
-        <IonItemOption color="danger" aria-label={LIVE_COPY.deleteItem(title)} onClick={onDelete}>
+        <IonItemOption color="danger" aria-label={ITEM_EDITOR_COPY.deleteItem(title)} onClick={remove}>
           {COMMON_COPY.delete}
         </IonItemOption>
       </IonItemOptions>

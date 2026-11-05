@@ -5,7 +5,6 @@ import {
   IonLabel,
   IonList,
   IonListHeader,
-  IonReorder,
   IonReorderGroup,
   type ReorderEndCustomEvent,
 } from '@ionic/react'
@@ -14,18 +13,21 @@ import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import type { RoutineSection } from '../../domain/types'
 import { type Change, MAX_SETS, MIN_SETS, moveItem, setSectionSets } from '../../domain/routineEdit'
+import { itemTitle } from '../../domain/workoutEdits'
 import { ItemLabel } from './ItemLabel'
 import { Stepper } from '../../components/Stepper'
+import { EditableItemRow } from '../../components/itemEditor/EditableItemRow'
 
 interface Props {
   section: RoutineSection
   onChange: (change: Change<RoutineSection>) => void
   onEditItem: (id: string) => void
+  onDeleteItem: (id: string) => void
   onAddItem: () => void
   onDelete: () => void
 }
 
-export function SectionEditor({ section, onChange, onEditItem, onAddItem, onDelete }: Props) {
+export function SectionEditor({ section, onChange, onEditItem, onDeleteItem, onAddItem, onDelete }: Props) {
   function reorder(event: ReorderEndCustomEvent) {
     const { from, to } = event.detail
 
@@ -66,10 +68,15 @@ export function SectionEditor({ section, onChange, onEditItem, onAddItem, onDele
         </IonItem>
         <IonReorderGroup disabled={false} onIonReorderEnd={reorder}>
           {section.items.map((item) => (
-            <IonItem key={item.id} button detail={false} onClick={() => onEditItem(item.id)}>
+            <EditableItemRow
+              key={item.id}
+              title={itemTitle(item)}
+              canDelete
+              onEdit={() => onEditItem(item.id)}
+              onDelete={() => onDeleteItem(item.id)}
+            >
               <ItemLabel item={item} sectionSets={section.sets} />
-              <IonReorder slot="end" />
-            </IonItem>
+            </EditableItemRow>
           ))}
         </IonReorderGroup>
         <IonItem button detail={false} onClick={onAddItem}>

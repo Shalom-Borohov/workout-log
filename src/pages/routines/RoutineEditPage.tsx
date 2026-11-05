@@ -13,56 +13,28 @@ import {
   IonTitle,
   IonToggle,
   IonToolbar,
-  useIonRouter,
 } from '@ionic/react'
 import { addCircle } from 'ionicons/icons'
-import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import { useRoutine } from '../../data/hooks'
-import { deleteRoutine, setRoutineDaily, updateRoutine } from '../../data/repo'
-import {
-  type Change,
-  findItem,
-  newItem,
-  newSection,
-  removeItem,
-  removeSection,
-  updateItem,
-  updateSection,
-} from '../../domain/routineEdit'
-import type { Routine, RoutineExercise } from '../../domain/types'
+import { setRoutineDaily, updateRoutine } from '../../data/repo'
+import { type Change, newSection, removeSection, updateSection } from '../../domain/routineEdit'
+import type { Routine } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import type { RoutineHostPath } from '../../navigation/paths'
-import { ExercisePicker } from '../../components/itemEditor/ExercisePicker'
-import { ItemEditModal } from '../../components/itemEditor/ItemEditModal'
+import { ItemEditorSheets } from '../../components/itemEditor/ItemEditorSheets'
 import { DrillColorPicker } from './DrillColorPicker'
+import { RoutineEditActions } from './RoutineEditActions'
 import { SectionEditor } from './SectionEditor'
+import { useRoutineItemEditor } from './useRoutineItemEditor'
 import './routines.css'
 
 function RoutineEditor({ routine, tab }: { routine: Routine; tab: RoutineHostPath }) {
-  const router = useIonRouter()
   const confirmDelete = useConfirmDelete()
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [addingTo, setAddingTo] = useState<string | null>(null)
-  const editing = editingId === null ? undefined : findItem(routine, editingId)
-
   const edit = (change: Change<Routine>) => void updateRoutine(routine.id, change)
-
-  function pick(exercise?: RoutineExercise) {
-    const id = crypto.randomUUID()
-    const item = exercise ? newItem(id, [exercise]) : newItem(id)
-
-    if (addingTo !== null) {
-      edit((current) => updateSection(current, addingTo, (section) => ({ ...section, items: [...section.items, item] })))
-
-      if (!exercise) {
-        setEditingId(id)
-      }
-    }
-    setAddingTo(null)
-  }
+  const items = useRoutineItemEditor(routine, edit)
 
   function addSection() {
     const section = newSection(crypto.randomUUID(), ROUTINES_COPY.newSection)
@@ -70,18 +42,8 @@ function RoutineEditor({ routine, tab }: { routine: Routine; tab: RoutineHostPat
     edit((current) => ({ ...current, sections: [...current.sections, section] }))
   }
 
-  async function removeRoutine() {
-    await deleteRoutine(routine.id)
-    router.push(tab, 'back', 'pop')
-  }
-
   function rename(name: string) {
     edit((current) => ({ ...current, name }))
-  }
-
-  function removeEditing(id: string) {
-    setEditingId(null)
-    edit((current) => removeItem(current, id))
   }
 
   return (
@@ -116,8 +78,9 @@ function RoutineEditor({ routine, tab }: { routine: Routine; tab: RoutineHostPat
           key={section.id}
           section={section}
           onChange={(change) => edit((current) => updateSection(current, section.id, change))}
-          onEditItem={setEditingId}
-          onAddItem={() => setAddingTo(section.id)}
+          onEditItem={items.flow.open}
+          onDeleteItem={items.remove}
+          onAddItem={() => items.flow.addTo(section.id)}
           onDelete={() =>
             confirmDelete({
               header: ROUTINES_COPY.deleteSectionQuestion,
@@ -133,32 +96,8 @@ function RoutineEditor({ routine, tab }: { routine: Routine; tab: RoutineHostPat
           <IonLabel color="primary">{ROUTINES_COPY.addSection}</IonLabel>
         </IonItem>
       </IonList>
-      <IonList inset>
-        <IonItem
-          button
-          detail={false}
-          onClick={() =>
-            confirmDelete({
-              header: COMMON_COPY.deleteWorkoutQuestion,
-              message: routine.name,
-              onConfirm: () => void removeRoutine(),
-            })
-          }
-        >
-          <IonLabel color="danger">{COMMON_COPY.deleteWorkout}</IonLabel>
-        </IonItem>
-      </IonList>
-      <ItemEditModal
-        editing={editing}
-        onChange={(id, change) => edit((current) => updateItem(current, id, change))}
-        onDelete={removeEditing}
-        onClose={() => setEditingId(null)}
-      />
-      <ExercisePicker
-        isOpen={addingTo !== null}
-        onPick={pick}
-        onClose={() => setAddingTo(null)}
-      />
+      <RoutineEditActions routine={routine} tab={tab} />
+      <ItemEditorSheets flow={items.flow} editing={items.editing} onChange={items.change} onDelete={items.remove} />
     </>
   )
 }

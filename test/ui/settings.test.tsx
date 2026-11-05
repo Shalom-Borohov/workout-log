@@ -4,7 +4,7 @@ import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
-import { ionChange, ionField, ionInput } from '../helpers/ionic'
+import { ionChange, ionField, ionInput, toasts } from '../helpers/ionic'
 import { renderAt } from '../helpers/renderAt'
 import { mockShare } from '../helpers/share'
 import { done, exercise, oct, reps, routine, workout } from '../helpers/workouts'
@@ -27,7 +27,6 @@ async function readJson(file: Blob | undefined) {
 
 const { summary: _summary, ...noSummary } = past
 
-const toasts = () => Array.from(document.querySelectorAll('ion-toast'), (toast) => toast.message)
 
 function chooseFile(input: HTMLElement, text: string) {
   fireEvent.change(input, { target: { files: [new File([text], 'backup.json', { type: 'application/json' })] } })

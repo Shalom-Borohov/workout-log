@@ -1,4 +1,4 @@
-import { exercisesOf } from './progress'
+import { exercisesOf, targetAmount } from './progress'
 import { createRoutine, newItem, withSets } from './routineEdit'
 import type { Routine, RoutineExercise, RoutineSection, Workout, WorkoutExercise } from './types'
 import { commonSets, setCount } from './workoutStructure'
@@ -36,4 +36,21 @@ export function routineFromWorkout(
   return base
     ? { ...base, updatedAt: now, sections }
     : createRoutine(ids(), workout.routineName, sections, now)
+}
+
+type PlanSource = { name: string; items: { exercises: Pick<RoutineExercise, 'name' | 'target' | 'tip'>[] }[] }[]
+
+function plan(sections: PlanSource): string {
+  return JSON.stringify(
+    sections.map((section) => [
+      section.name,
+      section.items.map((item) =>
+        item.exercises.map(({ name, target, tip }) => [name, target.kind, targetAmount(target), tip]),
+      ),
+    ]),
+  )
+}
+
+export function matchesRoutine(workout: Workout, routine: Routine): boolean {
+  return plan(workout.sections) === plan(routine.sections)
 }

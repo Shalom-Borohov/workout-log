@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveWorkout } from '../../src/data/repo'
 import { resetDb, savedWorkout } from '../helpers/db'
-import { actionSheetPresented, alertPresented, ionChange, ionInput, visibleAll } from '../helpers/ionic'
+import { alertPresented, ionChange, ionInput, visibleAll } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, open, seconds, workout } from '../helpers/workouts'
 import { userEvent } from '@testing-library/user-event'
@@ -156,15 +156,6 @@ describe('live workout', () => {
     fireEvent.click(setOption('סקוואט סט 4', 'מחיקה'))
     await waitFor(() => expect(screen.queryByRole('button', { name: 'סקוואט סט 4' })).not.toBeInTheDocument())
     await waitFor(async () => expect((await squat())?.sets).toHaveLength(3))
-
-    const presented = actionSheetPresented()
-
-    await user.click(await screen.findByLabelText('פעולות לתרגיל'))
-    await presented
-
-    const menu = Array.from(document.querySelectorAll('.action-sheet-button-label'), (label) => label.textContent)
-
-    expect(menu).toEqual(['הוספה לסיכום'])
   })
 
   it('asks before deleting a ticked set, and offers no delete on the only set', async () => {

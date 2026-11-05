@@ -13,6 +13,7 @@ import {
   IonTitle,
   IonToolbar,
   useIonRouter,
+  useIonViewWillEnter,
 } from '@ionic/react'
 import { COMMON_COPY } from '../../copy/common'
 import { useRoutines } from '../../data/hooks'
@@ -26,6 +27,12 @@ import './daily.css'
 export function DailyArchivePage() {
   const archived = useRoutines()?.filter((routine) => routine.daily && routine.archived)
   const router = useIonRouter()
+
+  useIonViewWillEnter(() => {
+    if (archived?.length === 0) {
+      router.push(DAILY_PATH, 'back', 'pop')
+    }
+  }, [archived?.length])
 
   async function restore(id: string, last: boolean) {
     await updateRoutine(id, (current) => ({ ...current, archived: false }))

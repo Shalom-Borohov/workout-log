@@ -10,13 +10,17 @@ import { BackToCurrent } from './BackToCurrent'
 import { FinishSheet, type SheetMode } from './FinishSheet'
 import { ItemActions } from './ItemActions'
 import { ItemCard } from './ItemCard'
-import { ItemListModal } from './ItemListModal'
+import { ItemListModal, type ListMode } from './ItemListModal'
 import { LiveFooter } from './LiveFooter'
 import { LiveHeader } from './LiveHeader'
 import { NoteSheet } from './NoteSheet'
+import { RoutineActions } from './RoutineActions'
 import { useItemMenu } from './useItemMenu'
 import { useLiveWorkout } from './useLiveWorkout'
+import { useOverviewEditor } from './useOverviewEditor'
+import { useSetSelection } from './useSetSelection'
 import { useItemSwipe } from './useSwipe'
+import { ItemEditorSheets } from '../../components/itemEditor/ItemEditorSheets'
 import { useWakeLock } from '../../hooks/useWakeLock'
 import './live.css'
 import './photo.css'
@@ -43,7 +47,7 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
   } = useLiveWorkout(initial)
 
   const [sheet, setSheet] = useState<SheetMode | null>(null)
-  const [listing, setListing] = useState(false)
+  const [listing, setListing] = useState<ListMode | null>(null)
   const [noting, setNoting] = useState(false)
   const content = useRef<HTMLIonContentElement>(null)
   const photo = useBackgroundUrl()
@@ -53,7 +57,21 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
   useWakeLock(active)
   useItemSwipe(content, step)
 
-  const openMenu = useItemMenu(item, () => setSheet('summary'))
+  const selection = useSetSelection(item, {
+    onChange: changeSet,
+    onDuplicate: (exercise, set) => apply((current) => duplicateSetAt(current, ref, exercise, set)),
+    onRemove: (exercise, set) => apply((current) => removeSetAt(current, ref, exercise, set)),
+  })
+
+  const editor = useOverviewEditor(workout, previous, apply)
+
+  const openMenu = useItemMenu({
+    item,
+    selection,
+    onAddAfter: () => editor.flow.addAfter(item.id),
+    onSummary: () => setSheet('summary'),
+    onEditWorkout: () => setListing('editing'),
+  })
 
   async function save(summary: string) {
     setSheet(null)
@@ -105,9 +123,7 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
           sectionName={workout.sections[ref.section].name}
           position={index + 1}
           total={total}
-          onSetChange={changeSet}
-          onSetDuplicate={(exercise, set) => apply((current) => duplicateSetAt(current, ref, exercise, set))}
-          onSetRemove={(exercise, set) => apply((current) => removeSetAt(current, ref, exercise, set))}
+          selection={selection}
           onNote={openNote}
         >
           <ItemActions
@@ -118,18 +134,25 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
         </ItemCard>
         {active && backTo !== null && backTo !== index && <BackToCurrent onBack={() => move(backTo)} />}
       </IonContent>
-      <LiveFooter index={index} total={total} onMove={move} onList={() => setListing(true)} />
+      <LiveFooter index={index} total={total} onMove={move} onList={() => setListing('progress')} />
       <ItemListModal
-        isOpen={listing}
+        mode={listing}
         workout={workout}
         current={index}
-        previous={previous}
+        editor={editor}
         onEdit={apply}
         onSelect={(next) => {
           move(next)
-          setListing(false)
+          setListing(null)
         }}
-        onClose={() => setListing(false)}
+        onModeChange={setListing}
+      />
+      <ItemEditorSheets
+        flow={editor.flow}
+        editing={editor.editing}
+        showStartWeight={false}
+        onChange={editor.change}
+        onDelete={editor.remove}
       />
       <NoteSheet
         isOpen={noting}
@@ -146,7 +169,9 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
         onCancel={() => setSheet(null)}
         onSave={save}
         onDelete={remove}
-      />
+      >
+        <RoutineActions workout={workout} onEdit={apply} unsavedOnly />
+      </FinishSheet>
     </>
   )
 }

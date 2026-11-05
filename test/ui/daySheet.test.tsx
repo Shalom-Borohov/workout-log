@@ -4,7 +4,7 @@ import { db } from '../../src/data/db'
 import { saveRecord, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
-import { expectInOrder } from '../helpers/ionic'
+import { expectInOrder, modalPresented } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { activity, dailyLog, dailyRoutine, done, exercise, oct, reps, seconds, workout } from '../helpers/workouts'
 
@@ -37,9 +37,12 @@ describe('day sheet', () => {
     await waitFor(async () => expect(await db.dailyLogs.toArray()).toEqual([dailyLog('d1', '2026-10-25', plannedDrills)]))
     expect(sheetTitle('יום א׳ 25.10')).not.toBeInTheDocument()
 
-    fireEvent.click(await button('יום א׳ 25.10, חטיפי תנועה'))
+    const sheetFullyOpen = modalPresented()
 
-    await waitFor(() => expect(sheetTitle('יום א׳ 25.10')).toBeInTheDocument())
+    fireEvent.click(await button('יום א׳ 25.10, חטיפי תנועה'))
+    await sheetFullyOpen
+
+    expect(sheetTitle('יום א׳ 25.10')).toBeInTheDocument()
     expect(await db.dailyLogs.count()).toBe(1)
   })
 
