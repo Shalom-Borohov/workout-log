@@ -102,16 +102,18 @@ export function applyItemEdit(
   previous: PreviousExerciseLookup,
 ): WorkoutItem {
   const count = itemSets(edited, sectionSets)
+  const countEdited = count !== setCount(item)
 
   const exercises = edited.exercises.map((exercise, exerciseIndex) => {
     const current = item.exercises.at(exerciseIndex)
     if (!current) {
       return toWorkoutExercise(exercise, count, previous)
     }
+    const exerciseCount = countEdited ? count : current.sets.length
     const sameExercise = current.name === exercise.name && targetAmount(current.target) === targetAmount(exercise.target)
     const keepsSets = current.target.kind === exercise.target.kind && (sameExercise || current.sets.some((set) => set.done))
     const last = previous(exercise)
-    const sets = keepsSets ? resize(current.sets, count) : prefill(exercise, count, last.sets)
+    const sets = keepsSets ? resize(current.sets, exerciseCount) : prefill(exercise, exerciseCount, last.sets)
     const note = current.name !== exercise.name && last.note !== '' ? last.note : current.note
 
     return { ...current, name: exercise.name, target: exercise.target, tip: exercise.tip, sets, note }
