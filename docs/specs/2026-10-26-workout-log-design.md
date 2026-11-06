@@ -142,6 +142,8 @@ Replaces Apple Notes workout notes. iPhone-only PWA that looks and feels native.
     - The תרגילים tab is grouped by area, in the order above, with ללא last. Each group has a header with the area's name; rows keep the icon, name, last date and best set, A–Z within a group. Search filters within the groups and hides empty ones.
     - "הוספת תרגיל" shows each exercise's icon and keeps its order (item 39). Routine editor rows, the live workout and the timeline show no icon: mid-workout the screen shows the current set (principle 6).
     - Existing exercises start with none and are tagged by hand; the app doesn't guess from the name, so nothing lands in the wrong group unnoticed.
+53. **Recovery screen (added 2026-11-07):** if a page can't draw, for example because a stored record is malformed, the app shows a plain "משהו השתבש" screen instead of a blank page, with "ייצוא גיבוי" and "טעינה מחדש". Why: the data lives only on the phone, so a bad record must never cut off the way out. Bad records aren't skipped on read, and the app never deletes or rewrites them on its own, because only the owner can decide what a damaged record was. The screen has no bug report link, so nothing from a record can reach a public repo.
+54. **A backup with a bad record (added 2026-11-07, extends 48):** an export checks each record with the import's own rules. The file is still produced, so no data becomes unreachable, and a message says how many records are bad and that importing the file will fail. Why: finding that out on the day of a restore is too late. A completed share still counts as a backup under item 48.
 
 ## Assumptions (accepted by the user)
 

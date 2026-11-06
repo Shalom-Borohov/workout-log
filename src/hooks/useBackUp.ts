@@ -1,16 +1,21 @@
-import { shareBackup } from '../components/backupFile'
-import { exportBackup } from '../data/backup'
-import { markBackedUp } from '../data/backupStatus'
-import { useShare } from './useShare'
+import { useIonAlert, useIonToast } from '@ionic/react'
+import { TOAST_OPTIONS } from '../components/toast'
+import { COMMON_COPY } from '../copy/common'
+import { backUpStoredData } from './backUpStoredData'
 
 export function useBackUp() {
-  const share = useShare()
+  const [presentToast] = useIonToast()
+  const [presentAlert] = useIonAlert()
 
-  return () =>
-    share(async () => {
-      const now = Date.now()
+  return async () => {
+    const { failure, badRecords } = await backUpStoredData()
 
-      await shareBackup(await exportBackup(now))
-      await markBackedUp(now)
-    })
+    if (failure) {
+      void presentToast({ message: failure, ...TOAST_OPTIONS })
+    }
+
+    if (badRecords > 0) {
+      void presentAlert({ message: COMMON_COPY.badRecordsInBackup(badRecords), buttons: [COMMON_COPY.ok] })
+    }
+  }
 }

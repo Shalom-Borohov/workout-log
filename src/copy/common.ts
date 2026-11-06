@@ -1,5 +1,8 @@
 export const COMMON_COPY = {
+  ok: 'אישור',
   actionFailed: 'הפעולה נכשלה',
+  badRecordsInBackup: (count: number) =>
+    count === 1 ? 'בגיבוי יש רשומה פגומה אחת, וייבוא הקובץ ייכשל' : `בגיבוי יש ${count} רשומות פגומות, וייבוא הקובץ ייכשל`,
   backup: 'גיבוי',
   cancel: 'ביטול',
   save: 'שמירה',

@@ -43,6 +43,7 @@ Code is in three layers, and dependencies point downward only:
   - `backup.ts`: backup export/import, with hand-written type guards for the JSON.
 - `src/pages/<feature>/` (`live`, `routines`, `timeline`, `exercises`, `settings`): grouped by feature. Each folder holds that screen's components, hooks, CSS and copy, and features don't import from each other.
 - Shared UI goes in `src/components/`, `src/hooks/`, `src/navigation/` and `src/copy/`. Move code there only once a second feature needs it.
+- `src/recovery/`: an error boundary above `IonApp`, and a plain screen with no Ionic and no router that can still export a backup (spec item 53).
 - `src/appUpdate/`: the update bar, the "מה חדש" sheet and `changelog.ts`, rendered by `Tabs.tsx` and Settings.
 - `src/rest/`: the rest timer's app-level clock and its sound. `Tabs.tsx` mounts it (`RestClock`), so a rest keeps running and rings on any tab. The running rest is saved in localStorage (`src/data/runningRest.ts`), and the clock re-syncs from it when the app returns from the background. It stops itself when the active workout is finished, deleted or done.
 
