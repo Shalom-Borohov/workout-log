@@ -16,6 +16,7 @@ import {
 } from '../../domain/workoutEdits'
 import { followIndex } from '../../domain/workoutStructure'
 import { useSave } from '../../hooks/useSave'
+import { ignoreTapsAfterAdvance } from '../../navigation/tapGuard'
 import { useRestTimer } from './useRestTimer'
 
 export type Travel = 'next' | 'prev' | null
@@ -113,6 +114,7 @@ export function useLiveWorkout(initial: Workout) {
     const next = nextUnfinished(latest.current, index)
 
     if (next !== null) {
+      ignoreTapsAfterAdvance()
       move(next)
     }
   }

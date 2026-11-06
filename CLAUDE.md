@@ -73,7 +73,7 @@ Routing:
 - The same live page edits a finished workout (edit mode, entered via the detail page's "עריכה").
 - Swipe-back is Ionic's own gesture (right edge in RTL). `src/navigation/edgeSwipe.ts` blocks iOS's built-in edge swipe by calling `preventDefault()` on `touchstart` within 20 px of either edge, unless the touch starts on a control. A scroll that starts in that strip therefore does not scroll.
   - In a Home Screen app on a Hebrew iPhone, iOS's swipe also uses the right edge. When both ran, the app jumped and froze taps (ionic-framework#29733, #22299). With only iOS's swipe, it slid a snapshot and then flashed the old page.
-- `src/navigation/tapGuard.ts` ignores taps while an Ionic page transition is still animating, for at most 1 s per transition, so a stuck animation can't freeze the app.
+- `src/navigation/tapGuard.ts` ignores taps while an Ionic page transition is still animating, for at most 1 s per transition, so a stuck animation can't freeze the app. It also ignores taps for 300 ms after a live workout auto-advances (spec item 58).
   - Without it, a tap during the end of a swipe-back reuses a page that Ionic then hides with `display: none`.
 
 Live page state:
