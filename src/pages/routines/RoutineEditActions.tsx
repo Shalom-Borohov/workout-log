@@ -4,6 +4,7 @@ import { ROUTINES_COPY } from './copy'
 import { deleteRoutine, updateRoutine } from '../../data/repo'
 import type { Routine } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
+import { useSave } from '../../hooks/useSave'
 import type { RoutineHostPath } from '../../navigation/paths'
 import { useDuplicateRoutine } from './useDuplicateRoutine'
 
@@ -11,14 +12,16 @@ export function RoutineEditActions({ routine, tab }: { routine: Routine; tab: Ro
   const router = useIonRouter()
   const confirmDelete = useConfirmDelete()
   const duplicate = useDuplicateRoutine(tab)
+  const { save } = useSave()
 
   function toggleArchived() {
-    void updateRoutine(routine.id, (current) => ({ ...current, archived: !current.archived }))
+    void save(() => updateRoutine(routine.id, (current) => ({ ...current, archived: !current.archived })))
   }
 
   async function removeRoutine() {
-    await deleteRoutine(routine.id)
-    router.push(tab, 'back', 'pop')
+    if (await save(() => deleteRoutine(routine.id))) {
+      router.push(tab, 'back', 'pop')
+    }
   }
 
   return (

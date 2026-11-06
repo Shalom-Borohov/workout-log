@@ -18,6 +18,7 @@ import { countLabel, LIST_SEPARATOR, shortDate } from '../../domain/format'
 import { exercisesOf, hasExercises } from '../../domain/progress'
 import type { Routine } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
+import { useSave } from '../../hooks/useSave'
 import { useStartWorkout } from '../../hooks/useStartWorkout'
 import { ROUTINES_PATH, routinePath } from '../../navigation/paths'
 import { useDuplicateRoutine } from './useDuplicateRoutine'
@@ -36,6 +37,7 @@ export function RoutineRow({ routine, now }: { routine: Routine; now: number }) 
   const startWorkout = useStartWorkout(ROUTINES_PATH)
   const duplicateRoutine = useDuplicateRoutine(ROUTINES_PATH)
   const sliding = useRef<HTMLIonItemSlidingElement>(null)
+  const { save } = useSave()
 
   function start(event: MouseEvent) {
     event.stopPropagation()
@@ -46,7 +48,7 @@ export function RoutineRow({ routine, now }: { routine: Routine; now: number }) 
     confirmDelete({
       header: COMMON_COPY.deleteWorkoutQuestion,
       message: routine.name,
-      onConfirm: () => void deleteRoutine(routine.id),
+      onConfirm: () => void save(() => deleteRoutine(routine.id)),
       onCancel: () => void sliding.current?.close(),
     })
   }

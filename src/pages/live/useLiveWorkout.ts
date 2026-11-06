@@ -15,6 +15,7 @@ import {
   toggleSkip,
 } from '../../domain/workoutEdits'
 import { followIndex } from '../../domain/workoutStructure'
+import { useSave } from '../../hooks/useSave'
 import { useRestTimer } from './useRestTimer'
 
 export type Travel = 'next' | 'prev' | null
@@ -24,6 +25,8 @@ type Position = { index: number; travel: Travel }
 export function useLiveWorkout(initial: Workout) {
   const [workout, setWorkout] = useState(initial)
   const latest = useRef(initial)
+  const stored = useRef(initial)
+  const { saveFailed } = useSave()
   const [{ index, travel }, setPosition] = useState<Position>(() => ({ index: firstUnfinished(initial), travel: null }))
   const refs = itemRefs(workout)
   const total = refs.length
@@ -38,9 +41,26 @@ export function useLiveWorkout(initial: Workout) {
     [history, workout.startedAt],
   )
 
+  async function saveOrTakeBack(next: Workout, indexAtEdit: number) {
+    try {
+      await saveWorkout(next)
+      stored.current = next
+    } catch {
+      if (latest.current !== next) {
+        return
+      }
+
+      latest.current = stored.current
+      setWorkout(stored.current)
+      setPosition({ index: followIndex(next, stored.current, indexAtEdit), travel: null })
+      saveFailed()
+    }
+  }
+
   function apply(edit: (current: Workout) => Workout) {
     const before = latest.current
     const next = edit(before)
+    const indexAtEdit = index
 
     latest.current = next
     setWorkout(next)
@@ -49,7 +69,7 @@ export function useLiveWorkout(initial: Workout) {
 
       return kept === position.index ? position : { index: kept, travel: null }
     })
-    void saveWorkout(next)
+    void saveOrTakeBack(next, indexAtEdit)
   }
 
   function move(next: number) {

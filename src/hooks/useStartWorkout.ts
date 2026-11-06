@@ -4,10 +4,12 @@ import { COMMON_COPY } from '../copy/common'
 import { activeWorkout, beginWorkout } from '../data/repo'
 import type { Routine } from '../domain/types'
 import { type HostTabPath, workoutPath } from '../navigation/paths'
+import { useSave } from './useSave'
 
 export function useStartWorkout(tab: HostTabPath) {
   const router = useIonRouter()
   const [presentSheet] = useIonActionSheet()
+  const { save } = useSave()
 
   return async (routine: Routine) => {
     const active = await activeWorkout()
@@ -22,7 +24,11 @@ export function useStartWorkout(tab: HostTabPath) {
 
       return
     }
-    const workout = await beginWorkout(routine)
-    router.push(workoutPath(tab, workout.id))
+
+    await save(async () => {
+      const workout = await beginWorkout(routine)
+
+      router.push(workoutPath(tab, workout.id))
+    })
   }
 }

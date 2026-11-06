@@ -22,6 +22,7 @@ import { targetAmount } from '../../domain/progress'
 import { type Change, DEFAULT_EXERCISE_NAME } from '../../domain/routineEdit'
 import { SECONDS_PER_MINUTE } from '../../domain/time'
 import type { RoutineExercise, Target } from '../../domain/types'
+import { useSave } from '../../hooks/useSave'
 import './itemEditor.css'
 
 interface Props {
@@ -70,6 +71,7 @@ export function ExerciseFields({ exercise, showStartWeight, onChange }: Props) {
   const areas = useExerciseAreas()
   const [unnamedArea, setUnnamedArea] = useState<BodyArea | null>(null)
   const isUnnamed = exercise.name === DEFAULT_EXERCISE_NAME
+  const { save } = useSave()
 
   function changeUnit(next: SegmentValue | undefined) {
     if (!isUnit(next)) {
@@ -105,15 +107,15 @@ export function ExerciseFields({ exercise, showStartWeight, onChange }: Props) {
 
       return
     }
-    void setExerciseArea(exercise.name, picked)
+    void save(() => setExerciseArea(exercise.name, picked))
   }
 
   function rename(name: string) {
     if (isUnnamed && unnamedArea !== null) {
-      void claimExerciseArea(name, unnamedArea)
+      void save(() => claimExerciseArea(name, unnamedArea))
     }
     if (!isUnnamed && name !== DEFAULT_EXERCISE_NAME) {
-      void carryExerciseArea(exercise.name, name)
+      void save(() => carryExerciseArea(exercise.name, name))
     }
     setUnnamedArea(null)
     onChange((current) => ({ ...current, name }))

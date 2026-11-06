@@ -22,6 +22,7 @@ import { changesOf } from '../../domain/progress'
 import { summaryLine } from '../../domain/timeline'
 import type { WorkoutRecord } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
+import { useSave } from '../../hooks/useSave'
 import { type DetailHostPath, workoutPath } from '../../navigation/paths'
 import { ActivityEditButton } from './ActivityEditButton'
 import { SummaryEditor } from './SummaryEditor'
@@ -36,9 +37,13 @@ export function WorkoutDetail({ id, tab }: { id: string; tab: DetailHostPath }) 
   const changes = useMemo(() => (records ? changesOf(records, id) : []), [records, id])
   const router = useIonRouter()
   const confirmDelete = useConfirmDelete()
+  const { save } = useSave()
 
   async function remove() {
-    await deleteWorkout(id)
+    if (!(await save(() => deleteWorkout(id)))) {
+      return
+    }
+
     if (router.canGoBack()) {
       router.goBack()
     } else {

@@ -6,6 +6,7 @@ import { newDailyLog, updateDailyExercise } from '../../domain/daily'
 import type { DailyDay } from '../../domain/dailyCalendar'
 import { formatDay } from '../../domain/format'
 import type { DailyExercise, DailyLog, Routine } from '../../domain/types'
+import { useSave } from '../../hooks/useSave'
 import { DAILY_COPY } from './copy'
 import { DrillName } from './DrillName'
 import { DrillSteppers } from './DrillSteppers'
@@ -20,19 +21,23 @@ interface DayDrillRowProps {
 export function DayDrillRow({ routine, day, log }: DayDrillRowProps) {
   const [edited, setEdited] = useState<DailyLog | null>(null)
   const [expanded, setExpanded] = useState(false)
+  const { save } = useSave()
   const current = log && (edited ?? log)
 
   function toggle() {
     setEdited(null)
     setExpanded(false)
-    void toggleDailyLog(newDailyLog(routine, day.date))
+    void save(() => toggleDailyLog(newDailyLog(routine, day.date)))
   }
 
-  function change(done: DailyLog, index: number, patch: Partial<DailyExercise>) {
+  async function change(done: DailyLog, index: number, patch: Partial<DailyExercise>) {
     const next = updateDailyExercise(done, index, patch)
 
     setEdited(next)
-    void updateDailyLog(next)
+
+    if (!(await save(() => updateDailyLog(next)))) {
+      setEdited(null)
+    }
   }
 
   return (
@@ -54,7 +59,7 @@ export function DayDrillRow({ routine, day, log }: DayDrillRowProps) {
             key={index}
             exercise={exercise}
             named={current.exercises.length > 1}
-            onChange={(patch) => change(current, index, patch)}
+            onChange={(patch) => void change(current, index, patch)}
           />
         ))}
     </>

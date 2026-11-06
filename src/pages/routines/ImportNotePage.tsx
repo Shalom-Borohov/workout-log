@@ -22,6 +22,7 @@ import { saveRoutine } from '../../data/repo'
 import { parseNote } from '../../domain/parseNote'
 import { createRoutine } from '../../domain/routineEdit'
 import { exercisesOf } from '../../domain/progress'
+import { useSave } from '../../hooks/useSave'
 import { ROUTINES_PATH, routinePath } from '../../navigation/paths'
 import { NotePreview } from './NotePreview'
 import './routines.css'
@@ -30,6 +31,7 @@ const newId = () => crypto.randomUUID()
 
 export function ImportNotePage() {
   const router = useIonRouter()
+  const { save } = useSave()
   const [text, setText] = useState('')
   const parsed = useMemo(() => parseNote(text, newId), [text])
 
@@ -37,11 +39,12 @@ export function ImportNotePage() {
     (exercise) => exercise.target.kind === 'reps' && exercise.target.reps === 0,
   )
 
-  async function save() {
+  async function saveParsed() {
     const id = newId()
 
-    await saveRoutine(createRoutine(id, parsed.name, parsed.sections, Date.now()))
-    router.push(routinePath(ROUTINES_PATH, id), 'forward', 'replace')
+    if (await save(() => saveRoutine(createRoutine(id, parsed.name, parsed.sections, Date.now())))) {
+      router.push(routinePath(ROUTINES_PATH, id), 'forward', 'replace')
+    }
   }
 
   return (
@@ -53,7 +56,7 @@ export function ImportNotePage() {
           </IonButtons>
           <IonTitle>{COMMON_COPY.pasteNote}</IonTitle>
           <IonButtons slot="end">
-            <IonButton strong disabled={parsed.sections.length === 0} onClick={save}>
+            <IonButton strong disabled={parsed.sections.length === 0} onClick={saveParsed}>
               {COMMON_COPY.save}
             </IonButton>
           </IonButtons>
