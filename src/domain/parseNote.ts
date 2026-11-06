@@ -1,4 +1,4 @@
-import { DEFAULT_ROUTINE_NAME, DEFAULT_SECTION_NAME, newItem, newSection, routineExercise } from './routineEdit'
+import { DEFAULT_EXERCISE_NAME, DEFAULT_ROUTINE_NAME, DEFAULT_SECTION_NAME, newItem, newSection, routineExercise } from './routineEdit'
 import { SECONDS_PER_MINUTE } from './time'
 import type { RoutineExercise, RoutineSection, Target } from './types'
 
@@ -15,14 +15,16 @@ function toTarget(amount: number, unit: string | undefined): Target {
   return { kind: 'duration', seconds: MINUTES.test(unit) ? amount * SECONDS_PER_MINUTE : amount }
 }
 
+const namedOrDefault = (text: string) => text.trim() || DEFAULT_EXERCISE_NAME
+
 function parseExercise(text: string): RoutineExercise {
   const match = text.match(AMOUNT)
 
   if (!match) {
-    return routineExercise(text.trim(), { kind: 'reps', reps: 0 })
+    return routineExercise(namedOrDefault(text), { kind: 'reps', reps: 0 })
   }
 
-  return routineExercise(match[1].trim(), toTarget(Number(match[2]), match[3]))
+  return routineExercise(namedOrDefault(match[1]), toTarget(Number(match[2]), match[3]))
 }
 
 function parseHeader(line: string, newId: () => string): RoutineSection {

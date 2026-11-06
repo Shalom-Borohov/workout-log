@@ -14,6 +14,7 @@ import { carryExerciseArea, claimExerciseArea, setExerciseArea } from '../../dat
 import { useExerciseAreas } from '../../data/hooks'
 import { areaOf, type BodyArea } from '../../domain/bodyAreas'
 import { BodyAreaPicker } from '../bodyArea/BodyAreaPicker'
+import { commitName } from '../commitName'
 import { ITEM_EDITOR_COPY } from './copy'
 import { durationUnit } from '../../domain/format'
 import { clampAmount } from '../../domain/limits'
@@ -133,7 +134,7 @@ export function ExerciseFields({ exercise, showStartWeight, onChange }: Props) {
           labelPlacement="stacked"
           placeholder={COMMON_COPY.exerciseName}
           value={exercise.name}
-          onIonChange={(event) => typeof event.detail.value === 'string' && rename(event.detail.value)}
+          onIonChange={(event) => commitName(event, exercise.name, rename)}
         />
       </IonItem>
       {areas && (

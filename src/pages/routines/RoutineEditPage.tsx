@@ -16,6 +16,7 @@ import {
 } from '@ionic/react'
 import { addCircle } from 'ionicons/icons'
 import { useParams } from 'react-router-dom'
+import { commitName } from '../../components/commitName'
 import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import { useRoutine } from '../../data/hooks'
@@ -57,7 +58,7 @@ function RoutineEditor({ routine, tab }: { routine: Routine; tab: RoutineHostPat
             labelPlacement="stacked"
             placeholder={COMMON_COPY.routineName}
             value={routine.name}
-            onIonChange={(event) => typeof event.detail.value === 'string' && rename(event.detail.value)}
+            onIonChange={(event) => commitName(event, routine.name, rename)}
           />
         </IonItem>
         <IonItem>
