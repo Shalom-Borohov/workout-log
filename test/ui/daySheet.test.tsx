@@ -2,9 +2,10 @@ import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveRecord, saveRoutine, saveWorkout } from '../../src/data/repo'
+import type { DailyLog } from '../../src/domain/types'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
-import { expectInOrder, modalPresented } from '../helpers/ionic'
+import { alertPresented, expectInOrder, modalPresented } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { activity, dailyLog, dailyRoutine, done, exercise, oct, reps, seconds, workout } from '../helpers/workouts'
 
@@ -66,6 +67,86 @@ describe('day sheet', () => {
     await waitFor(() => expect(check).toHaveAttribute('aria-pressed', 'false'))
     expect(await db.dailyLogs.count()).toBe(0)
     expect(screen.queryByText('גשר ישבן 3 × 15 · פלאנק 3 × 30 שנ׳')).not.toBeInTheDocument()
+    expect(document.querySelector('ion-alert')).toBeNull()
+  })
+
+  describe('removing a day from its ✓ when the numbers were edited', () => {
+    const editedLog = dailyLog('d1', '2026-10-25', [{ ...plannedDrills[0], sets: 5 }, plannedDrills[1]])
+
+    async function openSheetAndExpand(log: DailyLog) {
+      await saveRoutine(drills)
+      await db.dailyLogs.put(log)
+      renderAt('/tabs/daily')
+
+      fireEvent.click(await button(/^יום א׳ 25\.10/))
+      const row = await screen.findByRole('button', { name: /חטיפי תנועה/, expanded: false })
+
+      fireEvent.click(row)
+
+      return { row, check: await button('חטיפי תנועה, יום א׳ 25.10') }
+    }
+
+    async function tapUntilAsked(check: HTMLElement) {
+      const asked = alertPresented()
+
+      fireEvent.click(check)
+      await asked
+    }
+
+    it('asks first, and cancel keeps the log, the check and the open row', async () => {
+      const { row, check } = await openSheetAndExpand(editedLog)
+
+      await tapUntilAsked(check)
+
+      expect(screen.getByText('להסיר את הסימון?')).toBeInTheDocument()
+      expect(await db.dailyLogs.toArray()).toEqual([editedLog])
+
+      fireEvent.click(screen.getByText('ביטול', { selector: '.alert-button-inner' }))
+
+      await waitFor(() => expect(document.querySelector('ion-alert')).toBeNull())
+      expect(await db.dailyLogs.toArray()).toEqual([editedLog])
+      expect(check).toHaveAttribute('aria-pressed', 'true')
+      expect(row).toHaveAttribute('aria-expanded', 'true')
+      expect(await button('הוספת סט, גשר ישבן')).toBeInTheDocument()
+    })
+
+    it('confirming removes the log, and ticking again starts from the plan, closed', async () => {
+      const { check } = await openSheetAndExpand(editedLog)
+
+      await tapUntilAsked(check)
+      fireEvent.click(screen.getByText('מחיקה', { selector: '.alert-button-inner' }))
+
+      await waitFor(() => expect(check).toHaveAttribute('aria-pressed', 'false'))
+      expect(await db.dailyLogs.count()).toBe(0)
+
+      fireEvent.click(check)
+
+      expect(await screen.findByText('גשר ישבן 3 × 15 · פלאנק 3 × 30 שנ׳')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /חטיפי תנועה/, expanded: false })).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'הוספת סט, גשר ישבן' })).not.toBeInTheDocument()
+    })
+
+    it('asks about numbers still being saved', async () => {
+      const { check } = await openSheetAndExpand(dailyLog('d1', '2026-10-25', plannedDrills))
+      const addSet = await button('הוספת סט, גשר ישבן')
+      const asked = alertPresented()
+
+      fireEvent.click(addSet)
+      fireEvent.click(check)
+      await asked
+
+      expect(screen.getByText('להסיר את הסימון?')).toBeInTheDocument()
+    })
+
+    it('an untouched log goes in one tap', async () => {
+      const { check } = await openSheetAndExpand(dailyLog('d1', '2026-10-25', plannedDrills))
+
+      fireEvent.click(check)
+
+      await waitFor(() => expect(check).toHaveAttribute('aria-pressed', 'false'))
+      expect(await db.dailyLogs.count()).toBe(0)
+      expect(document.querySelector('ion-alert')).toBeNull()
+    })
   })
 
   it('a done drill is one row that expands into steppers saving the sets and seconds done', async () => {

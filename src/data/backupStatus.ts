@@ -1,8 +1,6 @@
 import type { BackupStatus } from '../domain/types'
-import { db } from './db'
+import { BACKUP_KEY, db } from './db'
 import { finishedCount } from './repo'
-
-export const BACKUP_KEY = 'backup'
 
 export async function backupStatus(): Promise<BackupStatus> {
   const setting = await db.settings.get(BACKUP_KEY)

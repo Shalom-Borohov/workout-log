@@ -21,6 +21,21 @@ export function newDailyLog(routine: Routine, date: string): DailyLog {
   return { id: dailyLogId(routine.id, date), routineId: routine.id, date, exercises: plannedExercises(routine) }
 }
 
+function isSameDrill(first: DailyExercise, second: DailyExercise): boolean {
+  return (
+    first.name === second.name &&
+    first.sets === second.sets &&
+    first.target.kind === second.target.kind &&
+    targetAmount(first.target) === targetAmount(second.target)
+  )
+}
+
+export function isEditedLog(log: DailyLog, routine: Routine): boolean {
+  const planned = plannedExercises(routine)
+
+  return log.exercises.length !== planned.length || log.exercises.some((exercise, index) => !isSameDrill(exercise, planned[index]))
+}
+
 export function updateDailyExercise(log: DailyLog, index: number, change: Partial<DailyExercise>): DailyLog {
   return {
     ...log,

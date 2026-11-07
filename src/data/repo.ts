@@ -2,7 +2,7 @@ import { isRoutineWorkout } from '../domain/activities'
 import { makeDaily } from '../domain/drillColors'
 import { startWorkout } from '../domain/progress'
 import type { DailyLog, Routine, Workout, WorkoutRecord } from '../domain/types'
-import { db } from './db'
+import { BACKUP_KEY, db } from './db'
 
 export async function saveRoutine(routine: Routine) {
   await db.routines.put(routine)
@@ -45,7 +45,16 @@ export async function saveWorkout(workout: Workout) {
 }
 
 export async function deleteWorkout(id: string) {
-  await db.workouts.delete(id)
+  await db.transaction('rw', db.workouts, db.settings, async () => {
+    const record = await db.workouts.get(id)
+    const setting = await db.settings.get(BACKUP_KEY)
+
+    await db.workouts.delete(id)
+
+    if (record && record.finishedAt !== null && setting?.key === BACKUP_KEY && setting.records > 0) {
+      await db.settings.put({ ...setting, records: setting.records - 1 })
+    }
+  })
 }
 
 const finished = () => db.workouts.where('finishedAt').above(0)
@@ -101,6 +110,10 @@ export async function toggleDailyLog(log: DailyLog) {
       await db.dailyLogs.put(log)
     }
   })
+}
+
+export async function removeDailyLog(id: string) {
+  await db.dailyLogs.delete(id)
 }
 
 export async function logDailyDay(log: DailyLog) {

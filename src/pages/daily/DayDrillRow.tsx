@@ -1,8 +1,8 @@
 import { IonItem, IonLabel } from '@ionic/react'
 import { useState } from 'react'
 import { SetCheck } from '../../components/SetCheck'
-import { toggleDailyLog, updateDailyLog } from '../../data/repo'
-import { newDailyLog, updateDailyExercise } from '../../domain/daily'
+import { updateDailyLog } from '../../data/repo'
+import { updateDailyExercise } from '../../domain/daily'
 import type { DailyDay } from '../../domain/dailyCalendar'
 import { formatDay } from '../../domain/format'
 import type { DailyExercise, DailyLog, Routine } from '../../domain/types'
@@ -11,6 +11,7 @@ import { DAILY_COPY } from './copy'
 import { DrillName } from './DrillName'
 import { DrillSteppers } from './DrillSteppers'
 import { DrillToggle } from './DrillToggle'
+import { useToggleDailyLog } from './useToggleDailyLog'
 
 interface DayDrillRowProps {
   routine: Routine
@@ -22,12 +23,12 @@ export function DayDrillRow({ routine, day, log }: DayDrillRowProps) {
   const [edited, setEdited] = useState<DailyLog | null>(null)
   const [expanded, setExpanded] = useState(false)
   const { save } = useSave()
+  const toggleLog = useToggleDailyLog(routine)
   const current = log && (edited ?? log)
 
-  function toggle() {
+  if (!log && (edited || expanded)) {
     setEdited(null)
     setExpanded(false)
-    void save(() => toggleDailyLog(newDailyLog(routine, day.date)))
   }
 
   async function change(done: DailyLog, index: number, patch: Partial<DailyExercise>) {
@@ -50,7 +51,12 @@ export function DayDrillRow({ routine, day, log }: DayDrillRowProps) {
             <DrillName routine={routine} />
           </IonLabel>
         )}
-        <SetCheck label={DAILY_COPY.onDay(routine.name, formatDay(day.day))} done={log !== undefined} size="small" onToggle={toggle} />
+        <SetCheck
+          label={DAILY_COPY.onDay(routine.name, formatDay(day.day))}
+          done={log !== undefined}
+          size="small"
+          onToggle={() => toggleLog(day.date, current)}
+        />
       </IonItem>
       {current &&
         expanded &&

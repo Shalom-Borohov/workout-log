@@ -41,7 +41,7 @@ Code is in three layers, and dependencies point downward only:
   - `repo.ts`: thin write and query functions.
   - `hooks.ts`: `useLiveQuery` hooks the pages read from.
   - `backup.ts`: backup export/import, with hand-written type guards for the JSON.
-- `src/pages/<feature>/` (`live`, `routines`, `timeline`, `exercises`, `settings`): grouped by feature. Each folder holds that screen's components, hooks, CSS and copy, and features don't import from each other.
+- `src/pages/<feature>/` (`live`, `routines`, `timeline`, `daily`, `exercises`, `settings`): grouped by feature. Each folder holds that screen's components, hooks, CSS and copy, and features don't import from each other.
 - Shared UI goes in `src/components/`, `src/hooks/`, `src/navigation/` and `src/copy/`. Move code there only once a second feature needs it.
 - `src/recovery/`: an error boundary above `IonApp`, and a plain screen with no Ionic and no router that can still export a backup (spec item 53).
 - `src/appUpdate/`: the update bar, the "מה חדש" sheet and `changelog.ts`, rendered by `Tabs.tsx` and Settings.
@@ -67,7 +67,7 @@ Routing:
 
 - The app uses `IonReactHashRouter` because it is hosted on GitHub Pages.
 - The root `IonRouterOutlet` holds `/tabs/*` (`Tabs.tsx`, with its own outlet and tab bar) and a redirect from the old `/workout/:id`.
-- The live workout page sits under the tab it was opened from: `/tabs/timeline/workout/:id` or `/tabs/routines/workout/:id` (`workoutPath(tab, id)`). The tab bar is hidden on it.
+- The live workout page sits under the tab it was opened from: `/tabs/timeline/workout/:id`, `/tabs/routines/workout/:id` or `/tabs/daily/workout/:id` (`workoutPath(tab, id)`). The tab bar is hidden on it.
   - Ionic React assigns a page to a tab only if its URL is under that tab's path. A page outside every tab makes going back count as a tab switch, which has no animation.
   - Keep it there. Ionic unmounts a nested outlet's pages while you're in a sibling root route, so a swipe-back would reveal a blank shell.
 - The same live page edits a finished workout (edit mode, entered via the detail page's "עריכה").
@@ -97,6 +97,7 @@ Schema changes:
 - Builders are in `test/helpers/workouts.ts`: `routine`, `routineExercise`, `workout`, `exercise`, `done`, `open`, `reps`, `oct`.
 - Ionic inputs and segments need the custom-event helpers in `test/helpers/ionic.ts` (`ionChange`, `ionInput`, `ionField`, `actionSheetPresented`). Plain `fireEvent.change` won't reach them.
 - Scope queries to the visible page (`visibleAll`, `ionElement`), because Ionic keeps hidden pages in the DOM.
+- `test.fakeTimers.toFake` in `vite.config.ts` leaves out `setImmediate`. fake-indexeddb schedules its work on it, and when it's faked, a transaction with two steps fails with `PrematureCommitError`, which only happens in tests.
 
 ## Conventions
 
@@ -105,6 +106,6 @@ Schema changes:
 - Ionic is forced to iOS mode, and the look follows native iOS. Colour tokens are in `src/theme.css`: system orange tint, ✓ in iOS green, light/dark follow the phone.
 - No `as` casts (`as const` is fine) and no `?? ''`/`?? 0` fallbacks to satisfy types. Narrow parsed JSON with type guards.
 - Durations are stored in seconds. Minutes are a display unit only.
-- Every PR that ships raises `version` in `package.json`: the minor number for features, the patch number for fixes. Settings shows it with the build time.
+- Every PR with a change the user can notice raises `version` in `package.json`: the minor number for features, the patch number for fixes. Dependency and docs-only PRs don't (spec item 35). Settings shows it with the build time.
 - The same PR adds a release to `src/appUpdate/changelog.ts`: short Hebrew lines for what the user will notice, under `features` and `fixes`. The phone shows them once after updating.
 - Keep files under about 250 lines, split by responsibility.
