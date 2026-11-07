@@ -1,5 +1,6 @@
 import { countBadRecords, exportBackup } from '../data/backup'
 import { markBackedUp } from '../data/backupStatus'
+import { recordLastError } from '../data/lastError'
 import { isoDate } from '../domain/format'
 import { shareFailure, shareFile } from './shareFile'
 
@@ -25,7 +26,11 @@ export async function backUpStoredData(): Promise<BackUpResult> {
 
     const dateNotSaved = await markBackedUp(now).then(
       () => false,
-      () => true,
+      (error) => {
+        recordLastError(error)
+
+        return true
+      },
     )
 
     return { failure: null, dateNotSaved, badRecords }

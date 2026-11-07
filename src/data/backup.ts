@@ -1,4 +1,5 @@
 import { APP_COPY } from '../copy/app'
+import { AppError } from '../domain/appError'
 import { isBodyArea } from '../domain/bodyAreas'
 import { dailyLogId } from '../domain/daily'
 import { isDrillColor } from '../domain/drillColors'
@@ -175,7 +176,7 @@ const isBackup = (backup: unknown): backup is LegacyBackup =>
 
 export function parseBackup(json: unknown): Backup {
   if (!isBackup(json)) {
-    throw new Error(APP_COPY.invalidBackup)
+    throw new AppError(APP_COPY.invalidBackup)
   }
 
   const workouts = json.workouts.map(upgradeRecord)

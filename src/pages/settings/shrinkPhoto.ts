@@ -1,3 +1,4 @@
+import { AppError } from '../../domain/appError'
 import { SETTINGS_COPY } from './copy'
 
 const MAX_EDGE = 1600
@@ -7,7 +8,10 @@ const QUALITY = 0.8
 const PHOTO_TYPE = 'image/jpeg'
 
 export async function shrinkPhoto(file: Blob): Promise<Blob> {
-  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' })
+  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' }).catch(() => {
+    throw new AppError(SETTINGS_COPY.photoUnreadable)
+  })
+
   const scale = MAX_EDGE / Math.max(bitmap.width, bitmap.height)
 
   if (scale >= 1) {
@@ -20,7 +24,7 @@ export async function shrinkPhoto(file: Blob): Promise<Blob> {
 
   if (!context) {
     bitmap.close()
-    throw new Error(SETTINGS_COPY.photoUnsupported)
+    throw new AppError(SETTINGS_COPY.photoUnsupported)
   }
   context.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
   bitmap.close()
