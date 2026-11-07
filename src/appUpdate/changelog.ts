@@ -2,6 +2,15 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.13.2',
+    features: [],
+    fixes: [
+      'תרגיל שעבר בין חזרות לזמן מתחיל מהיעד של האימון, בלי משקל',
+      'מעבר בין חזרות לזמן כבר לא נספר כשיפור',
+      'בהדבקת פתק, חזרות, זמן וסטים נשארים בתוך המגבלות',
+    ],
+  },
+  {
     version: '1.13.1',
     features: [],
     fixes: [
