@@ -17,7 +17,7 @@ import { BodyAreaPicker } from '../bodyArea/BodyAreaPicker'
 import { commitName } from '../commitName'
 import { ITEM_EDITOR_COPY } from './copy'
 import { durationUnit } from '../../domain/format'
-import { clampAmount } from '../../domain/limits'
+import { clampTarget } from '../../domain/limits'
 import { weightPatch } from '../../domain/numberInput'
 import { targetAmount } from '../../domain/progress'
 import { type Change, DEFAULT_EXERCISE_NAME } from '../../domain/routineEdit'
@@ -54,11 +54,10 @@ function shownAmount(target: Target, unit: Unit): number {
 
 function toTarget(amount: number, unit: Unit): Target {
   if (unit === 'reps') {
-    return { kind: 'reps', reps: clampAmount(amount, { kind: 'reps', reps: amount }) }
+    return clampTarget({ kind: 'reps', reps: amount })
   }
-  const seconds = unit === 'minutes' ? amount * SECONDS_PER_MINUTE : amount
 
-  return { kind: 'duration', seconds: clampAmount(seconds, { kind: 'duration', seconds }) }
+  return clampTarget({ kind: 'duration', seconds: unit === 'minutes' ? amount * SECONDS_PER_MINUTE : amount })
 }
 
 function parseAmount(text: string | null | undefined): number | null {
