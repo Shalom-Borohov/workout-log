@@ -14,14 +14,19 @@ import {
   IonTextarea,
   IonTitle,
   IonToolbar,
+  useIonToast,
 } from '@ionic/react'
 import { chatbubbleEllipsesOutline } from 'ionicons/icons'
 import { useState } from 'react'
+import { TOAST_OPTIONS } from '../../components/toast'
 import { COMMON_COPY } from '../../copy/common'
+import { ignoreTapsFor } from '../../navigation/tapGuard'
 import { SETTINGS_COPY } from './copy'
-import { type FeedbackKind, feedbackUrl } from './feedbackUrl'
+import { type FeedbackKind, feedbackUrl, fitsInLink } from './feedbackUrl'
 
-const isKind = (kind: unknown): kind is FeedbackKind => kind === 'bug' || kind === 'idea'
+const REPEAT_TAPS_IGNORED_MS = 300
+
+const isKind =(kind: unknown): kind is FeedbackKind => kind === 'bug' || kind === 'idea'
 
 const PLACEHOLDERS: Record<FeedbackKind, string> = {
   bug: SETTINGS_COPY.bugPlaceholder,
@@ -31,10 +36,18 @@ const PLACEHOLDERS: Record<FeedbackKind, string> = {
 function FeedbackForm({ onClose }: { onClose: () => void }) {
   const [kind, setKind] = useState<FeedbackKind>('idea')
   const [text, setText] = useState('')
+  const [tapped, setTapped] = useState(false)
+  const [presentToast] = useIonToast()
+  const url = feedbackUrl(kind, text)
+  const tooLong = !fitsInLink(url)
 
   function send() {
-    window.open(feedbackUrl(kind, text), '_blank')
-    onClose()
+    setTapped(true)
+    ignoreTapsFor(REPEAT_TAPS_IGNORED_MS)
+
+    if (!window.open(url, '_blank')) {
+      void presentToast({ message: SETTINGS_COPY.feedbackNotOpened, ...TOAST_OPTIONS })
+    }
   }
 
   return (
@@ -42,7 +55,7 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={onClose}>{COMMON_COPY.cancel}</IonButton>
+            <IonButton onClick={onClose}>{tapped ? COMMON_COPY.done : COMMON_COPY.cancel}</IonButton>
           </IonButtons>
           <IonTitle>{SETTINGS_COPY.report}</IonTitle>
         </IonToolbar>
@@ -71,8 +84,10 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
             />
           </IonItem>
         </IonList>
-        <IonNote className="list-footer">{SETTINGS_COPY.feedbackFooter}</IonNote>
-        <IonButton expand="block" className="ion-margin" disabled={text.trim() === ''} onClick={send}>
+        <IonNote role="status" className="list-footer" color={tooLong ? 'danger' : undefined}>
+          {tooLong ? SETTINGS_COPY.feedbackTooLong : SETTINGS_COPY.feedbackFooter}
+        </IonNote>
+        <IonButton expand="block" className="ion-margin" disabled={text.trim() === '' || tooLong} onClick={send}>
           {SETTINGS_COPY.openInGitHub}
         </IonButton>
       </IonContent>

@@ -2,6 +2,15 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.13.2',
+    features: [],
+    fixes: [
+      'דיווח נשאר פתוח עם הטקסט אחרי הפתיחה ב-GitHub, כדי שלא יאבד',
+      'דיווח ארוך מדי לקישור של GitHub לא נפתח, ומופיעה הודעה שצריך לקצר אותו',
+      'הודעות שגיאה מופיעות תמיד בעברית',
+    ],
+  },
+  {
     version: '1.13.1',
     features: [],
     fixes: [

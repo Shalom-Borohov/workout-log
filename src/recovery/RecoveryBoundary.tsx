@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from 'react'
+import { recordLastError } from '../data/lastError'
 import { RecoveryScreen } from './RecoveryScreen'
 
 interface RecoveryBoundaryProps {
@@ -10,6 +11,10 @@ export class RecoveryBoundary extends Component<RecoveryBoundaryProps, { failed:
 
   static getDerivedStateFromError() {
     return { failed: true }
+  }
+
+  componentDidCatch(error: unknown) {
+    recordLastError(error)
   }
 
   render() {
