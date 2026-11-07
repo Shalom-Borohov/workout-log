@@ -2,16 +2,22 @@ import { useIonAlert, useIonToast } from '@ionic/react'
 import { backUpStoredData } from '../components/backupFile'
 import { TOAST_OPTIONS } from '../components/toast'
 import { COMMON_COPY } from '../copy/common'
+import { useSave } from './useSave'
 
 export function useBackUp() {
   const [presentToast] = useIonToast()
   const [presentAlert] = useIonAlert()
+  const { saveFailed } = useSave()
 
   return async () => {
-    const { failure, badRecords } = await backUpStoredData()
+    const { failure, dateNotSaved, badRecords } = await backUpStoredData()
 
     if (failure) {
       void presentToast({ message: failure, ...TOAST_OPTIONS })
+    }
+
+    if (dateNotSaved) {
+      saveFailed()
     }
 
     if (badRecords > 0) {

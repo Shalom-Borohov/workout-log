@@ -26,6 +26,7 @@ import { type Backup, restoreBackup } from '../../data/backup'
 import { formatDateTime } from '../../domain/format'
 import { newestFirst } from '../../domain/releases'
 import { useBackUp } from '../../hooks/useBackUp'
+import { useSave } from '../../hooks/useSave'
 import { useShare } from '../../hooks/useShare'
 import type { HostTabPath } from '../../navigation/paths'
 import { readBackup } from './backupFile'
@@ -43,15 +44,13 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
   const [presentToast] = useIonToast()
   const backUp = useBackUp()
   const share = useShare()
+  const { save } = useSave()
 
   const toast = (message: string) => presentToast({ message, ...TOAST_OPTIONS })
 
   async function restore(backup: Backup) {
-    try {
-      await restoreBackup(backup)
+    if (await save(() => restoreBackup(backup))) {
       void toast(SETTINGS_COPY.backupRestored)
-    } catch (error) {
-      void toast(errorMessage(error))
     }
   }
 

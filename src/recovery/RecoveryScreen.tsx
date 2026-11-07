@@ -10,7 +10,7 @@ function reloadAtStart() {
 }
 
 export function RecoveryScreen() {
-  const [result, setResult] = useState<BackUpResult>({ failure: null, badRecords: 0 })
+  const [result, setResult] = useState<BackUpResult>({ failure: null, dateNotSaved: false, badRecords: 0 })
 
   return (
     <main className="recovery">
@@ -21,6 +21,7 @@ export function RecoveryScreen() {
       </button>
       <div role="status">
         {result.failure && <p>{COMMON_COPY.actionFailed}</p>}
+        {result.dateNotSaved && <p>{COMMON_COPY.saveFailed}</p>}
         {result.badRecords > 0 && <p>{COMMON_COPY.badRecordsInBackup(result.badRecords)}</p>}
       </div>
       <button type="button" onClick={reloadAtStart}>

@@ -1,4 +1,3 @@
-import { COMMON_COPY } from '../copy/common'
 import { countBadRecords, exportBackup } from '../data/backup'
 import { markBackedUp } from '../data/backupStatus'
 import { isoDate } from '../domain/format'
@@ -10,6 +9,7 @@ const backupFileName = (exportedAt: number) => `workouts-backup-${isoDate(export
 
 export interface BackUpResult {
   failure: string | null
+  dateNotSaved: boolean
   badRecords: number
 }
 
@@ -23,13 +23,13 @@ export async function backUpStoredData(): Promise<BackUpResult> {
     badRecords = countBadRecords(fileText)
     await shareFile(backupFileName(now), BACKUP_TYPE, fileText)
 
-    const failure = await markBackedUp(now).then(
-      () => null,
-      () => COMMON_COPY.saveFailed,
+    const dateNotSaved = await markBackedUp(now).then(
+      () => false,
+      () => true,
     )
 
-    return { failure, badRecords }
+    return { failure: null, dateNotSaved, badRecords }
   } catch (error) {
-    return { failure: shareFailure(error), badRecords }
+    return { failure: shareFailure(error), dateNotSaved: false, badRecords }
   }
 }

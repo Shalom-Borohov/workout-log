@@ -23,7 +23,9 @@ export function BackgroundSettings({ onError }: { onError: (error: unknown) => v
     }
 
     try {
-      await setBackground(await shrinkPhoto(file))
+      const photo = await shrinkPhoto(file)
+
+      await save(() => setBackground(photo))
     } catch (error) {
       onError(error)
     }

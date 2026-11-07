@@ -90,9 +90,8 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
   }
 
   async function remove() {
-    setSheet(null)
-
     if (await save(() => deleteWorkout(workout.id))) {
+      setSheet(null)
       router.push(TIMELINE_PATH, 'root', 'replace')
     }
   }

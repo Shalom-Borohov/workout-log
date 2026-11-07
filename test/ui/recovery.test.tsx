@@ -78,6 +78,17 @@ describe('a malformed stored record', () => {
     expect(await screen.findByText('הפעולה נכשלה')).toBeVisible()
   })
 
+  it('says only the backup date failed when the file was already shared', async () => {
+    mockShare()
+
+    await openOnStoredRecords()
+    vi.spyOn(db.settings, 'put').mockRejectedValue(new DOMException('Connection lost', 'UnknownError'))
+    fireEvent.click(screen.getByRole('button', { name: EXPORT_BUTTON }))
+
+    expect(await screen.findByText('לא נשמר. אפשר לנסות שוב.')).toBeVisible()
+    expect(screen.queryByText('הפעולה נכשלה')).not.toBeInTheDocument()
+  })
+
   it('never changes what is stored', async () => {
     await openOnStoredRecords()
 
