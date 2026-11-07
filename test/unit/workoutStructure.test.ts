@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { NO_HISTORY, type PreviousExerciseLookup } from '../../src/domain/progress'
+import { NO_HISTORY, previousExerciseLookup, type PreviousExerciseLookup } from '../../src/domain/progress'
 import type { RoutineItem, Workout, WorkoutItem } from '../../src/domain/types'
 import {
   addItem,
@@ -46,6 +46,16 @@ describe('addItem', () => {
         { name: 'סקוואט', target: reps(10), sets: [open(60, 8), open(65, 6), open(65, 6)], skipped: false, tip: 'גב ישר', note: '' },
       ],
     })
+  })
+
+  it('ignores the starting weight when the last session was of the other kind', () => {
+    const timedSquat = workout({ id: 'last', startedAt: oct(19), exercises: [exercise('סקוואט', [done(5, 45)], seconds(45))] })
+    const previous = previousExerciseLookup([timedSquat], oct(26))
+    const item = { ...squatItem, sets: 1, exercises: [routineExercise({ name: 'סקוואט', target: reps(10), weight: 20 })] }
+
+    const added = addItem(sized([2]), 0, item, previous).sections[0].items[1]
+
+    expect(added.exercises[0].sets).toEqual([open(null, 10)])
   })
 
   it('without its own count, takes the most common count in the section', () => {
@@ -195,6 +205,15 @@ describe('applyItemEdit', () => {
     expect(applyItemEdit(pair, edited, 2, benchHistory).exercises).toEqual([
       { name: 'לחיצת חזה', target: seconds(60), sets: [open(null, 45), open(null, 45)], skipped: false, tip: 'מרפקים פנימה', note: 'להעלות' },
     ])
+  })
+
+  it('ignores a typed weight when the edit moves an exercise away from the kind of its last session', () => {
+    const repsSquat = workout({ id: 'last', startedAt: oct(19), exercises: [exercise('סקוואט', [done(60, 8)])] })
+    const previous = previousExerciseLookup([repsSquat], oct(26))
+    const current: WorkoutItem = { id: 'n', exercises: [exercise('סקוואט', [open(60, 8)])] }
+    const edited = { ...asRoutineItem(current, 1), exercises: [routineExercise({ name: 'סקוואט', target: seconds(45), weight: 20 })] }
+
+    expect(applyItemEdit(current, edited, 1, previous).exercises[0].sets).toEqual([open(null, 45)])
   })
 
   it('adds a prefilled exercise when paired', () => {

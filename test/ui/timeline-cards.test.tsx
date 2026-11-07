@@ -4,7 +4,7 @@ import { saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
 import { renderAt } from '../helpers/renderAt'
-import { done, exercise, oct, workout } from '../helpers/workouts'
+import { done, exercise, oct, reps, seconds, workout } from '../helpers/workouts'
 
 const ANY_BADGE = /^(שיפור|שיא חדש)$/
 
@@ -51,6 +51,16 @@ describe('timeline cards', () => {
     expect(improved).toHaveLength(1)
     expect(improved[0].parentElement).toHaveTextContent(/^4$/)
     expect(screen.queryByText(/סקוואט/)).not.toBeInTheDocument()
+  })
+
+  it('shows no improvement after a switch from reps to time', async () => {
+    await saveWorkout(workout({ id: 'w0', startedAt: oct(19), exercises: [exercise('פלאנק', [done(null, 10)], reps(10))] }))
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(26, 8), exercises: [exercise('פלאנק', [done(null, 30)], seconds(30))] }))
+    renderAt('/tabs/timeline')
+
+    await screen.findAllByText('אימון גוף מלא', { selector: 'h2' })
+
+    expect(screen.queryByLabelText(ANY_BADGE)).not.toBeInTheDocument()
   })
 
   it('shows improvements before new bests in the stats line', async () => {
