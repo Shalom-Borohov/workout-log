@@ -175,7 +175,7 @@ describe('live workout', () => {
 
   it('finish saves summary and finishedAt and opens detail', async () => {
     const before = Date.now()
-    await saveWorkout(active)
+    await saveWorkout({ ...active, startedAt: before })
     const user = userEvent.setup()
     renderAt('/tabs/timeline/workout/w1')
 
@@ -193,7 +193,7 @@ describe('live workout', () => {
 
   it('finish with empty summary', async () => {
     const before = Date.now()
-    await saveWorkout(active)
+    await saveWorkout({ ...active, startedAt: before })
     const user = userEvent.setup()
     renderAt('/tabs/timeline/workout/w1')
 

@@ -45,7 +45,7 @@ Used mid-workout: one hand, sweaty fingers, quick glances between sets, screen k
 
 1. One tap at the gym: the usual action (✓ on a prefilled set) never needs typing.
 2. Native, not novel: iOS conventions over custom ones.
-   - Wherever iOS uses a swipe, offer it too: swipe actions on list rows, swiping between periods such as months, and swipe-down to close a sheet. A swipe is always a shortcut for a visible control, never the only way. Swipes never start within 20px of the screen edges, which belong to swipe-back.
+   - Wherever iOS uses a swipe, offer it too: swipe actions on list rows, swiping between periods such as months, and swipe-down to close a sheet. A swipe is always a shortcut for a visible control, never the only way. The app's own sideways swipes never start within 20px of either screen edge, and on a page that can swipe back they also leave the 50px at the back edge where that gesture starts.
 3. Progress at a glance.
 4. The phone owns the data: nothing leaves the device unless the owner exports it.
 5. Move on by itself: after the action that finishes something (the last set, a skip), go to the next thing at once. Undo is a swipe back, not a dialog or a toast.

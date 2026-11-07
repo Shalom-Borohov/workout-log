@@ -15,6 +15,8 @@ import {
 
 const DB_NAME = 'workout-log'
 
+export const BACKUP_KEY = 'backup'
+
 function upgradeRoutines(transaction: Transaction) {
   return transaction
     .table<LegacyRoutine>('routines')

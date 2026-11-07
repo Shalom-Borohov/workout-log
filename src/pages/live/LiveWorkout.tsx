@@ -75,7 +75,7 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
     onEditWorkout: () => setListing('editing'),
   })
 
-  async function saveSheet(summary: string) {
+  async function saveSheet(summary: string, minutes: number | null) {
     if (sheet === 'summary') {
       setSheet(null)
       apply((current) => ({ ...current, summary }))
@@ -83,7 +83,7 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
       return
     }
 
-    if (await save(() => finish(summary))) {
+    if (await save(() => finish(summary, minutes))) {
       setSheet(null)
       router.push(workoutDetailPath(tab, workout.id), 'root', 'replace')
     }
@@ -171,6 +171,7 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
       <FinishSheet
         mode={sheet}
         initialSummary={workout.summary}
+        startedAt={workout.startedAt}
         onCancel={() => setSheet(null)}
         onSave={saveSheet}
         onDelete={remove}

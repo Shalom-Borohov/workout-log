@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useFinishedWorkouts } from '../../data/hooks'
 import { saveWorkout } from '../../data/repo'
 import { previousExerciseLookup } from '../../domain/progress'
+import { MINUTE_MS } from '../../domain/time'
 import type { SetLog, Workout } from '../../domain/types'
 import {
   currentIndex,
@@ -120,8 +121,10 @@ export function useLiveWorkout(initial: Workout) {
     }
   }
 
-  function finish(summary: string): Promise<void> {
-    return saveWorkout({ ...latest.current, summary, finishedAt: Date.now() })
+  function finish(summary: string, minutes: number | null): Promise<void> {
+    const finishedAt = minutes === null ? Date.now() : latest.current.startedAt + minutes * MINUTE_MS
+
+    return saveWorkout({ ...latest.current, summary, finishedAt })
   }
 
   return {

@@ -52,7 +52,7 @@ export function DailyBody({ routines, logs, records, now }: DailyBodyProps) {
       {active.length > 0 && (
         <IonList inset>
           {active.map((routine) => (
-            <TodayCard key={routine.id} routine={routine} done={findDailyLog(logs, routine.id, today) !== undefined} />
+            <TodayCard key={routine.id} routine={routine} log={findDailyLog(logs, routine.id, today)} />
           ))}
         </IonList>
       )}

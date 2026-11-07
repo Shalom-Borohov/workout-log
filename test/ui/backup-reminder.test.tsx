@@ -1,7 +1,7 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { markBackedUp } from '../../src/data/backupStatus'
-import { saveRecord, saveWorkout } from '../../src/data/repo'
+import { deleteWorkout, saveRecord, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
 import { buttonByLabel } from '../helpers/ionic'
@@ -35,6 +35,16 @@ describe('backup reminder', () => {
     await saveWorkout(squats('w1', 4))
     await markBackedUp(oct(5, 12))
     await saveWorkout(squats('w2', 13))
+    renderAt('/tabs/timeline')
+
+    expect(await screen.findByText('הגיבוי האחרון לפני 9 ימים')).toBeInTheDocument()
+  })
+
+  it('shows for a new workout logged after an older one was deleted', async () => {
+    await Promise.all([squats('w1', 2), squats('w2', 3), squats('w3', 4)].map(saveWorkout))
+    await markBackedUp(oct(5, 12))
+    await deleteWorkout('w1')
+    await saveWorkout(squats('w4', 13))
     renderAt('/tabs/timeline')
 
     expect(await screen.findByText('הגיבוי האחרון לפני 9 ימים')).toBeInTheDocument()

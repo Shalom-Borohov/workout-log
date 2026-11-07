@@ -1,9 +1,13 @@
 import { IonContent, IonItem, IonList, IonModal, IonTextarea } from '@ionic/react'
 import { type ReactNode, useState } from 'react'
+import { DurationMinutesItem } from '../../components/DurationMinutesItem'
 import { HALF_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
+import { finishMinutes, isClockPastLimit, MAX_DURATION_MINUTES } from '../../domain/pastTime'
+import { MINUTE_MS } from '../../domain/time'
 import { LIVE_COPY } from './copy'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
+import { useNow } from '../../hooks/useNow'
 import { SheetHeader } from './SheetHeader'
 
 export type SheetMode = 'finish' | 'summary'
@@ -11,8 +15,9 @@ export type SheetMode = 'finish' | 'summary'
 type FinishFormProps = {
   mode: SheetMode
   initialSummary: string
+  startedAt: number
   onCancel: () => void
-  onSave: (summary: string) => void
+  onSave: (summary: string, minutes: number | null) => void
   onDelete: () => void
   children?: ReactNode
 }
@@ -39,15 +44,18 @@ function DeleteRow({ onDelete }: { onDelete: () => void }) {
   )
 }
 
-function FinishForm({ mode, initialSummary, onCancel, onSave, onDelete, children }: FinishFormProps) {
+function FinishForm({ mode, initialSummary, startedAt, onCancel, onSave, onDelete, children }: FinishFormProps) {
   const [summary, setSummary] = useState(initialSummary)
+  const [duration, setDuration] = useState(String(MAX_DURATION_MINUTES))
+  const now = useNow(MINUTE_MS)
+  const showDuration = mode === 'finish' && isClockPastLimit(startedAt, now)
 
   return (
     <>
       <SheetHeader
         title={mode === 'finish' ? COMMON_COPY.workoutSummary : COMMON_COPY.summary}
         onCancel={onCancel}
-        onSave={() => onSave(summary.trim())}
+        onSave={() => onSave(summary.trim(), showDuration ? finishMinutes(duration) : null)}
       />
       <IonContent>
         <IonList inset>
@@ -61,6 +69,7 @@ function FinishForm({ mode, initialSummary, onCancel, onSave, onDelete, children
               onIonInput={(event) => typeof event.detail.value === 'string' && setSummary(event.detail.value)}
             />
           </IonItem>
+          {showDuration && <DurationMinutesItem value={duration} onChange={setDuration} />}
         </IonList>
         {mode === 'finish' && children}
         {mode === 'finish' && <DeleteRow onDelete={onDelete} />}

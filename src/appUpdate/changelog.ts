@@ -2,6 +2,15 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.13.2',
+    features: [],
+    fixes: [
+      'תזכורת הגיבוי מופיעה גם כשנרשם אימון חדש אחרי שנמחקו אימונים ישנים',
+      'הסרת סימון יומי עם מספרים ששינית שואלת קודם',
+      'בסיום אימון שנשאר פתוח יותר מ-3 שעות אפשר לרשום כמה זמן הוא נמשך',
+    ],
+  },
+  {
     version: '1.13.1',
     features: [],
     fixes: [

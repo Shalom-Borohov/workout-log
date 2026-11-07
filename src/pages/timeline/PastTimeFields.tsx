@@ -1,4 +1,5 @@
 import { IonDatetime, IonDatetimeButton, IonInput, IonItem, IonLabel, IonModal, IonNote } from '@ionic/react'
+import { DurationMinutesItem } from '../../components/DurationMinutesItem'
 import { TIMELINE_COPY } from './copy'
 import { isoDate } from '../../domain/format'
 import { MAX_DURATION_MINUTES, type PastTimeProblems } from '../../domain/pastTime'
@@ -44,17 +45,7 @@ export function PastTimeItems({ value, now, onChange }: ItemsProps) {
           }}
         />
       </IonModal>
-      <IonItem>
-        <IonInput
-          label={TIMELINE_COPY.durationMinutes}
-          type="number"
-          inputmode="numeric"
-          min={1}
-          max={MAX_DURATION_MINUTES}
-          value={value.duration}
-          onIonInput={(event) => typeof event.detail.value === 'string' && update({ duration: event.detail.value })}
-        />
-      </IonItem>
+      <DurationMinutesItem value={value.duration} onChange={(duration) => update({ duration })} />
     </>
   )
 }
