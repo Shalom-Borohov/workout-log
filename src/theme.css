@@ -146,6 +146,9 @@ ion-label p {
   padding-inline: 32px;
   font-size: 0.8125rem;
   line-height: 1.35;
+}
+
+.list-footer:not(.ion-color) {
   color: var(--app-label-secondary);
 }
 

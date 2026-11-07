@@ -82,3 +82,32 @@ describe('what’s new after an update', () => {
     expect(screen.getByText('בחירת תרגיל קיים')).toBeInTheDocument()
   })
 })
+
+describe('another app on the same address', () => {
+  const SHARED_KEY = 'seen-version'
+
+  it('does not replay old releases because of a lower version under the shared key', async () => {
+    localStorage.setItem(SHARED_KEY, OLDEST_SEEN)
+    renderAt('/tabs/timeline')
+
+    expect(await screen.findByText(`גרסה ${__APP_VERSION__}`)).toBeInTheDocument()
+    expect(screen.queryByText('גרסה 0.2.0')).not.toBeInTheDocument()
+  })
+
+  it('still shows the release when a higher version sits under the shared key', async () => {
+    localStorage.setItem(SHARED_KEY, '99.0.0')
+    renderAt('/tabs/timeline')
+
+    expect(await screen.findByText(`גרסה ${__APP_VERSION__}`)).toBeInTheDocument()
+  })
+
+  it('leaves the shared key as it was when the sheet is closed', async () => {
+    localStorage.setItem(SHARED_KEY, '1.5.1')
+    renderAt('/tabs/timeline')
+
+    fireEvent.click(await closeButton())
+    await waitFor(() => expect(screen.queryByText('בחירת תרגיל קיים')).not.toBeInTheDocument())
+
+    expect(localStorage.getItem(SHARED_KEY)).toBe('1.5.1')
+  })
+})

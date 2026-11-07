@@ -16,6 +16,7 @@ import {
 } from '../../domain/workoutEdits'
 import { followIndex } from '../../domain/workoutStructure'
 import { useSave } from '../../hooks/useSave'
+import { recordLastError } from '../../data/lastError'
 import { ignoreTapsFor } from '../../navigation/tapGuard'
 import { useRestTimer } from './useRestTimer'
 
@@ -48,7 +49,9 @@ export function useLiveWorkout(initial: Workout) {
     try {
       await saveWorkout(next)
       stored.current = next
-    } catch {
+    } catch (error) {
+      recordLastError(error)
+
       if (latest.current !== next) {
         return
       }

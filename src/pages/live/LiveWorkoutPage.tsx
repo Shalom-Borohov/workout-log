@@ -13,14 +13,15 @@ function WorkoutLoader({ id, tab }: { id: string; tab: WorkoutHostPath }) {
   const shown = useLocation().pathname === workoutPath(tab, id)
   const workout = lookup?.workout
 
-  const leftBehind =
-    tab === ROUTINES_PATH && lookup !== undefined && (workout === undefined || (workout.kind === 'routine' && workout.finishedAt !== null))
+  const noLiveWorkout = lookup !== undefined && workout?.kind !== 'routine'
+  const finishedHere = tab === ROUTINES_PATH && workout?.kind === 'routine' && workout.finishedAt !== null
+  const leftBehind = noLiveWorkout || finishedHere
 
   useEffect(() => {
     if (leftBehind && shown) {
-      router.push(ROUTINES_PATH, 'root', 'replace')
+      router.push(tab, 'root', 'replace')
     }
-  }, [leftBehind, shown, router])
+  }, [leftBehind, shown, router, tab])
 
   return !leftBehind && workout?.kind === 'routine' ? <SessionWorkout initial={workout} tab={tab} /> : null
 }

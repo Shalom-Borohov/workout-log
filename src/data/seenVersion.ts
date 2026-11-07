@@ -1,4 +1,4 @@
-const SEEN_VERSION_KEY = 'seen-version'
+const SEEN_VERSION_KEY = 'workout-log:seen-version'
 
 export const readSeenVersion = () => localStorage.getItem(SEEN_VERSION_KEY)
 

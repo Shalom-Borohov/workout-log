@@ -1,10 +1,10 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { saveRoutine, saveWorkout } from '../../src/data/repo'
+import { saveRecord, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { BackGesture } from '../helpers/BackGesture'
 import { resetDb } from '../helpers/db'
 import { renderAt } from '../helpers/renderAt'
-import { done, exercise, oct, open, reps, routine, workout } from '../helpers/workouts'
+import { activity, done, exercise, oct, open, reps, routine, workout } from '../helpers/workouts'
 
 const renderApp = (path: string) => renderAt(path, <BackGesture />)
 
@@ -19,6 +19,11 @@ function visiblePageText() {
 const expectVisible = (text: string) => waitFor(() => expect(visiblePageText()).toContain(text))
 
 const path = () => screen.getByTestId('location').textContent
+
+async function expectMainPage(tabPath: string) {
+  await waitFor(() => expect(path()).toBe(tabPath))
+  expect(document.querySelector('ion-tab-bar')).not.toHaveClass('ion-hide')
+}
 
 function tabButton(tab: string): Element {
   const button = document.querySelector(`ion-tab-button[tab="${tab}"]`)
@@ -56,6 +61,25 @@ describe('navigation round trips', () => {
 
     await waitFor(() => expect(path()).toBe('/tabs/timeline/workout/live'))
     await expectVisible('עיקרי · 1 מתוך 1')
+  })
+
+  it.each(['/workout/gone', '/tabs/workout/gone'])('a workout link from a previous version (%s) with no such record goes to the timeline', async (link) => {
+    renderApp(link)
+
+    await expectMainPage('/tabs/timeline')
+  })
+
+  it.each(['timeline', 'daily', 'routines'])('a live address with no such record goes to the main page of the %s tab', async (tab) => {
+    renderApp(`/tabs/${tab}/workout/gone`)
+
+    await expectMainPage(`/tabs/${tab}`)
+  })
+
+  it.each(['timeline', 'daily', 'routines'])('a live address holding an activity id goes to the main page of the %s tab', async (tab) => {
+    await saveRecord(activity({ id: 'a1', startedAt: oct(24, 19) }))
+    renderApp(`/tabs/${tab}/workout/a1`)
+
+    await expectMainPage(`/tabs/${tab}`)
   })
 
   it('the routines tab shows its list again after finishing a workout started from it', async () => {
