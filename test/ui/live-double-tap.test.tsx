@@ -3,13 +3,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { saveWorkout } from '../../src/data/repo'
 import { guardTapsDuringTransitions } from '../../src/navigation/tapGuard'
 import { resetDb, savedWorkout } from '../helpers/db'
-import { cardButton, heading } from '../helpers/live'
+import { cardButton, heading, pause } from '../helpers/live'
 import { renderAt } from '../helpers/renderAt'
 import { exercise, oct, open, workout } from '../helpers/workouts'
 
 const IGNORED_MS = 300
 
 const WELL_PAST_ANY_EARLIER_ADVANCE_MS = 10_000
+
+const WRITES_SETTLED_MS = 50
 
 const oneSetEach = workout({
   id: 'w1',
@@ -32,8 +34,6 @@ const storedDone = async () =>
 
 const storedSkipped = async () =>
   (await savedWorkout('w1'))?.sections[0].items.map((item) => item.exercises[0].skipped)
-
-const writesSettled = () => new Promise((resolve) => setTimeout(resolve, 50))
 
 describe('taps right after an advance', () => {
   let release = () => {}
@@ -60,7 +60,7 @@ describe('taps right after an advance', () => {
     await heading('ב')
     now += IGNORED_MS
     await tick('ב סט 1')
-    await writesSettled()
+    await pause(WRITES_SETTLED_MS)
 
     expect(await heading('ב')).toBeInTheDocument()
     expect(await storedDone()).toEqual([true, false, false])
@@ -86,7 +86,7 @@ describe('taps right after an advance', () => {
     await heading('ב')
     now += IGNORED_MS
     fireEvent.click(await cardButton('דלג'))
-    await writesSettled()
+    await pause(WRITES_SETTLED_MS)
 
     expect(await heading('ב')).toBeInTheDocument()
     expect(await storedSkipped()).toEqual([true, false, false])

@@ -2,12 +2,10 @@ import { SECOND_MS } from '../domain/time'
 
 const MAX_TRANSITION_MS = SECOND_MS
 
-const AFTER_ADVANCE_MS = 300
+let ignoreTapsUntil = 0
 
-let ignoreTapsUntil = Number.NEGATIVE_INFINITY
-
-export function ignoreTapsAfterAdvance() {
-  ignoreTapsUntil = performance.now() + AFTER_ADVANCE_MS
+export function ignoreTapsFor(milliseconds: number) {
+  ignoreTapsUntil = performance.now() + milliseconds
 }
 
 const firstSeen = new WeakMap<Animation, number>()

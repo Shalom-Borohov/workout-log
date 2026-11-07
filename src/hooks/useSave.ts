@@ -5,7 +5,7 @@ import { COMMON_COPY } from '../copy/common'
 
 export function useSave() {
   const [presentToast] = useIonToast()
-  const messageShownAt = useRef(Number.NEGATIVE_INFINITY)
+  const messageShownAt = useRef(0)
 
   function saveFailed() {
     if (Date.now() - messageShownAt.current >= TOAST_OPTIONS.duration) {

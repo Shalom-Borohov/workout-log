@@ -98,7 +98,7 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
         <IonList inset>
           <IonItem button detail={false} onClick={() => void backUp()}>
             <IonIcon slot="start" color="primary" icon={shareOutline} />
-            <IonLabel>{SETTINGS_COPY.exportBackup}</IonLabel>
+            <IonLabel>{COMMON_COPY.exportBackup}</IonLabel>
           </IonItem>
           <IonItem button detail={false} onClick={() => fileInput.current?.click()}>
             <IonIcon slot="start" color="primary" icon={downloadOutline} />

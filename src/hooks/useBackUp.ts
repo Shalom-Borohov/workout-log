@@ -1,7 +1,7 @@
 import { useIonAlert, useIonToast } from '@ionic/react'
+import { backUpStoredData } from '../components/backupFile'
 import { TOAST_OPTIONS } from '../components/toast'
 import { COMMON_COPY } from '../copy/common'
-import { backUpStoredData } from './backUpStoredData'
 
 export function useBackUp() {
   const [presentToast] = useIonToast()

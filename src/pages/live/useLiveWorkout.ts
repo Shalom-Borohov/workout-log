@@ -16,8 +16,10 @@ import {
 } from '../../domain/workoutEdits'
 import { followIndex } from '../../domain/workoutStructure'
 import { useSave } from '../../hooks/useSave'
-import { ignoreTapsAfterAdvance } from '../../navigation/tapGuard'
+import { ignoreTapsFor } from '../../navigation/tapGuard'
 import { useRestTimer } from './useRestTimer'
+
+const AFTER_ADVANCE_TAPS_IGNORED_MS = 300
 
 export type Travel = 'next' | 'prev' | null
 
@@ -42,7 +44,7 @@ export function useLiveWorkout(initial: Workout) {
     [history, workout.startedAt],
   )
 
-  async function saveOrTakeBack(next: Workout, indexAtEdit: number) {
+  async function saveOrTakeBack(next: Workout) {
     try {
       await saveWorkout(next)
       stored.current = next
@@ -53,7 +55,7 @@ export function useLiveWorkout(initial: Workout) {
 
       latest.current = stored.current
       setWorkout(stored.current)
-      setPosition({ index: followIndex(next, stored.current, indexAtEdit), travel: null })
+      setPosition({ index: followIndex(next, stored.current, index), travel: null })
       saveFailed()
     }
   }
@@ -61,7 +63,6 @@ export function useLiveWorkout(initial: Workout) {
   function apply(edit: (current: Workout) => Workout) {
     const before = latest.current
     const next = edit(before)
-    const indexAtEdit = index
 
     latest.current = next
     setWorkout(next)
@@ -70,7 +71,7 @@ export function useLiveWorkout(initial: Workout) {
 
       return kept === position.index ? position : { index: kept, travel: null }
     })
-    void saveOrTakeBack(next, indexAtEdit)
+    void saveOrTakeBack(next)
   }
 
   function move(next: number) {
@@ -114,7 +115,7 @@ export function useLiveWorkout(initial: Workout) {
     const next = nextUnfinished(latest.current, index)
 
     if (next !== null) {
-      ignoreTapsAfterAdvance()
+      ignoreTapsFor(AFTER_ADVANCE_TAPS_IGNORED_MS)
       move(next)
     }
   }

@@ -1,5 +1,6 @@
 export const COMMON_COPY = {
   ok: 'אישור',
+  exportBackup: 'ייצוא גיבוי',
   actionFailed: 'הפעולה נכשלה',
   saveFailed: 'לא נשמר. אפשר לנסות שוב.',
   badRecordsInBackup: (count: number) =>

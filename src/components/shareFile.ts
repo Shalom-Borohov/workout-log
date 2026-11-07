@@ -1,3 +1,5 @@
+import { errorMessage } from './toast'
+
 export async function shareFile(name: string, type: string, content: string): Promise<void> {
   const file = new File([content], name, { type })
 
@@ -16,4 +18,6 @@ export async function shareFile(name: string, type: string, content: string): Pr
   setTimeout(() => URL.revokeObjectURL(url))
 }
 
-export const isShareCancel = (error: unknown) => error instanceof DOMException && error.name === 'AbortError'
+const isShareCancel = (error: unknown) => error instanceof DOMException && error.name === 'AbortError'
+
+export const shareFailure = (error: unknown) => (isShareCancel(error) ? null : errorMessage(error))

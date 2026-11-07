@@ -1,6 +1,6 @@
 import { useIonToast } from '@ionic/react'
-import { isShareCancel } from '../components/shareFile'
-import { errorMessage, TOAST_OPTIONS } from '../components/toast'
+import { shareFailure } from '../components/shareFile'
+import { TOAST_OPTIONS } from '../components/toast'
 
 export function useShare() {
   const [presentToast] = useIonToast()
@@ -9,8 +9,10 @@ export function useShare() {
     try {
       await run()
     } catch (error) {
-      if (!isShareCancel(error)) {
-        void presentToast({ message: errorMessage(error), ...TOAST_OPTIONS })
+      const message = shareFailure(error)
+
+      if (message) {
+        void presentToast({ message, ...TOAST_OPTIONS })
       }
     }
   }

@@ -202,14 +202,19 @@ export async function exportBackup(now: number): Promise<Backup> {
   return { version: BACKUP_VERSION, exportedAt: now, routines, workouts, dailyLogs, exerciseAreas }
 }
 
-const countFailing = (guard: (value: unknown) => boolean, records: object[]) =>
-  records.filter((record) => !guard(JSON.parse(JSON.stringify(record)))).length
+const countFailing = (guard: (value: unknown) => boolean, records: unknown[]) =>
+  records.filter((record) => !guard(record)).length
 
-export const countBadRecords = ({ routines, workouts, dailyLogs, exerciseAreas }: Backup) =>
-  countFailing(isRoutine, routines) +
-  countFailing(isRecord, workouts) +
-  countFailing(isDailyLog, dailyLogs) +
-  countFailing(isExerciseArea, exerciseAreas)
+export function countBadRecords(fileText: string): number {
+  const { routines, workouts, dailyLogs, exerciseAreas } = JSON.parse(fileText)
+
+  return (
+    countFailing(isRoutine, routines) +
+    countFailing(isRecord, workouts) +
+    countFailing(isDailyLog, dailyLogs) +
+    countFailing(isExerciseArea, exerciseAreas)
+  )
+}
 
 export async function restoreBackup(backup: Backup): Promise<void> {
   await db.transaction('rw', db.routines, db.workouts, db.dailyLogs, db.exerciseAreas, db.settings, async () => {
