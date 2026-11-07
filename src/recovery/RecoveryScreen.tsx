@@ -4,6 +4,11 @@ import { COMMON_COPY } from '../copy/common'
 import { RECOVERY_COPY } from './copy'
 import './recovery.css'
 
+function reloadAtStart() {
+  window.location.hash = ''
+  window.location.reload()
+}
+
 export function RecoveryScreen() {
   const [result, setResult] = useState<BackUpResult>({ failure: null, badRecords: 0 })
 
@@ -18,7 +23,7 @@ export function RecoveryScreen() {
         {result.failure && <p>{COMMON_COPY.actionFailed}</p>}
         {result.badRecords > 0 && <p>{COMMON_COPY.badRecordsInBackup(result.badRecords)}</p>}
       </div>
-      <button type="button" onClick={() => window.location.reload()}>
+      <button type="button" onClick={reloadAtStart}>
         {RECOVERY_COPY.reload}
       </button>
     </main>

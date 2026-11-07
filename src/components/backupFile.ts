@@ -1,3 +1,4 @@
+import { COMMON_COPY } from '../copy/common'
 import { countBadRecords, exportBackup } from '../data/backup'
 import { markBackedUp } from '../data/backupStatus'
 import { isoDate } from '../domain/format'
@@ -21,9 +22,13 @@ export async function backUpStoredData(): Promise<BackUpResult> {
 
     badRecords = countBadRecords(fileText)
     await shareFile(backupFileName(now), BACKUP_TYPE, fileText)
-    await markBackedUp(now)
 
-    return { failure: null, badRecords }
+    const failure = await markBackedUp(now).then(
+      () => null,
+      () => COMMON_COPY.saveFailed,
+    )
+
+    return { failure, badRecords }
   } catch (error) {
     return { failure: shareFailure(error), badRecords }
   }

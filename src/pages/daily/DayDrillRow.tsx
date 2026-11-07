@@ -36,7 +36,7 @@ export function DayDrillRow({ routine, day, log }: DayDrillRowProps) {
     setEdited(next)
 
     if (!(await save(() => updateDailyLog(next)))) {
-      setEdited(null)
+      setEdited((shown) => (shown === next ? null : shown))
     }
   }
 

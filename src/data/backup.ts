@@ -205,8 +205,20 @@ export async function exportBackup(now: number): Promise<Backup> {
 const countFailing = (guard: (value: unknown) => boolean, records: unknown[]) =>
   records.filter((record) => !guard(record)).length
 
+type ExportedLists = Record<'routines' | 'workouts' | 'dailyLogs' | 'exerciseAreas', unknown[]>
+
+const isExportedLists = (json: unknown): json is ExportedLists =>
+  isObject(json) &&
+  [json.routines, json.workouts, json.dailyLogs, json.exerciseAreas].every((list) => Array.isArray(list))
+
 export function countBadRecords(fileText: string): number {
-  const { routines, workouts, dailyLogs, exerciseAreas } = JSON.parse(fileText)
+  const json: unknown = JSON.parse(fileText)
+
+  if (!isExportedLists(json)) {
+    throw new Error(APP_COPY.invalidBackup)
+  }
+
+  const { routines, workouts, dailyLogs, exerciseAreas } = json
 
   return (
     countFailing(isRoutine, routines) +

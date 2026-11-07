@@ -85,6 +85,17 @@ describe('exporting a backup', () => {
     expect((await backupStatus()).backedUpAt).not.toBeNull()
   })
 
+  it('says in Hebrew that the backup date was not saved when the share worked', async () => {
+    const share = mockShare()
+    const button = await openExport()
+
+    vi.spyOn(db.settings, 'put').mockRejectedValue(new DOMException('Connection lost', 'UnknownError'))
+    fireEvent.click(button)
+    await waitFor(() => expect(share).toHaveBeenCalledOnce())
+
+    await waitFor(() => expect(toasts()).toEqual(['לא נשמר. אפשר לנסות שוב.']))
+  })
+
   it('says nothing about a file with only sound records', async () => {
     await saveRoutine(routine('r1', 'רגליים', [[{ name: 'סקוואט', target: reps(12) }]]))
     await saveWorkout(workout({ id: 'good', startedAt: oct(26), exercises: [exercise('סקוואט', [done(60, 10)])] }))

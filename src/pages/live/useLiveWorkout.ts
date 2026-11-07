@@ -44,7 +44,7 @@ export function useLiveWorkout(initial: Workout) {
     [history, workout.startedAt],
   )
 
-  async function saveOrTakeBack(next: Workout) {
+  async function saveOrTakeBack(before: Workout, next: Workout) {
     try {
       await saveWorkout(next)
       stored.current = next
@@ -55,7 +55,7 @@ export function useLiveWorkout(initial: Workout) {
 
       latest.current = stored.current
       setWorkout(stored.current)
-      setPosition({ index: followIndex(next, stored.current, index), travel: null })
+      setPosition({ index: followIndex(before, stored.current, index), travel: null })
       saveFailed()
     }
   }
@@ -71,7 +71,7 @@ export function useLiveWorkout(initial: Workout) {
 
       return kept === position.index ? position : { index: kept, travel: null }
     })
-    void saveOrTakeBack(next)
+    void saveOrTakeBack(before, next)
   }
 
   function move(next: number) {

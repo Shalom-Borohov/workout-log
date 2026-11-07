@@ -90,6 +90,13 @@ describe('a malformed stored record', () => {
 
     expect(screen.getByRole('button', { name: 'טעינה מחדש' })).toBeVisible()
   })
+
+  it('reloads at the start, so the page that could not draw does not open again', async () => {
+    await openOnStoredRecords()
+    fireEvent.click(screen.getByRole('button', { name: 'טעינה מחדש' }))
+
+    expect(window.location.hash).toBe('')
+  })
 })
 
 describe('the app with sound records', () => {

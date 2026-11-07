@@ -1,15 +1,19 @@
 import { useIonToast } from '@ionic/react'
-import { useRef } from 'react'
+import { useReducer } from 'react'
 import { TOAST_OPTIONS } from '../components/toast'
 import { COMMON_COPY } from '../copy/common'
 
+let messageShownAt = 0
+
 export function useSave() {
   const [presentToast] = useIonToast()
-  const messageShownAt = useRef(0)
+  const [, redrawFieldsFromStoredProps] = useReducer((failures: number) => failures + 1, 0)
 
   function saveFailed() {
-    if (Date.now() - messageShownAt.current >= TOAST_OPTIONS.duration) {
-      messageShownAt.current = Date.now()
+    redrawFieldsFromStoredProps()
+
+    if (Date.now() - messageShownAt >= TOAST_OPTIONS.duration) {
+      messageShownAt = Date.now()
       void presentToast({ message: COMMON_COPY.saveFailed, ...TOAST_OPTIONS })
     }
   }

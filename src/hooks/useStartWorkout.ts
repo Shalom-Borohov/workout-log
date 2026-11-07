@@ -11,24 +11,23 @@ export function useStartWorkout(tab: HostTabPath) {
   const [presentSheet] = useIonActionSheet()
   const { save } = useSave()
 
-  return async (routine: Routine) => {
-    const active = await activeWorkout()
-    if (active && active.routineId !== routine.id) {
-      presentSheet({
-        header: APP_COPY.workoutInProgress,
-        buttons: [
-          { text: APP_COPY.resumeWorkout(active.routineName), handler: () => router.push(workoutPath(tab, active.id)) },
-          { text: COMMON_COPY.cancel, role: 'cancel' },
-        ],
-      })
+  return (routine: Routine) =>
+    save(async () => {
+      const active = await activeWorkout()
+      if (active && active.routineId !== routine.id) {
+        presentSheet({
+          header: APP_COPY.workoutInProgress,
+          buttons: [
+            { text: APP_COPY.resumeWorkout(active.routineName), handler: () => router.push(workoutPath(tab, active.id)) },
+            { text: COMMON_COPY.cancel, role: 'cancel' },
+          ],
+        })
 
-      return
-    }
+        return
+      }
 
-    await save(async () => {
       const workout = await beginWorkout(routine)
 
       router.push(workoutPath(tab, workout.id))
     })
-  }
 }
