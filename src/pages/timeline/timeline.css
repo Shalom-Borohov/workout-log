@@ -34,7 +34,6 @@ ion-tabs:has(.ion-page:not(.ion-page-hidden) > .timeline-footer) ion-tab-bar {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  opacity: 0.8;
 }
 
 .active-workout-clock {

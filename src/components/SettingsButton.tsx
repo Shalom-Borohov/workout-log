@@ -6,7 +6,7 @@ import { settingsPath, type HostTabPath } from '../navigation/paths'
 export function SettingsButton({ tab }: { tab: HostTabPath }) {
   return (
     <IonButton routerLink={settingsPath(tab)} aria-label={COMMON_COPY.settings}>
-      <IonIcon slot="icon-only" icon={settingsOutline} />
+      <IonIcon slot="icon-only" icon={settingsOutline} aria-hidden="true" />
     </IonButton>
   )
 }

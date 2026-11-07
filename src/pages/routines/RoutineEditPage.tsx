@@ -95,7 +95,7 @@ function RoutineEditor({ routine, tab }: { routine: Routine; tab: RoutineHostPat
       ))}
       <IonList inset>
         <IonItem button detail={false} onClick={addSection}>
-          <IonIcon slot="start" color="primary" icon={addCircle} />
+          <IonIcon slot="start" color="primary" icon={addCircle} aria-hidden="true" />
           <IonLabel color="primary">{ROUTINES_COPY.addSection}</IonLabel>
         </IonItem>
       </IonList>

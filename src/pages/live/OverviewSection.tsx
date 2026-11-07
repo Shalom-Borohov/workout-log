@@ -56,7 +56,7 @@ function EditableItems({ section, canDelete, onEditItem, onDeleteItem, onReorder
         })}
       </IonReorderGroup>
       <IonItem button detail={false} onClick={onAdd}>
-        <IonIcon slot="start" color="primary" icon={addCircle} />
+        <IonIcon slot="start" color="primary" icon={addCircle} aria-hidden="true" />
         <IonLabel color="primary">{COMMON_COPY.addExercise}</IonLabel>
       </IonItem>
     </>

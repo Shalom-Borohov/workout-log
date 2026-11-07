@@ -83,7 +83,7 @@ function ItemForm({ item, sectionSets, showStartWeight, onChange, onDelete, onAd
       </IonList>
       <IonList inset>
         <IonItem button detail={false} onClick={() => onAddAfter(item.id)}>
-          <IonIcon slot="start" color="primary" icon={addCircle} />
+          <IonIcon slot="start" color="primary" icon={addCircle} aria-hidden="true" />
           <IonLabel color="primary">{ITEM_EDITOR_COPY.addExerciseAfter}</IonLabel>
         </IonItem>
       </IonList>

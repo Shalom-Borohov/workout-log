@@ -1,4 +1,5 @@
 import { type TouchEvent, useRef } from 'react'
+import { startsAtEdge } from '../../navigation/edgeSwipe'
 
 const MIN_SWIPE = 50
 
@@ -10,7 +11,7 @@ export function useMonthSwipe(onMonthsBack: (change: number) => void) {
   function onTouchStart(event: TouchEvent) {
     const touch = event.touches[0]
 
-    start.current = { x: touch.clientX, y: touch.clientY }
+    start.current = startsAtEdge(touch.clientX, window.innerWidth) ? null : { x: touch.clientX, y: touch.clientY }
   }
 
   function onTouchEnd(event: TouchEvent) {

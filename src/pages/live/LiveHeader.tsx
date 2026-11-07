@@ -25,7 +25,7 @@ export function LiveHeader({ title, startedAt, progress, restTimer, onMenu, onFi
       <IonToolbar>
         <IonButtons slot="start">
           <IonButton aria-label={LIVE_COPY.exerciseActions} onClick={onMenu}>
-            <IonIcon slot="icon-only" icon={ellipsisHorizontal} />
+            <IonIcon slot="icon-only" icon={ellipsisHorizontal} aria-hidden="true" />
           </IonButton>
           {rest && <RestButton rest={rest} onToggle={peek.toggle} />}
         </IonButtons>

@@ -21,6 +21,10 @@
   justify-content: center;
 }
 
+.live-footer ion-toolbar {
+  padding-bottom: var(--ion-safe-area-bottom, 0);
+}
+
 .item-heading {
   display: flex;
   flex-direction: column;
@@ -67,7 +71,7 @@
 }
 
 .item-heading .item-skipped {
-  --color: var(--ion-color-warning-shade);
+  --color: var(--app-skipped);
   font-weight: 600;
 }
 

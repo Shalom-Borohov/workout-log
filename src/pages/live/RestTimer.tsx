@@ -15,7 +15,7 @@ export function RestButton({ rest, onToggle }: { rest: Rest; onToggle: () => voi
       aria-label={rest.ended ? LIVE_COPY.restOver : LIVE_COPY.rest}
       onClick={onToggle}
     >
-      <IonIcon slot="icon-only" icon={timerOutline} />
+      <IonIcon slot="icon-only" icon={timerOutline} aria-hidden="true" />
     </IonButton>
   )
 }
@@ -42,7 +42,7 @@ export function RestRow({ rest, seconds, sound, onAdjust, onToggleSound }: RestR
           aria-pressed={sound}
           onClick={onToggleSound}
         >
-          <IonIcon icon={sound ? volumeHighOutline : volumeMuteOutline} />
+          <IonIcon icon={sound ? volumeHighOutline : volumeMuteOutline} aria-hidden="true" />
         </button>
         <div className="stepper rest-stepper">
           <button
@@ -52,7 +52,7 @@ export function RestRow({ rest, seconds, sound, onAdjust, onToggleSound }: RestR
             disabled={seconds <= MIN_REST_SECONDS}
             onClick={() => onAdjust(-1)}
           >
-            <IonIcon icon={remove} />
+            <IonIcon icon={remove} aria-hidden="true" />
           </button>
           <span role="timer" className="rest-left">
             {formatClock(secondsLeft * SECOND_MS)}
@@ -63,7 +63,7 @@ export function RestRow({ rest, seconds, sound, onAdjust, onToggleSound }: RestR
             aria-label={LIVE_COPY.increase(LIVE_COPY.rest)}
             onClick={() => onAdjust(1)}
           >
-            <IonIcon icon={add} />
+            <IonIcon icon={add} aria-hidden="true" />
           </button>
         </div>
       </div>

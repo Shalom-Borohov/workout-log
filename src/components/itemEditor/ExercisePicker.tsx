@@ -89,7 +89,7 @@ export function ExercisePicker({ isOpen, onPick, onClose }: Props) {
       <IonContent>
         <IonList inset>
           <IonItem button detail={false} onClick={() => onPick()}>
-            <IonIcon slot="start" color="primary" icon={addCircle} />
+            <IonIcon slot="start" color="primary" icon={addCircle} aria-hidden="true" />
             <IonLabel color="primary">{ITEM_EDITOR_COPY.newExercise}</IonLabel>
           </IonItem>
           <ChoiceRows matches={search.matches} onPick={onPick} />

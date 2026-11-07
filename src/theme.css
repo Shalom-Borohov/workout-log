@@ -23,7 +23,8 @@
   --app-label-secondary: rgba(60, 60, 67, 0.75);
   --app-label-tertiary: rgba(60, 60, 67, 0.3);
   --app-fill: rgba(118, 118, 128, 0.12);
-  --app-up: #248a3d;
+  --app-up: #1e7b34;
+  --app-skipped: #8a6100;
   --app-record: #b34e00;
   --app-drill-red: #ff3b30;
   --app-drill-orange: #ff9500;
@@ -61,6 +62,7 @@
     --app-label-tertiary: rgba(235, 235, 245, 0.3);
     --app-fill: rgba(118, 118, 128, 0.24);
     --app-up: #30d158;
+    --app-skipped: var(--ion-color-warning-shade);
     --app-record: #ff9f0a;
     --app-drill-red: #ff453a;
     --app-drill-orange: #ff9f0a;
@@ -177,6 +179,10 @@ ion-label p {
   line-height: 1.4;
   color: var(--app-label-secondary);
   text-wrap: balance;
+}
+
+ion-toolbar ion-button {
+  --opacity: 1;
 }
 
 .plain-button {

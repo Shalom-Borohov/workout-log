@@ -49,19 +49,19 @@ export function Tabs() {
       <UpdateBar inWorkout={inWorkout} />
       <IonTabBar slot="bottom" className={inWorkout ? 'ion-hide' : undefined}>
         <IonTabButton tab="timeline" href={TIMELINE_PATH}>
-          <IonIcon icon={timeOutline} />
+          <IonIcon icon={timeOutline} aria-hidden="true" />
           <IonLabel>{COMMON_COPY.timeline}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="daily" href={DAILY_PATH}>
-          <IonIcon icon={calendarOutline} />
+          <IonIcon icon={calendarOutline} aria-hidden="true" />
           <IonLabel>{COMMON_COPY.daily}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="routines" href={ROUTINES_PATH}>
-          <IonIcon icon={listOutline} />
+          <IonIcon icon={listOutline} aria-hidden="true" />
           <IonLabel>{COMMON_COPY.routines}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="exercises" href={EXERCISES_PATH}>
-          <IonIcon icon={barbell} />
+          <IonIcon icon={barbell} aria-hidden="true" />
           <IonLabel>{COMMON_COPY.exercises}</IonLabel>
         </IonTabButton>
       </IonTabBar>

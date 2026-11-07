@@ -80,7 +80,7 @@ export function SectionEditor({ section, onChange, onEditItem, onDeleteItem, onA
           ))}
         </IonReorderGroup>
         <IonItem button detail={false} onClick={onAddItem}>
-          <IonIcon slot="start" color="primary" icon={addCircle} />
+          <IonIcon slot="start" color="primary" icon={addCircle} aria-hidden="true" />
           <IonLabel color="primary">{COMMON_COPY.addExercise}</IonLabel>
         </IonItem>
       </IonList>

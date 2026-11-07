@@ -15,14 +15,14 @@ export function EmptyRoutines({ onPaste, onEmpty }: Props) {
       <EmptyState title={ROUTINES_COPY.noRoutinesYet} body={ROUTINES_COPY.noRoutinesBody} />
       <IonList inset>
         <IonItem button detail onClick={onPaste}>
-          <IonIcon slot="start" color="primary" className="option-icon" icon={clipboardOutline} />
+          <IonIcon slot="start" color="primary" className="option-icon" icon={clipboardOutline} aria-hidden="true" />
           <IonLabel>
             <h2>{COMMON_COPY.pasteNote}</h2>
             <p>{ROUTINES_COPY.pasteNoteHint}</p>
           </IonLabel>
         </IonItem>
         <IonItem button detail onClick={onEmpty}>
-          <IonIcon slot="start" color="primary" className="option-icon" icon={createOutline} />
+          <IonIcon slot="start" color="primary" className="option-icon" icon={createOutline} aria-hidden="true" />
           <IonLabel>
             <h2>{COMMON_COPY.emptyRoutine}</h2>
             <p>{ROUTINES_COPY.emptyRoutineHint}</p>

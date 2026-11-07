@@ -96,11 +96,11 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
         </IonListHeader>
         <IonList inset>
           <IonItem button detail={false} onClick={() => void backUp()}>
-            <IonIcon slot="start" color="primary" icon={shareOutline} />
+            <IonIcon slot="start" color="primary" icon={shareOutline} aria-hidden="true" />
             <IonLabel>{COMMON_COPY.exportBackup}</IonLabel>
           </IonItem>
           <IonItem button detail={false} onClick={() => fileInput.current?.click()}>
-            <IonIcon slot="start" color="primary" icon={downloadOutline} />
+            <IonIcon slot="start" color="primary" icon={downloadOutline} aria-hidden="true" />
             <IonLabel>{SETTINGS_COPY.importBackup}</IonLabel>
           </IonItem>
         </IonList>
@@ -111,7 +111,7 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
         </IonListHeader>
         <IonList inset>
           <IonItem button detail={false} onClick={() => void share(() => shareHistory(Date.now()))}>
-            <IonIcon slot="start" color="primary" icon={documentTextOutline} />
+            <IonIcon slot="start" color="primary" icon={documentTextOutline} aria-hidden="true" />
             <IonLabel>{SETTINGS_COPY.exportHistory}</IonLabel>
           </IonItem>
         </IonList>

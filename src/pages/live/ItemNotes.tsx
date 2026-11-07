@@ -11,7 +11,7 @@ export function ExerciseNotes({ item, onNote }: { item: WorkoutItem; onNote: () 
     <IonList inset>
       {noted.length === 0 ? (
         <IonItem button detail onClick={onNote}>
-          <IonIcon slot="start" color="primary" icon={createOutline} />
+          <IonIcon slot="start" color="primary" icon={createOutline} aria-hidden="true" />
           <IonLabel className="item-note" color="primary">
             {LIVE_COPY.addNote}
           </IonLabel>
@@ -19,7 +19,7 @@ export function ExerciseNotes({ item, onNote }: { item: WorkoutItem; onNote: () 
       ) : (
         noted.map((exercise) => (
           <IonItem key={exercise.name} button detail onClick={onNote}>
-            <IonIcon slot="start" color="medium" icon={createOutline} />
+            <IonIcon slot="start" color="medium" icon={createOutline} aria-hidden="true" />
             <IonLabel className="item-note ion-text-wrap">{pair ? `${exercise.name}: ${exercise.note}` : exercise.note}</IonLabel>
           </IonItem>
         ))

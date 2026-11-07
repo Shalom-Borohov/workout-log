@@ -28,7 +28,7 @@ export function BackupReminder({ records, now }: { records: number | undefined; 
           aria-label={COMMON_COPY.close}
           onClick={() => void save(dismissBackupReminder)}
         >
-          <IonIcon slot="icon-only" icon={close} />
+          <IonIcon slot="icon-only" icon={close} aria-hidden="true" />
         </IonButton>
         <IonLabel>
           {status.backedUpAt === null

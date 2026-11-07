@@ -24,7 +24,7 @@ export function Stepper({ field, label, value, unit, inputMode, canDecrease, can
         disabled={!canDecrease}
         onClick={() => onStep(-1)}
       >
-        <IonIcon icon={remove} />
+        <IonIcon icon={remove} aria-hidden="true" />
       </button>
       <div className="stepper-value">
         <IonInput
@@ -45,7 +45,7 @@ export function Stepper({ field, label, value, unit, inputMode, canDecrease, can
         disabled={!canIncrease}
         onClick={() => onStep(1)}
       >
-        <IonIcon icon={add} />
+        <IonIcon icon={add} aria-hidden="true" />
       </button>
     </div>
   )
