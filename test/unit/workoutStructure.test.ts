@@ -12,6 +12,7 @@ import {
   removeItem,
   setCount,
 } from '../../src/domain/workoutStructure'
+import { withSets } from '../../src/domain/routineEdit'
 import { done, exercise, oct, open, reps, routineExercise, seconds, workout } from '../helpers/workouts'
 
 const squatHistory: PreviousExerciseLookup = ({ name }) => ({
@@ -238,5 +239,42 @@ describe('applyItemEdit', () => {
 
     expect(setsAfter(item, 3, 4)).toEqual([[done(60, 10), done(60, 10), open(60, 10)]])
     expect(setsAfter(item, 1, 4)).toEqual([[done(60, 10), done(60, 10)]])
+  })
+})
+
+describe('editing one exercise of a pair with uneven sets', () => {
+  const unevenPair: WorkoutItem = {
+    id: 'pair',
+    exercises: [
+      exercise('א', [open(20, 10), open(20, 10), open(20, 10)]),
+      exercise('ב', [open(30, 10), open(30, 10)]),
+    ],
+  }
+
+  const lengths = (item: WorkoutItem) => item.exercises.map((pairExercise) => pairExercise.sets.length)
+
+  const edit = (change: (item: RoutineItem) => RoutineItem) =>
+    applyItemEdit(unevenPair, change(asRoutineItem(unevenPair, 3)), 3, NO_HISTORY)
+
+  const editFirst = (item: RoutineItem, change: { tip?: string; name?: string }) => ({
+    ...item,
+    exercises: item.exercises.map((pairExercise, index) => (index === 0 ? { ...pairExercise, ...change } : pairExercise)),
+  })
+
+  const renameSecond = (item: RoutineItem) => ({
+    ...item,
+    exercises: item.exercises.map((pairExercise, index) => (index === 1 ? { ...pairExercise, name: 'ג' } : pairExercise)),
+  })
+
+  it('leaves the other exercise without the set it deleted', () => {
+    expect(lengths(edit((item) => editFirst(item, { tip: 'דגש' })))).toEqual([3, 2])
+  })
+
+  it('keeps the set count of an exercise renamed with nothing ticked', () => {
+    expect(lengths(edit(renameSecond))).toEqual([3, 2])
+  })
+
+  it('brings both to the new count when the set count is what was edited', () => {
+    expect(lengths(edit((item) => withSets(item, 4, 3)))).toEqual([4, 4])
   })
 })

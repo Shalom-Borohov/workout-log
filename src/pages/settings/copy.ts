@@ -1,6 +1,5 @@
 export const SETTINGS_COPY = {
   backupRestored: 'הגיבוי שוחזר',
-  exportBackup: 'ייצוא גיבוי',
   importBackup: 'ייבוא גיבוי',
   importReplacesAllData: 'הייבוא יחליף את כל הנתונים',
   import: 'ייבוא',

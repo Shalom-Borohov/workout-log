@@ -7,6 +7,7 @@ import { saveRoutine, updateRoutine } from '../../data/repo'
 import { copyName, duplicateRoutine } from '../../domain/routineEdit'
 import { matchesRoutine, routineFromWorkout } from '../../domain/routineFromWorkout'
 import type { Workout } from '../../domain/types'
+import { useSave } from '../../hooks/useSave'
 import type { WorkoutEdit } from './useOverviewEditor'
 
 const newId = () => crypto.randomUUID()
@@ -21,21 +22,28 @@ export function RoutineActions({ workout, onEdit, unsavedOnly = false }: Props) 
   const routine = useRoutine(workout.routineId)
   const [presentAlert] = useIonAlert()
   const [presentToast] = useIonToast()
+  const { save } = useSave()
 
   const toast = (message: string) => presentToast({ message, ...TOAST_OPTIONS })
 
   async function update() {
-    await updateRoutine(workout.routineId, (current) => routineFromWorkout(workout, current, newId, Date.now()))
-    void toast(LIVE_COPY.routineUpdated)
+    const updated = await save(() =>
+      updateRoutine(workout.routineId, (current) => routineFromWorkout(workout, current, newId, Date.now())),
+    )
+
+    if (updated) {
+      void toast(LIVE_COPY.routineUpdated)
+    }
   }
 
   async function saveAsNew(name: string) {
     const now = Date.now()
     const copy = duplicateRoutine(routineFromWorkout(workout, routine, newId, now), newId, now)
 
-    onEdit((current) => ({ ...current, routineId: copy.id, routineName: name }))
-    await saveRoutine({ ...copy, name })
-    void toast(LIVE_COPY.savedNewRoutine)
+    if (await save(() => saveRoutine({ ...copy, name }))) {
+      onEdit((current) => ({ ...current, routineId: copy.id, routineName: name }))
+      void toast(LIVE_COPY.savedNewRoutine)
+    }
   }
 
   function askName() {

@@ -20,10 +20,12 @@ import { COMMON_COPY } from '../../copy/common'
 import { setExerciseArea } from '../../data/exerciseAreas'
 import { useExerciseAreas } from '../../data/hooks'
 import { areaOf, type BodyArea } from '../../domain/bodyAreas'
+import { useSave } from '../../hooks/useSave'
 
 export function BodyAreaRow({ name }: { name: string }) {
   const areas = useExerciseAreas()
   const [isOpen, setIsOpen] = useState(false)
+  const { save } = useSave()
 
   if (!areas) {
     return null
@@ -32,7 +34,7 @@ export function BodyAreaRow({ name }: { name: string }) {
   const area = areaOf(areas, name)
 
   function pick(picked: BodyArea | null) {
-    void setExerciseArea(name, picked)
+    void save(() => setExerciseArea(name, picked))
     setIsOpen(false)
   }
 

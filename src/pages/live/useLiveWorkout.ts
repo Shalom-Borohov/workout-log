@@ -15,7 +15,11 @@ import {
   toggleSkip,
 } from '../../domain/workoutEdits'
 import { followIndex } from '../../domain/workoutStructure'
+import { useSave } from '../../hooks/useSave'
+import { ignoreTapsFor } from '../../navigation/tapGuard'
 import { useRestTimer } from './useRestTimer'
+
+const AFTER_ADVANCE_TAPS_IGNORED_MS = 300
 
 export type Travel = 'next' | 'prev' | null
 
@@ -24,6 +28,8 @@ type Position = { index: number; travel: Travel }
 export function useLiveWorkout(initial: Workout) {
   const [workout, setWorkout] = useState(initial)
   const latest = useRef(initial)
+  const stored = useRef(initial)
+  const { saveFailed } = useSave()
   const [{ index, travel }, setPosition] = useState<Position>(() => ({ index: firstUnfinished(initial), travel: null }))
   const refs = itemRefs(workout)
   const total = refs.length
@@ -38,6 +44,22 @@ export function useLiveWorkout(initial: Workout) {
     [history, workout.startedAt],
   )
 
+  async function saveOrTakeBack(before: Workout, next: Workout) {
+    try {
+      await saveWorkout(next)
+      stored.current = next
+    } catch {
+      if (latest.current !== next) {
+        return
+      }
+
+      latest.current = stored.current
+      setWorkout(stored.current)
+      setPosition({ index: followIndex(before, stored.current, index), travel: null })
+      saveFailed()
+    }
+  }
+
   function apply(edit: (current: Workout) => Workout) {
     const before = latest.current
     const next = edit(before)
@@ -49,7 +71,7 @@ export function useLiveWorkout(initial: Workout) {
 
       return kept === position.index ? position : { index: kept, travel: null }
     })
-    void saveWorkout(next)
+    void saveOrTakeBack(before, next)
   }
 
   function move(next: number) {
@@ -93,6 +115,7 @@ export function useLiveWorkout(initial: Workout) {
     const next = nextUnfinished(latest.current, index)
 
     if (next !== null) {
+      ignoreTapsFor(AFTER_ADVANCE_TAPS_IGNORED_MS)
       move(next)
     }
   }

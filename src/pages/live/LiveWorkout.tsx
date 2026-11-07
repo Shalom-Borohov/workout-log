@@ -21,12 +21,14 @@ import { useOverviewEditor } from './useOverviewEditor'
 import { useSetSelection } from './useSetSelection'
 import { useItemSwipe } from './useSwipe'
 import { ItemEditorSheets } from '../../components/itemEditor/ItemEditorSheets'
+import { useSave } from '../../hooks/useSave'
 import { useWakeLock } from '../../hooks/useWakeLock'
 import './live.css'
 import './photo.css'
 
 export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHostPath }) {
   const router = useIonRouter()
+  const { save } = useSave()
 
   const {
     workout,
@@ -73,22 +75,25 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
     onEditWorkout: () => setListing('editing'),
   })
 
-  async function save(summary: string) {
-    setSheet(null)
-
+  async function saveSheet(summary: string) {
     if (sheet === 'summary') {
+      setSheet(null)
       apply((current) => ({ ...current, summary }))
 
       return
     }
-    await finish(summary)
-    router.push(workoutDetailPath(tab, workout.id), 'root', 'replace')
+
+    if (await save(() => finish(summary))) {
+      setSheet(null)
+      router.push(workoutDetailPath(tab, workout.id), 'root', 'replace')
+    }
   }
 
   async function remove() {
-    setSheet(null)
-    await deleteWorkout(workout.id)
-    router.push(TIMELINE_PATH, 'root', 'replace')
+    if (await save(() => deleteWorkout(workout.id))) {
+      setSheet(null)
+      router.push(TIMELINE_PATH, 'root', 'replace')
+    }
   }
 
   function leave() {
@@ -167,7 +172,7 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
         mode={sheet}
         initialSummary={workout.summary}
         onCancel={() => setSheet(null)}
-        onSave={save}
+        onSave={saveSheet}
         onDelete={remove}
       >
         <RoutineActions workout={workout} onEdit={apply} unsavedOnly />

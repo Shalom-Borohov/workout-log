@@ -21,6 +21,7 @@ import { pastTimeProblems } from '../../domain/pastTime'
 import { isStartable } from '../../domain/progress'
 import { MINUTE_MS } from '../../domain/time'
 import { useNow } from '../../hooks/useNow'
+import { useSave } from '../../hooks/useSave'
 import { TIMELINE_PATH, workoutPath } from '../../navigation/paths'
 import { PastTimeItems, PastTimeNotes } from './PastTimeFields'
 import { defaultPastTime, readPastTime } from './pastTimeForm'
@@ -29,6 +30,7 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
   const routines = useRoutines()
   const router = useIonRouter()
   const now = useNow(MINUTE_MS)
+  const { save } = useSave()
   const [routineId, setRoutineId] = useState<string | null>(null)
   const [pastTime, setPastTime] = useState(() => defaultPastTime(now))
 
@@ -38,14 +40,17 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
   const problems = pastTimeProblems(startedAt, minutes, now)
   const valid = routine !== undefined && problems.valid
 
-  async function save() {
+  async function savePast() {
     if (!routine) {
       return
     }
-    const workout = await addPastWorkout(routine, startedAt, minutes * MINUTE_MS)
 
-    onClose()
-    router.push(workoutPath(TIMELINE_PATH, workout.id))
+    await save(async () => {
+      const workout = await addPastWorkout(routine, startedAt, minutes * MINUTE_MS)
+
+      onClose()
+      router.push(workoutPath(TIMELINE_PATH, workout.id))
+    })
   }
 
   return (
@@ -57,7 +62,7 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
           </IonButtons>
           <IonTitle>{TIMELINE_COPY.pastWorkout}</IonTitle>
           <IonButtons slot="end">
-            <IonButton strong disabled={!valid} onClick={() => void save()}>
+            <IonButton strong disabled={!valid} onClick={() => void savePast()}>
               {COMMON_COPY.save}
             </IonButton>
           </IonButtons>

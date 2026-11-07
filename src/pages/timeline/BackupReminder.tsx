@@ -6,11 +6,13 @@ import { useBackupStatus } from '../../data/hooks'
 import { isBackupDue } from '../../domain/backupReminder'
 import { daysSince } from '../../domain/time'
 import { useBackUp } from '../../hooks/useBackUp'
+import { useSave } from '../../hooks/useSave'
 import { TIMELINE_COPY } from './copy'
 
 export function BackupReminder({ records, now }: { records: number | undefined; now: number }) {
   const status = useBackupStatus()
   const backUp = useBackUp()
+  const { save } = useSave()
 
   if (!status || records === undefined || !isBackupDue(status, records, now)) {
     return null
@@ -24,7 +26,7 @@ export function BackupReminder({ records, now }: { records: number | undefined; 
           fill="clear"
           color="medium"
           aria-label={COMMON_COPY.close}
-          onClick={() => void dismissBackupReminder()}
+          onClick={() => void save(dismissBackupReminder)}
         >
           <IonIcon slot="icon-only" icon={close} />
         </IonButton>

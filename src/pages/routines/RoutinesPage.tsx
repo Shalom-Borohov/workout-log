@@ -20,6 +20,7 @@ import { saveRoutine } from '../../data/repo'
 import { newRoutine } from '../../domain/routineEdit'
 import { HOUR_MS } from '../../domain/time'
 import { useNow } from '../../hooks/useNow'
+import { useSave } from '../../hooks/useSave'
 import { IMPORT_PATH, ROUTINES_PATH, routinePath } from '../../navigation/paths'
 import { EmptyRoutines } from './EmptyRoutines'
 import { RoutineRow } from './RoutineRow'
@@ -30,12 +31,14 @@ export function RoutinesPage() {
   const now = useNow(HOUR_MS)
   const router = useIonRouter()
   const [presentActionSheet] = useIonActionSheet()
+  const { save } = useSave()
 
   async function createEmpty() {
     const id = crypto.randomUUID()
 
-    await saveRoutine(newRoutine(id, crypto.randomUUID(), Date.now()))
-    router.push(routinePath(ROUTINES_PATH, id))
+    if (await save(() => saveRoutine(newRoutine(id, crypto.randomUUID(), Date.now())))) {
+      router.push(routinePath(ROUTINES_PATH, id))
+    }
   }
 
   const openImport = () => router.push(IMPORT_PATH)

@@ -3,14 +3,17 @@ import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
 import { saveRecord } from '../../data/repo'
 import type { WorkoutRecord } from '../../domain/types'
+import { useSave } from '../../hooks/useSave'
 
 export function SummaryEditor({ workout }: { workout: WorkoutRecord }) {
+  const { save } = useSave()
+
   function handleChange(event: TextareaCustomEvent) {
     const { value } = event.detail
     if (typeof value !== 'string') {
       return
     }
-    void saveRecord({ ...workout, summary: value.trim() })
+    void save(() => saveRecord({ ...workout, summary: value.trim() }))
   }
 
   return (

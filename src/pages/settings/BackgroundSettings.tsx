@@ -4,11 +4,13 @@ import { type ChangeEvent, useRef } from 'react'
 import { SETTINGS_COPY } from './copy'
 import { clearBackground, setBackground } from '../../data/background'
 import { useBackground } from '../../data/hooks'
+import { useSave } from '../../hooks/useSave'
 import { shrinkPhoto } from './shrinkPhoto'
 
 export function BackgroundSettings({ onError }: { onError: (error: unknown) => void }) {
   const fileInput = useRef<HTMLInputElement>(null)
   const background = useBackground()
+  const { save } = useSave()
 
   async function choose(event: ChangeEvent<HTMLInputElement>) {
     const input = event.currentTarget
@@ -21,7 +23,9 @@ export function BackgroundSettings({ onError }: { onError: (error: unknown) => v
     }
 
     try {
-      await setBackground(await shrinkPhoto(file))
+      const photo = await shrinkPhoto(file)
+
+      await save(() => setBackground(photo))
     } catch (error) {
       onError(error)
     }
@@ -38,7 +42,7 @@ export function BackgroundSettings({ onError }: { onError: (error: unknown) => v
           <IonLabel>{SETTINGS_COPY.backgroundPhoto}</IonLabel>
         </IonItem>
         {background && (
-          <IonItem button detail={false} onClick={() => void clearBackground()}>
+          <IonItem button detail={false} onClick={() => void save(clearBackground)}>
             <IonIcon slot="start" color="danger" icon={trashOutline} />
             <IonLabel color="danger">{SETTINGS_COPY.removeBackgroundPhoto}</IonLabel>
           </IonItem>

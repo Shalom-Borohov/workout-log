@@ -16,6 +16,7 @@ import { addDailyRoutine } from '../../data/repo'
 import { newRoutine } from '../../domain/routineEdit'
 import { MINUTE_MS } from '../../domain/time'
 import { useNow } from '../../hooks/useNow'
+import { useSave } from '../../hooks/useSave'
 import { DAILY_PATH, routinePath } from '../../navigation/paths'
 import { DAILY_COPY } from './copy'
 import { DailyBody } from './DailyBody'
@@ -27,12 +28,14 @@ export function DailyPage() {
   const records = useFinishedRecords()
   const router = useIonRouter()
   const now = useNow(MINUTE_MS)
+  const { save } = useSave()
 
   async function addDaily() {
     const id = crypto.randomUUID()
 
-    await addDailyRoutine(newRoutine(id, crypto.randomUUID(), Date.now()))
-    router.push(routinePath(DAILY_PATH, id))
+    if (await save(() => addDailyRoutine(newRoutine(id, crypto.randomUUID(), Date.now())))) {
+      router.push(routinePath(DAILY_PATH, id))
+    }
   }
 
   return (

@@ -2,6 +2,12 @@ import { SECOND_MS } from '../domain/time'
 
 const MAX_TRANSITION_MS = SECOND_MS
 
+let ignoreTapsUntil = 0
+
+export function ignoreTapsFor(milliseconds: number) {
+  ignoreTapsUntil = performance.now() + milliseconds
+}
+
 const firstSeen = new WeakMap<Animation, number>()
 
 const isKeyframeEffect = (effect: AnimationEffect | null): effect is KeyframeEffect => effect !== null && 'target' in effect
@@ -40,7 +46,7 @@ function isPageTransition(animation: Animation, root: Document): boolean {
 
 export function guardTapsDuringTransitions(root: Document): () => void {
   function swallow(event: MouseEvent) {
-    if (root.getAnimations().some((animation) => isPageTransition(animation, root))) {
+    if (performance.now() <= ignoreTapsUntil || root.getAnimations().some((animation) => isPageTransition(animation, root))) {
       event.preventDefault()
       event.stopPropagation()
     }

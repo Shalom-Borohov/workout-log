@@ -16,6 +16,7 @@ import {
 } from '@ionic/react'
 import { addCircle } from 'ionicons/icons'
 import { useParams } from 'react-router-dom'
+import { commitName } from '../../components/commitName'
 import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import { useRoutine } from '../../data/hooks'
@@ -23,6 +24,7 @@ import { setRoutineDaily, updateRoutine } from '../../data/repo'
 import { type Change, newSection, removeSection, updateSection } from '../../domain/routineEdit'
 import type { Routine } from '../../domain/types'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
+import { useSave } from '../../hooks/useSave'
 import type { RoutineHostPath } from '../../navigation/paths'
 import { ItemEditorSheets } from '../../components/itemEditor/ItemEditorSheets'
 import { DrillColorPicker } from './DrillColorPicker'
@@ -33,7 +35,8 @@ import './routines.css'
 
 function RoutineEditor({ routine, tab }: { routine: Routine; tab: RoutineHostPath }) {
   const confirmDelete = useConfirmDelete()
-  const edit = (change: Change<Routine>) => void updateRoutine(routine.id, change)
+  const { save } = useSave()
+  const edit = (change: Change<Routine>) => void save(() => updateRoutine(routine.id, change))
   const items = useRoutineItemEditor(routine, edit)
 
   function addSection() {
@@ -55,13 +58,13 @@ function RoutineEditor({ routine, tab }: { routine: Routine; tab: RoutineHostPat
             labelPlacement="stacked"
             placeholder={COMMON_COPY.routineName}
             value={routine.name}
-            onIonChange={(event) => typeof event.detail.value === 'string' && rename(event.detail.value)}
+            onIonChange={(event) => commitName(event, routine.name, rename)}
           />
         </IonItem>
         <IonItem>
           <IonToggle
             checked={routine.daily}
-            onIonChange={(event) => void setRoutineDaily(routine.id, event.detail.checked)}
+            onIonChange={(event) => void save(() => setRoutineDaily(routine.id, event.detail.checked))}
           >
             {ROUTINES_COPY.dailyToggle}
           </IonToggle>

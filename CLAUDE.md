@@ -43,6 +43,7 @@ Code is in three layers, and dependencies point downward only:
   - `backup.ts`: backup export/import, with hand-written type guards for the JSON.
 - `src/pages/<feature>/` (`live`, `routines`, `timeline`, `exercises`, `settings`): grouped by feature. Each folder holds that screen's components, hooks, CSS and copy, and features don't import from each other.
 - Shared UI goes in `src/components/`, `src/hooks/`, `src/navigation/` and `src/copy/`. Move code there only once a second feature needs it.
+- `src/recovery/`: an error boundary above `IonApp`, and a plain screen with no Ionic and no router that can still export a backup (spec item 53).
 - `src/appUpdate/`: the update bar, the "מה חדש" sheet and `changelog.ts`, rendered by `Tabs.tsx` and Settings.
 - `src/rest/`: the rest timer's app-level clock and its sound. `Tabs.tsx` mounts it (`RestClock`), so a rest keeps running and rings on any tab. The running rest is saved in localStorage (`src/data/runningRest.ts`), and the clock re-syncs from it when the app returns from the background. It stops itself when the active workout is finished, deleted or done.
 
@@ -72,7 +73,7 @@ Routing:
 - The same live page edits a finished workout (edit mode, entered via the detail page's "עריכה").
 - Swipe-back is Ionic's own gesture (right edge in RTL). `src/navigation/edgeSwipe.ts` blocks iOS's built-in edge swipe by calling `preventDefault()` on `touchstart` within 20 px of either edge, unless the touch starts on a control. A scroll that starts in that strip therefore does not scroll.
   - In a Home Screen app on a Hebrew iPhone, iOS's swipe also uses the right edge. When both ran, the app jumped and froze taps (ionic-framework#29733, #22299). With only iOS's swipe, it slid a snapshot and then flashed the old page.
-- `src/navigation/tapGuard.ts` ignores taps while an Ionic page transition is still animating, for at most 1 s per transition, so a stuck animation can't freeze the app.
+- `src/navigation/tapGuard.ts` ignores taps while an Ionic page transition is still animating, for at most 1 s per transition, so a stuck animation can't freeze the app. It also ignores taps for 300 ms after a live workout auto-advances (spec item 58).
   - Without it, a tap during the end of a swipe-back reuses a page that Ionic then hides with `display: none`.
 
 Live page state:

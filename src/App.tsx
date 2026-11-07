@@ -3,6 +3,7 @@ import { IonReactHashRouter } from '@ionic/react-router'
 import { Navigate, Route } from 'react-router-dom'
 import { LegacyWorkoutLink } from './navigation/LegacyWorkoutLink'
 import { TIMELINE_PATH } from './navigation/paths'
+import { RecoveryBoundary } from './recovery/RecoveryBoundary'
 import { Tabs } from './Tabs'
 
 export function AppRoutes() {
@@ -17,10 +18,12 @@ export function AppRoutes() {
 
 export function App() {
   return (
-    <IonApp>
-      <IonReactHashRouter>
-        <AppRoutes />
-      </IonReactHashRouter>
-    </IonApp>
+    <RecoveryBoundary>
+      <IonApp>
+        <IonReactHashRouter>
+          <AppRoutes />
+        </IonReactHashRouter>
+      </IonApp>
+    </RecoveryBoundary>
   )
 }

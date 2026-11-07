@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseNote } from '../../src/domain/parseNote'
+import { DEFAULT_EXERCISE_NAME } from '../../src/domain/routineEdit'
 import { counter } from '../helpers/ids'
 import { routineExercise } from '../helpers/workouts'
 
@@ -26,6 +27,19 @@ const FULL_BODY = `אימון גוף מלא
 מדרגות 15 דקות
 מתיחת כופפי ירך בכריעה 30 שניות
 `
+
+describe('a note line with no exercise name', () => {
+  const firstItemNames = (line: string) =>
+    parseNote(`אימון\n${line}`, counter()).sections[0].items[0].exercises.map((parsed) => parsed.name)
+
+  it('names a bare number with the default name', () => {
+    expect(firstItemNames('12')).toEqual([DEFAULT_EXERCISE_NAME])
+  })
+
+  it('names an empty half of a pair with the default name', () => {
+    expect(firstItemNames('-> סקוואט 5')).toEqual([DEFAULT_EXERCISE_NAME, 'סקוואט'])
+  })
+})
 
 describe('parseNote', () => {
   it('exercises before a header go to עיקרי', () => {

@@ -6,6 +6,7 @@ import { findDailyLog, newDailyLog } from '../../domain/daily'
 import { type DailyDay, dayDrills, monthStart, quickLogDrill, recordDates, shiftMonth } from '../../domain/dailyCalendar'
 import { isoDate } from '../../domain/format'
 import type { DailyLog, Routine, WorkoutRecord } from '../../domain/types'
+import { useSave } from '../../hooks/useSave'
 import { DAILY_ARCHIVE_PATH } from '../../navigation/paths'
 import { DAILY_COPY } from './copy'
 import { DaySheet } from './DaySheet'
@@ -22,6 +23,7 @@ interface DailyBodyProps {
 export function DailyBody({ routines, logs, records, now }: DailyBodyProps) {
   const [monthsBack, setMonthsBack] = useState(0)
   const [openDay, setOpenDay] = useState<DailyDay | null>(null)
+  const { save } = useSave()
   const daily = routines.filter((routine) => routine.daily)
   const active = daily.filter((routine) => !routine.archived)
   const archived = daily.length - active.length
@@ -37,7 +39,7 @@ export function DailyBody({ routines, logs, records, now }: DailyBodyProps) {
     const drill = quickDrill(day.date)
 
     if (drill) {
-      void logDailyDay(newDailyLog(drill, day.date))
+      void save(() => logDailyDay(newDailyLog(drill, day.date)))
 
       return
     }

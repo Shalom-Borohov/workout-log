@@ -202,6 +202,32 @@ export async function exportBackup(now: number): Promise<Backup> {
   return { version: BACKUP_VERSION, exportedAt: now, routines, workouts, dailyLogs, exerciseAreas }
 }
 
+const countFailing = (guard: (value: unknown) => boolean, records: unknown[]) =>
+  records.filter((record) => !guard(record)).length
+
+type ExportedLists = Record<'routines' | 'workouts' | 'dailyLogs' | 'exerciseAreas', unknown[]>
+
+const isExportedLists = (json: unknown): json is ExportedLists =>
+  isObject(json) &&
+  [json.routines, json.workouts, json.dailyLogs, json.exerciseAreas].every((list) => Array.isArray(list))
+
+export function countBadRecords(fileText: string): number {
+  const json: unknown = JSON.parse(fileText)
+
+  if (!isExportedLists(json)) {
+    throw new Error(APP_COPY.invalidBackup)
+  }
+
+  const { routines, workouts, dailyLogs, exerciseAreas } = json
+
+  return (
+    countFailing(isRoutine, routines) +
+    countFailing(isRecord, workouts) +
+    countFailing(isDailyLog, dailyLogs) +
+    countFailing(isExerciseArea, exerciseAreas)
+  )
+}
+
 export async function restoreBackup(backup: Backup): Promise<void> {
   await db.transaction('rw', db.routines, db.workouts, db.dailyLogs, db.exerciseAreas, db.settings, async () => {
     await db.routines.clear()

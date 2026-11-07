@@ -98,6 +98,18 @@ describe('settings', () => {
     expect(await file?.text()).toBe('אימון גוף מלא · יום ג׳ 20.10.2026 · 60 דק׳\nעיקרי\nסקוואט: 40 × 12')
   })
 
+  it('says so in Hebrew when saving the background photo fails', async () => {
+    renderAt('/tabs/routines/settings')
+    await screen.findByText('תמונת רקע')
+
+    vi.spyOn(db.settings, 'put').mockRejectedValueOnce(new DOMException('Connection lost', 'UnknownError'))
+    fireEvent.change(screen.getByLabelText('קובץ תמונת רקע'), {
+      target: { files: [new File(['photo'], 'gym.jpg', { type: 'image/jpeg' })] },
+    })
+
+    await waitFor(() => expect(toasts()).toEqual(['לא נשמר. אפשר לנסות שוב.']))
+  })
+
   it('sets and removes the background photo', async () => {
     const put = vi.spyOn(db.settings, 'put')
 

@@ -9,6 +9,7 @@ import { pastTimeProblems } from '../../domain/pastTime'
 import { MINUTE_MS } from '../../domain/time'
 import type { Activity } from '../../domain/types'
 import { useNow } from '../../hooks/useNow'
+import { useSave } from '../../hooks/useSave'
 import { ActivityNameSuggestions } from './ActivityNameSuggestions'
 import { PastTimeItems, PastTimeNotes } from './PastTimeFields'
 import { defaultPastTime, pastTimeOf, readPastTime } from './pastTimeForm'
@@ -20,6 +21,7 @@ interface FormProps {
 
 function ActivityForm({ activity, onClose }: FormProps) {
   const now = useNow(MINUTE_MS)
+  const { save } = useSave()
   const [newId] = useState(() => crypto.randomUUID())
   const [name, setName] = useState(activity ? activity.name : '')
   const [typedLocation, setTypedLocation] = useState<string | null>(activity ? activity.location : null)
@@ -33,11 +35,13 @@ function ActivityForm({ activity, onClose }: FormProps) {
   const location = typedLocation ?? (records ? lastLocation(records, trimmedName) : '')
   const valid = trimmedName !== '' && problems.valid
 
-  async function save() {
+  async function saveActivity() {
     const base: Pick<Activity, 'kind' | 'id' | 'summary'> = activity ?? { kind: 'activity', id: newId, summary: '' }
+    const record = { ...base, name: trimmedName, location: location.trim(), startedAt, finishedAt: startedAt + minutes * MINUTE_MS }
 
-    await saveRecord({ ...base, name: trimmedName, location: location.trim(), startedAt, finishedAt: startedAt + minutes * MINUTE_MS })
-    onClose()
+    if (await save(() => saveRecord(record))) {
+      onClose()
+    }
   }
 
   return (
@@ -49,7 +53,7 @@ function ActivityForm({ activity, onClose }: FormProps) {
           </IonButtons>
           <IonTitle>{activity ? TIMELINE_COPY.editActivity : TIMELINE_COPY.otherActivity}</IonTitle>
           <IonButtons slot="end">
-            <IonButton strong disabled={!valid} onClick={() => void save()}>
+            <IonButton strong disabled={!valid} onClick={() => void saveActivity()}>
               {COMMON_COPY.save}
             </IonButton>
           </IonButtons>
