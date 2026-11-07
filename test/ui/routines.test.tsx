@@ -132,6 +132,15 @@ describe('routines', () => {
     expect(screen.queryByText('תרגיל עם ? חסר בו מספר חזרות. אפשר לתקן אחרי השמירה.')).not.toBeInTheDocument()
   })
 
+  it('import page shows an amount over the limit as the limit', async () => {
+    renderAt('/tabs/routines/import')
+
+    ionInput(await ionField('פתק'), 'אימון\nריצה 5000')
+
+    expect(await screen.findByText('100 חזרות', { selector: 'p' })).toBeInTheDocument()
+    expect(screen.queryByText(/5000 חזרות/)).not.toBeInTheDocument()
+  })
+
   it('import page saves parsed routine', async () => {
     renderAt('/tabs/routines/import')
 
