@@ -42,6 +42,23 @@ export default defineConfig(({ mode }) => ({
     environment: 'jsdom',
     setupFiles: ['test/setup.ts'],
     include: ['test/**/*.test.{ts,tsx}'],
+    fakeTimers: {
+      toFake: [
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'Date',
+        'hrtime',
+        'requestAnimationFrame',
+        'cancelAnimationFrame',
+        'requestIdleCallback',
+        'cancelIdleCallback',
+        'performance',
+        'Intl',
+        'Temporal',
+      ],
+    },
     server: {
       deps: { inline: ['@ionic/react', '@ionic/core', 'ionicons', '@stencil/react-output-target', '@lit/react'] },
     },

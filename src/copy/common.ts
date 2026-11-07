@@ -25,6 +25,7 @@ export const COMMON_COPY = {
   skipped: 'דילגת',
   summary: 'סיכום',
   workoutSummary: 'סיכום האימון',
+  durationMinutes: 'משך (דקות)',
   routineName: 'שם האימון',
   exerciseName: 'שם התרגיל',
   newRoutine: 'אימון חדש',

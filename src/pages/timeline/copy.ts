@@ -17,7 +17,6 @@ export const TIMELINE_COPY = {
   routine: 'אימון',
   date: 'תאריך',
   startTime: 'שעת התחלה',
-  durationMinutes: 'משך (דקות)',
   startTimeMustBePast: 'שעת ההתחלה צריכה להיות בעבר',
   mustEndByNow: 'האימון צריך להסתיים עד עכשיו',
   maxDuration: (minutes: number) => `משך האימון עד ${minutes} דקות`,

@@ -19,6 +19,8 @@ export const DAILY_COPY = {
   archive: 'ארכיון',
   archived: 'בארכיון',
   restore: 'החזרה',
+  removeLogQuestion: 'להסיר את הסימון?',
+  removeLogMessage: 'המספרים שנרשמו ביום הזה יימחקו.',
   dayLabel: (day: string, drills: string[], workouts: boolean) =>
     [day, ...drills, ...(workouts ? ['אימון'] : [])].join(LABEL_SEPARATOR),
 } as const

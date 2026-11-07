@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { drillsLine, logLine, newDailyLog, updateDailyExercise } from '../../src/domain/daily'
+import { drillsLine, isEditedLog, logLine, newDailyLog, updateDailyExercise } from '../../src/domain/daily'
 import { exerciseNames, isStartable } from '../../src/domain/progress'
 import { reps, routine, seconds } from '../helpers/workouts'
 
@@ -35,6 +35,58 @@ describe('updateDailyExercise', () => {
       { name: 'פלאנק', sets: 1, target: seconds(45) },
     ])
     expect(log.exercises[1].sets).toBe(3)
+  })
+})
+
+describe('isEditedLog', () => {
+  const fresh = newDailyLog(drills, '2026-10-25')
+
+  it('is false for a log that still holds the plan', () => {
+    expect(isEditedLog(fresh, drills)).toBe(false)
+  })
+
+  it('is false for a routine with no drills', () => {
+    const empty = routine('d2', 'ריק', [])
+
+    expect(isEditedLog(newDailyLog(empty, '2026-10-25'), empty)).toBe(false)
+  })
+
+  it('is true when the sets changed', () => {
+    expect(isEditedLog(updateDailyExercise(fresh, 0, { sets: 4 }), drills)).toBe(true)
+  })
+
+  it('is true when the amount changed', () => {
+    expect(isEditedLog(updateDailyExercise(fresh, 1, { target: seconds(35) }), drills)).toBe(true)
+  })
+
+  it('is true when the target kind changed, even with the same amount', () => {
+    expect(isEditedLog(updateDailyExercise(fresh, 0, { target: seconds(15) }), drills)).toBe(true)
+  })
+
+  it('is true when a drill has another name', () => {
+    expect(isEditedLog(updateDailyExercise(fresh, 0, { name: 'דדליפט' }), drills)).toBe(true)
+  })
+
+  it('is true when the routine gained a drill after the log', () => {
+    const longer = routine('d1', 'חטיפי תנועה', [
+      [{ name: 'גשר ישבן', target: reps(15) }],
+      [{ name: 'פלאנק', target: seconds(30) }],
+      [{ name: 'פרפר', target: seconds(30) }],
+    ])
+
+    expect(isEditedLog(fresh, longer)).toBe(true)
+  })
+
+  it('is true when the routine lost a drill after the log', () => {
+    const shorter = routine('d1', 'חטיפי תנועה', [[{ name: 'גשר ישבן', target: reps(15) }]])
+
+    expect(isEditedLog(fresh, shorter)).toBe(true)
+  })
+
+  it('is true when the routine changed a target after the log', () => {
+    const changed = routine('d1', 'חטיפי תנועה', [[{ name: 'גשר ישבן', target: reps(20) }], [{ name: 'פלאנק', target: seconds(30) }]])
+
+    expect(isEditedLog(fresh, changed)).toBe(true)
   })
 })
 

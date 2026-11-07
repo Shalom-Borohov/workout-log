@@ -1,10 +1,10 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { db } from '../../src/data/db'
 import { activeWorkout, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
-import { buttonByLabel, ionElement, ionEvent } from '../helpers/ionic'
+import { alertPresented, buttonByLabel, ionElement, ionEvent } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { dailyLog, done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
 
@@ -93,6 +93,77 @@ describe('daily tab', () => {
 
     await waitFor(() => expect(today).toHaveAttribute('aria-pressed', 'false'))
     expect(await db.dailyLogs.count()).toBe(0)
+    expect(document.querySelector('ion-alert')).toBeNull()
+  })
+
+  describe('removing today from a card when its numbers were edited', () => {
+    const editedLog = dailyLog('d1', '2026-10-26', [{ ...plannedDrills[0], sets: 5 }, plannedDrills[1]])
+
+    async function tapCheckUntilAsked() {
+      await saveRoutine(drills)
+      await db.dailyLogs.put(editedLog)
+      renderAt('/tabs/daily')
+
+      const today = await dayButton('חטיפי תנועה, היום')
+      await waitFor(() => expect(today).toHaveAttribute('aria-pressed', 'true'))
+      const asked = alertPresented()
+
+      fireEvent.click(today)
+      await asked
+
+      return today
+    }
+
+    it('asks first, and cancel keeps the log and the check', async () => {
+      const today = await tapCheckUntilAsked()
+
+      expect(screen.getByText('להסיר את הסימון?')).toBeInTheDocument()
+      expect(screen.getByText('המספרים שנרשמו ביום הזה יימחקו.')).toBeInTheDocument()
+      expect(await db.dailyLogs.toArray()).toEqual([editedLog])
+
+      fireEvent.click(screen.getByText('ביטול', { selector: '.alert-button-inner' }))
+
+      await waitFor(() => expect(document.querySelector('ion-alert')).toBeNull())
+      expect(await db.dailyLogs.toArray()).toEqual([editedLog])
+      expect(today).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    it('confirming removes the log', async () => {
+      const today = await tapCheckUntilAsked()
+
+      fireEvent.click(screen.getByText('מחיקה', { selector: '.alert-button-inner' }))
+
+      await waitFor(() => expect(today).toHaveAttribute('aria-pressed', 'false'))
+      expect(await db.dailyLogs.count()).toBe(0)
+    })
+
+    it('a double tap on מחיקה removes the log and does not bring it back from the plan', async () => {
+      const today = await tapCheckUntilAsked()
+      const remove = screen.getByText('מחיקה', { selector: '.alert-button-inner' })
+
+      fireEvent.click(remove)
+      fireEvent.click(remove)
+
+      await waitFor(() => expect(document.querySelector('ion-alert')).toBeNull())
+      await waitFor(() => expect(today).toHaveAttribute('aria-pressed', 'false'))
+      expect(await db.dailyLogs.count()).toBe(0)
+    })
+
+    it('after midnight, before the page refreshes, ✓ logs the new day without asking about yesterday', async () => {
+      await saveRoutine(drills)
+      await db.dailyLogs.put(editedLog)
+      renderAt('/tabs/daily')
+
+      const today = await dayButton('חטיפי תנועה, היום')
+      await waitFor(() => expect(today).toHaveAttribute('aria-pressed', 'true'))
+
+      vi.setSystemTime(oct(27, 0, 30))
+      fireEvent.click(today)
+
+      await waitFor(async () => expect(await db.dailyLogs.count()).toBe(2))
+      expect(document.querySelector('ion-alert')).toBeNull()
+      expect(await db.dailyLogs.get(editedLog.id)).toEqual(editedLog)
+    })
   })
 
   it('the today card opens the routine in the editor', async () => {
