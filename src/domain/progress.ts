@@ -23,10 +23,11 @@ export function completedSets(exercise: WorkoutExercise): SetLog[] {
 export type ExerciseSession = { workoutId: string; startedAt: number; target: Target; sets: SetLog[] }
 
 function sessionOf(workout: Workout, name: string): ExerciseSession | null {
-  const matching = exercisesOf(workout).filter((exercise) => exercise.name === name)
-  const sets = matching.flatMap(completedSets)
+  const ticked = exercisesOf(workout).filter((exercise) => exercise.name === name && completedSets(exercise).length > 0)
 
-  return sets.length > 0 ? { workoutId: workout.id, startedAt: workout.startedAt, target: matching[0].target, sets } : null
+  return ticked.length > 0
+    ? { workoutId: workout.id, startedAt: workout.startedAt, target: ticked[0].target, sets: ticked.flatMap(completedSets) }
+    : null
 }
 
 export function exerciseHistory(history: Workout[], name: string): ExerciseSession[] {
@@ -51,6 +52,14 @@ function latestNotes(workouts: Workout[]): Map<string, string> {
   return new Map(workouts.flatMap(exercisesOf).map((exercise) => [exercise.name, exercise.note]))
 }
 
+function targetOnlySets(target: Target): SetLog[] {
+  return prefill({ target, weight: null }, 1, null)
+}
+
+function setsToPrefillFrom(session: ExerciseSession, target: Target): SetLog[] {
+  return session.target.kind === target.kind ? session.sets : targetOnlySets(target)
+}
+
 export function previousExerciseLookup(history: Workout[], before: number): PreviousExerciseLookup {
   const workouts = chronological(history, before)
   const sessions = latestSessions(workouts)
@@ -61,7 +70,7 @@ export function previousExerciseLookup(history: Workout[], before: number): Prev
     const note = notes.get(exercise.name)
 
     return {
-      sets: session && session.target.kind === exercise.target.kind ? session.sets : null,
+      sets: session ? setsToPrefillFrom(session, exercise.target) : null,
       note: note === undefined ? '' : note,
     }
   }
@@ -131,7 +140,13 @@ const CHANGE_KINDS = ['up', 'record'] as const
 
 export type Change = { name: string; kind: (typeof CHANGE_KINDS)[number]; set: SetLog; target: Target }
 
-type ExerciseState = { heaviest: number; previousBest: SetLog }
+type ExerciseState = { heaviest: number; previousBest: SetLog; previousKind: Target['kind'] }
+
+function improved(best: SetLog, kind: Target['kind'], earlier: ExerciseState): boolean {
+  return kind === earlier.previousKind
+    ? beats(best, earlier.previousBest)
+    : weightRank(best.weight) > weightRank(earlier.previousBest.weight)
+}
 
 function changeTracker() {
   const state = new Map<string, ExerciseState>()
@@ -151,7 +166,11 @@ function changeTracker() {
       const earlier = state.get(name)
       const heaviest = Math.max(...session.sets.map((set) => weightRank(set.weight)))
 
-      state.set(name, { heaviest: Math.max(heaviest, earlier ? earlier.heaviest : -Infinity), previousBest: best })
+      state.set(name, {
+        heaviest: Math.max(heaviest, earlier ? earlier.heaviest : -Infinity),
+        previousBest: best,
+        previousKind: session.target.kind,
+      })
       if (!earlier) {
         return []
       }
@@ -159,7 +178,7 @@ function changeTracker() {
         return [{ name, kind: 'record', set: best, target: session.target }]
       }
 
-      return beats(best, earlier.previousBest) ? [{ name, kind: 'up', set: best, target: session.target }] : []
+      return improved(best, session.target.kind, earlier) ? [{ name, kind: 'up', set: best, target: session.target }] : []
     })
   }
 }

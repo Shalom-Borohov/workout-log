@@ -1,9 +1,75 @@
 import { describe, expect, it } from 'vitest'
 import { type Change, changeTally, withChanges } from '../../src/domain/progress'
-import type { Workout } from '../../src/domain/types'
-import { activity, done, exercise, oct, reps, workout } from '../helpers/workouts'
+import type { SetLog, Target, Workout } from '../../src/domain/types'
+import { activity, done, exercise, oct, open, reps, seconds, workout } from '../helpers/workouts'
 
 const changesOf = (target: Workout, history: Workout[]) => withChanges(history).find((entry) => entry.id === target.id)?.changes
+
+describe('changes across a switch between reps and time', () => {
+  const session = (id: string, day: number, set: SetLog, target: Target) =>
+    workout({ id, startedAt: oct(day), exercises: [exercise('פלאנק', [set], target)] })
+
+  it('a bigger amount of the other kind at the same weight is no improvement', () => {
+    const counted = session('a', 19, done(20, 10), reps(10))
+    const timed = session('now', 26, done(20, 30), seconds(30))
+
+    expect(changesOf(timed, [counted, timed])).toEqual([])
+  })
+
+  it('holds in the other direction too', () => {
+    const timed = session('a', 19, done(20, 10), seconds(10))
+    const counted = session('now', 26, done(20, 30), reps(30))
+
+    expect(changesOf(counted, [timed, counted])).toEqual([])
+  })
+
+  it('holds for bodyweight', () => {
+    const counted = session('a', 19, done(null, 10), reps(10))
+    const timed = session('now', 26, done(null, 30), seconds(30))
+
+    expect(changesOf(timed, [counted, timed])).toEqual([])
+  })
+
+  it('a higher weight is still up, below the heaviest ever', () => {
+    const heaviest = session('a', 12, done(50, 6), reps(6))
+    const counted = session('b', 19, done(20, 10), reps(10))
+    const timed = session('now', 26, done(25, 30), seconds(30))
+
+    expect(changesOf(timed, [heaviest, counted, timed])).toEqual([
+      { name: 'פלאנק', kind: 'up', set: done(25, 30), target: seconds(30) },
+    ])
+  })
+
+  it('a new heaviest weight is still a record', () => {
+    const counted = session('a', 19, done(20, 10), reps(10))
+    const timed = session('now', 26, done(25, 30), seconds(30))
+
+    expect(changesOf(timed, [counted, timed])).toEqual([
+      { name: 'פלאנק', kind: 'record', set: done(25, 30), target: seconds(30) },
+    ])
+  })
+
+  it('compares amounts again from the next session of the new kind', () => {
+    const counted = session('a', 12, done(20, 10), reps(10))
+    const firstTimed = session('b', 19, done(20, 30), seconds(30))
+    const longer = session('now', 26, done(20, 40), seconds(40))
+
+    expect(changesOf(longer, [counted, firstTimed, longer])).toEqual([
+      { name: 'פלאנק', kind: 'up', set: done(20, 40), target: seconds(40) },
+    ])
+  })
+
+  it('reads the kind of a session from the row that was ticked, when the exercise appears twice', () => {
+    const untickedCounted = exercise('פלאנק', [open(20, 10)], reps(10))
+    const tickedTimed = exercise('פלאנק', [done(20, 30)], seconds(30))
+    const twice = workout({ id: 'a', startedAt: oct(19), exercises: [untickedCounted, tickedTimed] })
+    const longer = session('now', 26, done(20, 40), seconds(40))
+
+    expect(changesOf(longer, [twice, longer])).toEqual([
+      { name: 'פלאנק', kind: 'up', set: done(20, 40), target: seconds(40) },
+    ])
+  })
+})
 
 describe('changes per workout', () => {
   it('no changes on first session', () => {

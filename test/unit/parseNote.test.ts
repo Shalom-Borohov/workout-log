@@ -41,7 +41,49 @@ describe('a note line with no exercise name', () => {
   })
 })
 
+describe('limits on a pasted note', () => {
+  const targetsOf = (line: string) =>
+    parseNote(`אימון\n${line}`, counter()).sections[0].items[0].exercises.map((parsed) => parsed.target)
+
+  const setsOf = (header: string) => parseNote(`אימון\n${header}\nסקוואט 10`, counter()).sections[0].sets
+
+  it('clamps reps to 100', () => {
+    expect(targetsOf('ריצה 5000')).toEqual([{ kind: 'reps', reps: 100 }])
+  })
+
+  it('clamps minutes and seconds to 3 hours', () => {
+    expect(targetsOf('ריצה 500 דקות')).toEqual([{ kind: 'duration', seconds: 10800 }])
+    expect(targetsOf('ריצה 20000 שניות')).toEqual([{ kind: 'duration', seconds: 10800 }])
+  })
+
+  it('clamps both exercises of a pair', () => {
+    expect(targetsOf('ריצה 5000 -> הליכה 500 דקות')).toEqual([
+      { kind: 'reps', reps: 100 },
+      { kind: 'duration', seconds: 10800 },
+    ])
+  })
+
+  it('leaves amounts at the limit as they are', () => {
+    expect(targetsOf('ריצה 100')).toEqual([{ kind: 'reps', reps: 100 }])
+    expect(targetsOf('ריצה 180 דקות')).toEqual([{ kind: 'duration', seconds: 10800 }])
+  })
+
+  it('keeps a section between 1 and 10 sets', () => {
+    expect(setsOf('עיקרי 5000 סטים:')).toBe(10)
+    expect(setsOf('עיקרי 0 סטים:')).toBe(1)
+    expect(setsOf('עיקרי 10 סטים:')).toBe(10)
+    expect(setsOf('עיקרי 1 סט:')).toBe(1)
+  })
+})
+
 describe('parseNote', () => {
+  it('reads a numbered first line as an exercise, as any `name N` line', () => {
+    const result = parseNote('אימון 2\nסקוואט 15', counter('id'))
+
+    expect(result.name).toBe('אימון חדש')
+    expect(result.sections[0].items[0].exercises).toEqual([routineExercise({ name: 'אימון', target: { kind: 'reps', reps: 2 } })])
+  })
+
   it('exercises before a header go to עיקרי', () => {
     const result = parseNote('אימון רגליים\nסקוואט 15', counter('id'))
 

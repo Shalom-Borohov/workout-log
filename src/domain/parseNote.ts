@@ -1,4 +1,14 @@
-import { DEFAULT_EXERCISE_NAME, DEFAULT_ROUTINE_NAME, DEFAULT_SECTION_NAME, newItem, newSection, routineExercise } from './routineEdit'
+import { clampTarget } from './limits'
+import {
+  DEFAULT_EXERCISE_NAME,
+  DEFAULT_ROUTINE_NAME,
+  DEFAULT_SECTION_NAME,
+  MAX_SETS,
+  MIN_SETS,
+  newItem,
+  newSection,
+  routineExercise,
+} from './routineEdit'
 import { SECONDS_PER_MINUTE } from './time'
 import type { RoutineExercise, RoutineSection, Target } from './types'
 
@@ -9,11 +19,13 @@ const DEFAULT_NOTE_SETS = 1
 
 function toTarget(amount: number, unit: string | undefined): Target {
   if (unit === undefined) {
-    return { kind: 'reps', reps: amount }
+    return clampTarget({ kind: 'reps', reps: amount })
   }
 
-  return { kind: 'duration', seconds: MINUTES.test(unit) ? amount * SECONDS_PER_MINUTE : amount }
+  return clampTarget({ kind: 'duration', seconds: MINUTES.test(unit) ? amount * SECONDS_PER_MINUTE : amount })
 }
+
+const withinSetLimits = (sets: number) => Math.min(Math.max(sets, MIN_SETS), MAX_SETS)
 
 const namedOrDefault = (text: string) => text.trim() || DEFAULT_EXERCISE_NAME
 
@@ -31,7 +43,7 @@ function parseHeader(line: string, newId: () => string): RoutineSection {
   const sets = line.match(SETS)
   const name = line.slice(0, -1).replace(SETS, '').replace(/\s+/g, ' ').trim()
 
-  return newSection(newId(), name || DEFAULT_SECTION_NAME, sets ? Number(sets[1]) : DEFAULT_NOTE_SETS)
+  return newSection(newId(), name || DEFAULT_SECTION_NAME, sets ? withinSetLimits(Number(sets[1])) : DEFAULT_NOTE_SETS)
 }
 
 export function parseNote(text: string, newId: () => string): { name: string; sections: RoutineSection[] } {

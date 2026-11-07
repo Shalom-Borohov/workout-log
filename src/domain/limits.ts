@@ -20,3 +20,9 @@ export function clampAmount(amount: number, target: Target): number {
 
   return Math.min(whole, maxAmount(target))
 }
+
+export function clampTarget(target: Target): Target {
+  return target.kind === 'reps'
+    ? { kind: 'reps', reps: clampAmount(target.reps, target) }
+    : { kind: 'duration', seconds: clampAmount(target.seconds, target) }
+}
