@@ -1,5 +1,6 @@
-import { IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, useIonRouter } from '@ionic/react'
+import { IonItemOption, IonItemOptions, IonItemSliding, IonLabel, useIonRouter } from '@ionic/react'
 import type { MouseEvent } from 'react'
+import { ButtonRow } from '../../components/ButtonRow'
 import { SetCheck } from '../../components/SetCheck'
 import { toggleDailyLog, updateRoutine } from '../../data/repo'
 import { drillsLine, newDailyLog } from '../../domain/daily'
@@ -31,13 +32,16 @@ export function TodayCard({ routine, done }: TodayCardProps) {
 
   return (
     <IonItemSliding>
-      <IonItem button detail={false} onClick={() => router.push(routinePath(DAILY_PATH, routine.id))}>
+      <ButtonRow
+        label={routine.name}
+        onClick={() => router.push(routinePath(DAILY_PATH, routine.id))}
+        controls={<SetCheck label={DAILY_COPY.today(routine.name)} done={done} size="small" onToggle={toggle} />}
+      >
         <IonLabel>
           <DrillName routine={routine} />
           {drills && <p>{drills}</p>}
         </IonLabel>
-        <SetCheck label={DAILY_COPY.today(routine.name)} done={done} size="small" onToggle={toggle} />
-      </IonItem>
+      </ButtonRow>
       <IonItemOptions side="end" onIonSwipe={archive}>
         <IonItemOption color="medium" expandable onClick={archive}>
           {DAILY_COPY.archive}

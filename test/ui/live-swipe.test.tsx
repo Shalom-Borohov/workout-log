@@ -130,6 +130,18 @@ describe('live swipe between exercises', () => {
     expect(screen.getByText('לחיצת חזה', { selector: 'h1' })).toBeInTheDocument()
   })
 
+  it('ignores a drag that starts within 20 px of the other edge, and takes one just past it', async () => {
+    await saveWorkout(threeItems)
+    renderAt('/tabs/timeline/workout/w1')
+
+    drag(await heading('סקוואט'), { x: 18, y: 200 }, { x: 200, y: 205 })
+    await pause(100)
+    expect(screen.getByText('סקוואט', { selector: 'h1' })).toBeInTheDocument()
+
+    drag(await heading('סקוואט'), { x: 21, y: 200 }, { x: 200, y: 205 })
+    expect(await heading('לחיצת חזה')).toBeInTheDocument()
+  })
+
   it('ignores a short or mostly vertical drag', async () => {
     await saveWorkout(threeItems)
     renderAt('/tabs/timeline/workout/w1')

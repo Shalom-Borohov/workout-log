@@ -17,23 +17,23 @@ export function LiveFooter({ index, total, onMove, onList }: LiveFooterProps) {
   useSwipeUp(footer, onList)
 
   return (
-    <IonFooter ref={footer}>
+    <IonFooter ref={footer} className="live-footer">
       <IonToolbar>
         <IonButtons slot="start">
           <IonButton disabled={index === 0} onClick={() => onMove(index - 1)}>
-            <IonIcon slot="start" icon={chevronBack} flipRtl />
+            <IonIcon slot="start" icon={chevronBack} flipRtl aria-hidden="true" />
             {LIVE_COPY.previous}
           </IonButton>
         </IonButtons>
         <div className="live-footer-center">
           <IonButton fill="clear" aria-label={LIVE_COPY.allExercises} onClick={onList}>
-            <IonIcon slot="icon-only" icon={listOutline} />
+            <IonIcon slot="icon-only" icon={listOutline} aria-hidden="true" />
           </IonButton>
         </div>
         <IonButtons slot="end">
           <IonButton disabled={index === total - 1} onClick={() => onMove(index + 1)}>
             {LIVE_COPY.next}
-            <IonIcon slot="end" icon={chevronForward} flipRtl />
+            <IonIcon slot="end" icon={chevronForward} flipRtl aria-hidden="true" />
           </IonButton>
         </IonButtons>
       </IonToolbar>

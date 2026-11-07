@@ -1,0 +1,21 @@
+ion-button,
+ion-back-button,
+.back-to-current-pill {
+  position: relative;
+}
+
+ion-button::after,
+ion-back-button::after,
+.back-to-current-pill::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
+
+ion-buttons ion-button.in-buttons {
+  margin-inline: 3px;
+}

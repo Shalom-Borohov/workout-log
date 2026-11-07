@@ -45,7 +45,7 @@ export function DailyPage() {
           <IonTitle>{COMMON_COPY.daily}</IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={() => void addDaily()} aria-label={DAILY_COPY.addDaily}>
-              <IonIcon slot="icon-only" icon={add} />
+              <IonIcon slot="icon-only" icon={add} aria-hidden="true" />
             </IonButton>
           </IonButtons>
         </IonToolbar>

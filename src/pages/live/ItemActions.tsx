@@ -16,11 +16,11 @@ export function ItemActions({ item, onToggleSkip, onAddSet }: ItemActionsProps) 
   return (
     <div className="item-actions">
       <IonButton fill="clear" size="small" onClick={onToggleSkip}>
-        <IonIcon slot="start" icon={arrowRedoOutline} flipRtl />
+        <IonIcon slot="start" icon={arrowRedoOutline} flipRtl aria-hidden="true" />
         {isSkipped(item) ? LIVE_COPY.unskip : LIVE_COPY.skip}
       </IonButton>
       <IonButton fill="clear" size="small" onClick={onAddSet}>
-        <IonIcon slot="start" icon={addOutline} />
+        <IonIcon slot="start" icon={addOutline} aria-hidden="true" />
         {COMMON_COPY.addSet}
       </IonButton>
     </div>

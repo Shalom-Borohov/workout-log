@@ -19,7 +19,7 @@ export function SetCheck({ label, done, size, onToggle }: SetCheckProps) {
       aria-pressed={done}
       onClick={onToggle}
     >
-      <IonIcon icon={done ? checkmarkCircle : ellipseOutline} />
+      <IonIcon icon={done ? checkmarkCircle : ellipseOutline} aria-hidden="true" />
     </button>
   )
 }

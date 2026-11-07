@@ -62,7 +62,7 @@ export function RoutinesPage() {
           <IonButtons slot="end">
             <SettingsButton tab={ROUTINES_PATH} />
             <IonButton onClick={openAddMenu} aria-label={ROUTINES_COPY.addRoutine}>
-              <IonIcon slot="icon-only" icon={add} />
+              <IonIcon slot="icon-only" icon={add} aria-hidden="true" />
             </IonButton>
           </IonButtons>
         </IonToolbar>

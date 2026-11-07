@@ -21,7 +21,7 @@ const CONTROL_SELECTOR = [
   'ion-backdrop',
 ].join(', ')
 
-const startsAtEdge = (clientX: number, width: number) => clientX <= EDGE_PX || clientX >= width - EDGE_PX
+export const startsAtEdge = (clientX: number, width: number) => clientX <= EDGE_PX || clientX >= width - EDGE_PX
 
 const startsOnControl = (event: TouchEvent) =>
   event.composedPath().some((node) => node instanceof Element && node.matches(CONTROL_SELECTOR))

@@ -87,7 +87,7 @@ export function FeedbackSettings() {
     <>
       <IonList inset>
         <IonItem button detail={false} onClick={() => setOpen(true)}>
-          <IonIcon slot="start" color="primary" icon={chatbubbleEllipsesOutline} />
+          <IonIcon slot="start" color="primary" icon={chatbubbleEllipsesOutline} aria-hidden="true" />
           <IonLabel>{SETTINGS_COPY.reportBugOrIdea}</IonLabel>
         </IonItem>
       </IonList>

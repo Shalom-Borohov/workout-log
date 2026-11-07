@@ -1,5 +1,6 @@
 import { createGesture, type GestureDetail } from '@ionic/react'
 import { type RefObject, useEffect, useLayoutEffect, useRef } from 'react'
+import { startsAtEdge } from '../../navigation/edgeSwipe'
 
 const EDGE = 50
 
@@ -45,7 +46,8 @@ function isRtl() {
 export function useItemSwipe(element: RefObject<HTMLElement | null>, onSwipe: (step: 1 | -1) => void) {
   useGesture(element, 'item-swipe', {
     direction: 'x',
-    canStart: ({ startX }) => (isRtl() ? startX < window.innerWidth - EDGE : startX > EDGE),
+    canStart: ({ startX }) =>
+      !startsAtEdge(startX, window.innerWidth) && (isRtl() ? startX < window.innerWidth - EDGE : startX > EDGE),
     onEnd: (deltaX) => {
       if (Math.abs(deltaX) >= DISTANCE) {
         onSwipe(deltaX > 0 === isRtl() ? 1 : -1)

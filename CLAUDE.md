@@ -102,7 +102,7 @@ Schema changes:
 
 - All UI copy is Hebrew and lives in constants, never inline in components. A screen's own text is in its feature folder (`src/pages/<feature>/copy.ts`, one `<FEATURE>_COPY` object). Text used by more than one feature is in `src/copy/` (`COMMON_COPY`, `FORMAT_COPY`, `APP_COPY`). Tests keep Hebrew literals, as an independent check. Use the terms in `PRODUCT.md` (אימון, חלק, סט, חזרות, סיכום, …).
 - Name values that encode a decision (limits, defaults, durations, MIME types, keys) as consts in the module that owns them. Discriminated-union tags (`'reps'`, `'duration'`) and framework API values (`'cancel'`, `'root'`) stay inline; the types check them.
-- Ionic is forced to iOS mode, and the look follows native iOS. Colour tokens are in `src/theme.css`: system orange tint, ✓ in iOS green, light/dark follow the phone.
+- Ionic is forced to iOS mode, and the look follows native iOS. Colour tokens are in `src/theme.css`: orange tint (darker than system orange in light mode, for contrast), ✓ in iOS green, light/dark follow the phone.
 - No `as` casts (`as const` is fine) and no `?? ''`/`?? 0` fallbacks to satisfy types. Narrow parsed JSON with type guards.
 - Durations are stored in seconds. Minutes are a display unit only.
 - Every PR that ships raises `version` in `package.json`: the minor number for features, the patch number for fixes. Settings shows it with the build time.

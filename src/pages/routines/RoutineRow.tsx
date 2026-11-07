@@ -1,7 +1,6 @@
 import {
   IonButton,
   IonIcon,
-  IonItem,
   IonItemOption,
   IonItemOptions,
   IonItemSliding,
@@ -11,6 +10,7 @@ import {
 import { play } from 'ionicons/icons'
 import type { MouseEvent } from 'react'
 import { useRef } from 'react'
+import { ButtonRow } from '../../components/ButtonRow'
 import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import { deleteRoutine } from '../../data/repo'
@@ -60,23 +60,29 @@ export function RoutineRow({ routine, now }: { routine: Routine; now: number }) 
 
   return (
     <IonItemSliding ref={sliding}>
-      <IonItem button detail onClick={() => router.push(routinePath(ROUTINES_PATH, routine.id))}>
+      <ButtonRow
+        label={routine.name}
+        detail
+        onClick={() => router.push(routinePath(ROUTINES_PATH, routine.id))}
+        controls={
+          <IonButton
+            slot="end"
+            size="small"
+            shape="round"
+            className="start-button"
+            disabled={!hasExercises(routine)}
+            onClick={start}
+          >
+            <IonIcon slot="start" icon={play} aria-hidden="true" />
+            {ROUTINES_COPY.start}
+          </IonButton>
+        }
+      >
         <IonLabel>
           <h2>{routine.name}</h2>
           <p>{counts(routine, now)}</p>
         </IonLabel>
-        <IonButton
-          slot="end"
-          size="small"
-          shape="round"
-          className="start-button"
-          disabled={!hasExercises(routine)}
-          onClick={start}
-        >
-          <IonIcon slot="start" icon={play} />
-          {ROUTINES_COPY.start}
-        </IonButton>
-      </IonItem>
+      </ButtonRow>
       <IonItemOptions side="end">
         <IonItemOption color="medium" onClick={duplicate}>
           {ROUTINES_COPY.duplicate}

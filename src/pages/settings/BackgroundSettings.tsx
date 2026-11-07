@@ -38,12 +38,12 @@ export function BackgroundSettings({ onError }: { onError: (error: unknown) => v
       </IonListHeader>
       <IonList inset>
         <IonItem button detail={false} onClick={() => fileInput.current?.click()}>
-          <IonIcon slot="start" color="primary" icon={imageOutline} />
+          <IonIcon slot="start" color="primary" icon={imageOutline} aria-hidden="true" />
           <IonLabel>{SETTINGS_COPY.backgroundPhoto}</IonLabel>
         </IonItem>
         {background && (
           <IonItem button detail={false} onClick={() => void save(clearBackground)}>
-            <IonIcon slot="start" color="danger" icon={trashOutline} />
+            <IonIcon slot="start" color="danger" icon={trashOutline} aria-hidden="true" />
             <IonLabel color="danger">{SETTINGS_COPY.removeBackgroundPhoto}</IonLabel>
           </IonItem>
         )}

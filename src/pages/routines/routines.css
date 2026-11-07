@@ -28,19 +28,12 @@
 }
 
 .start-button {
-  position: relative;
   margin-inline-start: 12px;
   font-weight: 600;
 }
 
 .start-button ion-icon {
   font-size: 0.875em;
-}
-
-.start-button::after {
-  content: '';
-  position: absolute;
-  inset: -8px -4px;
 }
 
 .option-icon {
