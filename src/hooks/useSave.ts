@@ -2,6 +2,7 @@ import { useIonToast } from '@ionic/react'
 import { useReducer } from 'react'
 import { TOAST_OPTIONS } from '../components/toast'
 import { COMMON_COPY } from '../copy/common'
+import { recordLastError } from '../data/lastError'
 
 let messageShownAt = 0
 
@@ -23,7 +24,8 @@ export function useSave() {
       await write()
 
       return true
-    } catch {
+    } catch (error) {
+      recordLastError(error)
       saveFailed()
 
       return false
