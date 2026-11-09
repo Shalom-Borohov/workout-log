@@ -4,12 +4,13 @@ import { App } from '../../src/App'
 import { db } from '../../src/data/db'
 import { saveWorkout } from '../../src/data/repo'
 import { feedbackUrl } from '../../src/pages/settings/feedbackUrl'
+import { UNKNOWN_STORAGE } from '../../src/pages/settings/phoneState'
 import { resetDb } from '../helpers/db'
 import { renderAt } from '../helpers/renderAt'
 import { mockShare } from '../helpers/share'
 import { exercise, oct, open, workout } from '../helpers/workouts'
 
-const reportBody = () => new URL(feedbackUrl('bug', 'דיווח')).searchParams.get('body')
+const reportBody = () => new URL(feedbackUrl('bug', 'דיווח', UNKNOWN_STORAGE)).searchParams.get('body')
 
 const expectReportToName = (type: string) => waitFor(() => expect(reportBody()).toContain(`שגיאה אחרונה: ${type} (`))
 
