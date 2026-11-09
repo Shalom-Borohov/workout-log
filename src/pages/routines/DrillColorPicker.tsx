@@ -1,31 +1,15 @@
-import { useId } from 'react'
 import { drillColorStyle } from '../../components/drillColorStyle'
+import { Swatches } from '../../components/Swatches'
+import { COMMON_COPY } from '../../copy/common'
 import { DRILL_COLORS } from '../../domain/drillColors'
 import type { DrillColor } from '../../domain/types'
-import { ROUTINES_COPY } from './copy'
 import './drillColorPicker.css'
 
 export function DrillColorPicker({ value, onChange }: { value: DrillColor | null; onChange: (color: DrillColor) => void }) {
-  const name = `drill-color-${useId()}`
-
   return (
-    <fieldset className="drill-color-picker">
-      <legend>{ROUTINES_COPY.color}</legend>
-      <div className="drill-color-options">
-        {DRILL_COLORS.map((color) => (
-          <label key={color} className="drill-color-option">
-            <input
-              type="radio"
-              name={name}
-              value={color}
-              checked={value === color}
-              aria-label={ROUTINES_COPY.colorNames[color]}
-              onChange={() => onChange(color)}
-            />
-            <span style={drillColorStyle(color)} />
-          </label>
-        ))}
-      </div>
+    <fieldset className="swatch-fieldset drill-color-picker">
+      <legend>{COMMON_COPY.color}</legend>
+      <Swatches options={DRILL_COLORS} columns={4} value={value} swatchStyle={drillColorStyle} onChange={onChange} />
     </fieldset>
   )
 }

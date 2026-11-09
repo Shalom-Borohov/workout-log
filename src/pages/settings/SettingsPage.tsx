@@ -19,21 +19,25 @@ import { documentTextOutline, downloadOutline, shareOutline } from 'ionicons/ico
 import { type ChangeEvent, useRef, useState } from 'react'
 import { CHANGELOG } from '../../appUpdate/changelog'
 import { WhatsNewSheet } from '../../appUpdate/WhatsNewSheet'
+import { BACKUP_FILE_ACCEPT, readBackup } from '../../components/backupFile'
 import { errorMessage, TOAST_OPTIONS } from '../../components/toast'
 import { COMMON_COPY } from '../../copy/common'
 import { SETTINGS_COPY } from './copy'
-import { type Backup, restoreBackup } from '../../data/backup'
+import type { Backup } from '../../data/backup'
+import { restoreBackup, restorePreview } from '../../data/restore'
 import { formatDateTime } from '../../domain/format'
 import { newestFirst } from '../../domain/releases'
 import { useBackUp } from '../../hooks/useBackUp'
 import { useSave } from '../../hooks/useSave'
 import { useShare } from '../../hooks/useShare'
 import type { HostTabPath } from '../../navigation/paths'
-import { readBackup } from './backupFile'
+import { AccentSettings } from './AccentSettings'
 import { BackgroundSettings } from './BackgroundSettings'
 import { BackupFooter } from './BackupFooter'
 import { FeedbackSettings } from './FeedbackSettings'
+import { RestoreUndoItem } from './RestoreUndoItem'
 import { shareHistory } from './historyFile'
+import './settings.css'
 
 const ALL_RELEASES = newestFirst(CHANGELOG)
 
@@ -49,7 +53,7 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
   const toast = (message: string) => presentToast({ message, ...TOAST_OPTIONS })
 
   async function restore(backup: Backup) {
-    if (await save(() => restoreBackup(backup))) {
+    if (await save(() => restoreBackup(backup, Date.now()))) {
       void toast(SETTINGS_COPY.backupRestored)
     }
   }
@@ -66,13 +70,15 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
 
     try {
       const backup = await readBackup(file)
+      const preview = await restorePreview(backup)
 
       presentAlert({
-        header: SETTINGS_COPY.importBackup,
-        message: SETTINGS_COPY.importReplacesAllData,
+        header: COMMON_COPY.importBackup,
+        message: preview.join('\n'),
+        cssClass: 'restore-preview',
         buttons: [
           { text: COMMON_COPY.cancel, role: 'cancel' },
-          { text: SETTINGS_COPY.import, role: 'destructive', handler: () => void restore(backup) },
+          { text: COMMON_COPY.import, role: 'destructive', handler: () => void restore(backup) },
         ],
       })
     } catch (error) {
@@ -101,8 +107,9 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
           </IonItem>
           <IonItem button detail={false} onClick={() => fileInput.current?.click()}>
             <IonIcon slot="start" color="primary" icon={downloadOutline} aria-hidden="true" />
-            <IonLabel>{SETTINGS_COPY.importBackup}</IonLabel>
+            <IonLabel>{COMMON_COPY.importBackup}</IonLabel>
           </IonItem>
+          <RestoreUndoItem />
         </IonList>
         <BackupFooter />
         <FeedbackSettings />
@@ -116,6 +123,7 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
           </IonItem>
         </IonList>
         <IonNote className="list-footer">{SETTINGS_COPY.historyFooter}</IonNote>
+        <AccentSettings />
         <BackgroundSettings onError={(error) => void toast(errorMessage(error))} />
         <IonList inset>
           <IonItem button onClick={() => setShowingChangelog(true)}>
@@ -126,9 +134,9 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
         <input
           ref={fileInput}
           type="file"
-          accept="application/json,.json"
+          accept={BACKUP_FILE_ACCEPT}
           hidden
-          aria-label={SETTINGS_COPY.backupFile}
+          aria-label={COMMON_COPY.backupFile}
           onChange={importFile}
         />
       </IonContent>

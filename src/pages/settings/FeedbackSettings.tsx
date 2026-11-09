@@ -23,6 +23,7 @@ import { COMMON_COPY } from '../../copy/common'
 import { ignoreTapsFor } from '../../navigation/tapGuard'
 import { SETTINGS_COPY } from './copy'
 import { type FeedbackKind, feedbackUrl, fitsInLink } from './feedbackUrl'
+import { usePhoneStorage } from './usePhoneStorage'
 
 const REPEAT_TAPS_IGNORED_MS = 300
 
@@ -38,7 +39,8 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
   const [text, setText] = useState('')
   const [tapped, setTapped] = useState(false)
   const [presentToast] = useIonToast()
-  const url = feedbackUrl(kind, text)
+  const storage = usePhoneStorage()
+  const url = feedbackUrl(kind, text, storage)
   const tooLong = !fitsInLink(url)
 
   function send() {

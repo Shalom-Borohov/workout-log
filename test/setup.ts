@@ -40,6 +40,7 @@ setupIonicReact({ mode: 'ios' })
 
 beforeEach(() => {
   localStorage.clear()
+  document.documentElement.removeAttribute('style')
   saveSeenVersion(__APP_VERSION__)
 })
 

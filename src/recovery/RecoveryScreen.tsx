@@ -1,16 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { backUpStoredData, type BackUpResult } from '../components/backupFile'
 import { COMMON_COPY } from '../copy/common'
 import { RECOVERY_COPY } from './copy'
+import { RecoveryImport } from './RecoveryImport'
+import { checkForUpdateOnOpen, reloadIntoLatest } from './serviceWorkerUpdate'
 import './recovery.css'
-
-function reloadAtStart() {
-  window.location.hash = ''
-  window.location.reload()
-}
 
 export function RecoveryScreen() {
   const [result, setResult] = useState<BackUpResult>({ failure: null, dateNotSaved: false, badRecords: 0 })
+
+  useEffect(checkForUpdateOnOpen, [])
 
   return (
     <main className="recovery">
@@ -24,7 +23,8 @@ export function RecoveryScreen() {
         {result.dateNotSaved && <p>{COMMON_COPY.saveFailed}</p>}
         {result.badRecords > 0 && <p>{COMMON_COPY.badRecordsInBackup(result.badRecords)}</p>}
       </div>
-      <button type="button" onClick={reloadAtStart}>
+      <RecoveryImport />
+      <button type="button" onClick={reloadIntoLatest}>
         {RECOVERY_COPY.reload}
       </button>
     </main>

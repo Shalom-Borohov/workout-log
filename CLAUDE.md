@@ -86,6 +86,7 @@ Schema changes:
 - The data lives only on the phone, so schema changes must be additive.
 - Add a new `this.version(n)` in `db.ts`, with an `.upgrade()` callback that fills defaults through `migrate.ts`.
 - Make the guards in `backup.ts` accept the legacy shape, so old backup files still import.
+- Upgrade the restore undo copy too (the `restoreCopy` row in `settings`, `src/data/restore.ts`). It holds whole tables, and an undo writes them back as they are.
 - Cover both with a test that opens a database in the previous version (see `test/unit/migrate.test.ts`).
 
 ## Testing

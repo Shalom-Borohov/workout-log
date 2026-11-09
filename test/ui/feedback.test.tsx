@@ -1,10 +1,11 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { guardTapsDuringTransitions } from '../../src/navigation/tapGuard'
 import { resetDb } from '../helpers/db'
 import { ionField, ionInput, OPEN_MODAL, toasts } from '../helpers/ionic'
 import { pause } from '../helpers/live'
 import { renderAt } from '../helpers/renderAt'
+import { PHONE_STORAGE, removeStorageStub, stubStorage } from '../helpers/storage'
 
 const REPORT = 'הכפתור לא עובד'
 
@@ -12,7 +13,7 @@ const WELL_PAST_ANY_EARLIER_TAP_MS = 10_000
 
 const TOAST_SETTLE_MS = 200
 
-const FOOTER = 'הדיווח נפתח ב-GitHub, עם סוג הדפדפן, הגרסה וסוג השגיאה האחרונה. נתוני האימונים לא נשלחים.'
+const FOOTER = 'הדיווח נפתח ב-GitHub, עם פרטי המכשיר, הגרסה וסוג השגיאה האחרונה. נתוני האימונים לא נשלחים.'
 
 const TOO_LONG = 'הדיווח ארוך מדי לקישור של GitHub. צריך לקצר אותו כדי לפתוח.'
 
@@ -70,6 +71,22 @@ describe('the report sheet', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+    removeStorageStub()
+  })
+
+  it('sends the phone storage it read when it opened', async () => {
+    stubStorage(PHONE_STORAGE)
+
+    const openWindow = vi.spyOn(window, 'open').mockReturnValue(window)
+
+    await openSheetWith(REPORT)
+    await act(async () => {})
+    fireEvent.click(screen.getByText('פתיחה ב-GitHub'))
+
+    const body = new URL(String(openWindow.mock.calls[0][0])).searchParams.get('body')
+
+    expect(body).toContain('אחסון קבוע: כן')
+    expect(body).toContain('אחסון בשימוש: 2.4 MB')
   })
 
   it('stays open with the text after the tap and offers סיום instead of ביטול', async () => {

@@ -6,6 +6,7 @@ import { backupStatus } from './backupStatus'
 import { db } from './db'
 import { exerciseAreaMap } from './exerciseAreas'
 import { activeWorkout, dailyLogs, finishedRecords, finishedWorkouts } from './repo'
+import { restoreUndo } from './restore'
 
 export function useRoutines() {
   return useLiveQuery(async () =>
@@ -43,6 +44,10 @@ export function useActiveWorkout() {
 
 export function useBackupStatus() {
   return useLiveQuery(backupStatus)
+}
+
+export function useRestoreUndo(now: number) {
+  return useLiveQuery(() => restoreUndo(now), [now])
 }
 
 export function useExerciseAreas() {
