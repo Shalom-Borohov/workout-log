@@ -168,7 +168,7 @@ describe('other screens when a save fails', () => {
       await screen.findByLabelText('קובץ גיבוי'),
       new File([JSON.stringify(backup)], 'backup.json', { type: 'application/json' }),
     )
-    await screen.findByText('הייבוא יחליף את כל הנתונים')
+    await screen.findByText(/הייבוא יחליף את כל הנתונים במכשיר\.$/)
 
     vi.spyOn(db.routines, 'clear').mockRejectedValue(LOST_CONNECTION)
     fireEvent.click(screen.getByText('ייבוא', { selector: '.alert-button *' }))

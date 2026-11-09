@@ -1,6 +1,7 @@
 import { isRoutineWorkout } from '../domain/activities'
 import { makeDaily } from '../domain/drillColors'
 import { startWorkout } from '../domain/progress'
+import type { WorkoutSummary } from '../domain/restorePreview'
 import type { DailyLog, Routine, Workout, WorkoutRecord } from '../domain/types'
 import { BACKUP_KEY, db } from './db'
 
@@ -64,6 +65,24 @@ export function finishedRecords(): Promise<WorkoutRecord[]> {
 }
 
 export const finishedCount = () => finished().count()
+
+async function timedFinishedIdsNewestFirst() {
+  const [idsNewestFirst, finishedIds] = await Promise.all([
+    db.workouts.where('startedAt').below(Infinity).reverse().primaryKeys(),
+    db.workouts.where('finishedAt').between(0, Infinity, false).primaryKeys(),
+  ])
+
+  const finishedSet = new Set(finishedIds)
+
+  return idsNewestFirst.filter((id) => finishedSet.has(id))
+}
+
+export async function phoneWorkoutSummary(): Promise<WorkoutSummary> {
+  const ids = await timedFinishedIdsNewestFirst()
+  const newest = ids.length > 0 ? await db.workouts.get(ids[0]) : undefined
+
+  return { count: ids.length, newestAt: newest ? newest.startedAt : null }
+}
 
 export async function finishedWorkouts(): Promise<Workout[]> {
   return (await finishedRecords()).filter(isRoutineWorkout)

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { exportBackup, parseBackup, restoreBackup } from '../../src/data/backup'
+import { exportBackup, parseBackup } from '../../src/data/backup'
 import { exerciseAreaMap, setExerciseArea } from '../../src/data/exerciseAreas'
+import { restoreBackup } from '../../src/data/restore'
 import { resetDb } from '../helpers/db'
 import { oct } from '../helpers/workouts'
 
@@ -15,7 +16,7 @@ describe('backup of exercise areas', () => {
 
     await resetDb()
     await setExerciseArea('פלאנק', 'core')
-    await restoreBackup(parseBackup(json))
+    await restoreBackup(parseBackup(json), oct(27))
 
     expect(await exerciseAreaMap()).toEqual(
       new Map([
@@ -30,7 +31,7 @@ describe('backup of exercise areas', () => {
 
     const backup = parseBackup({ version: 2, exportedAt: oct(26), routines: [], workouts: [], dailyLogs: [] })
 
-    await restoreBackup(backup)
+    await restoreBackup(backup, oct(27))
 
     expect(backup.exerciseAreas).toEqual([])
     expect(await exerciseAreaMap()).toEqual(new Map())

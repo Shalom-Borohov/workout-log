@@ -38,3 +38,11 @@
   color: var(--ion-color-primary-contrast);
   font-weight: 600;
 }
+
+.recovery .recovery-secondary {
+  background: transparent;
+}
+
+.recovery button:disabled {
+  opacity: 0.4;
+}

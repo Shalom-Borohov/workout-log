@@ -3,10 +3,9 @@ import { AppError } from '../domain/appError'
 import { isBodyArea } from '../domain/bodyAreas'
 import { dailyLogId } from '../domain/daily'
 import { isDrillColor } from '../domain/drillColors'
-import type { DailyExercise, DailyLog, ExerciseArea, Routine, SetLog, Target, WorkoutRecord } from '../domain/types'
-import { markBackedUp } from './backupStatus'
-import { db } from './db'
+import type { DailyExercise, DataSnapshot, ExerciseArea, SetLog, Target } from '../domain/types'
 import { isNumber, isObject, isString } from './guards'
+import { readStoredData } from './storedData'
 import {
   carryNotesForward,
   colorDailyRoutines,
@@ -30,13 +29,9 @@ const BACKUP_VERSION = 2
 
 const VERSION_BEFORE_CARRIED_NOTES = 1
 
-export type Backup = {
+export type Backup = DataSnapshot & {
   version: typeof BACKUP_VERSION
   exportedAt: number
-  routines: Routine[]
-  workouts: WorkoutRecord[]
-  dailyLogs: DailyLog[]
-  exerciseAreas: ExerciseArea[]
 }
 
 type LegacyBackup = {
@@ -193,14 +188,7 @@ export function parseBackup(json: unknown): Backup {
 }
 
 export async function exportBackup(now: number): Promise<Backup> {
-  const [routines, workouts, dailyLogs, exerciseAreas] = await Promise.all([
-    db.routines.toArray(),
-    db.workouts.toArray(),
-    db.dailyLogs.toArray(),
-    db.exerciseAreas.toArray(),
-  ])
-
-  return { version: BACKUP_VERSION, exportedAt: now, routines, workouts, dailyLogs, exerciseAreas }
+  return { version: BACKUP_VERSION, exportedAt: now, ...(await readStoredData()) }
 }
 
 const countFailing = (guard: (value: unknown) => boolean, records: unknown[]) =>
@@ -227,18 +215,4 @@ export function countBadRecords(fileText: string): number {
     countFailing(isDailyLog, dailyLogs) +
     countFailing(isExerciseArea, exerciseAreas)
   )
-}
-
-export async function restoreBackup(backup: Backup): Promise<void> {
-  await db.transaction('rw', db.routines, db.workouts, db.dailyLogs, db.exerciseAreas, db.settings, async () => {
-    await db.routines.clear()
-    await db.workouts.clear()
-    await db.dailyLogs.clear()
-    await db.exerciseAreas.clear()
-    await db.routines.bulkPut(backup.routines)
-    await db.workouts.bulkPut(backup.workouts)
-    await db.dailyLogs.bulkPut(backup.dailyLogs)
-    await db.exerciseAreas.bulkPut(backup.exerciseAreas)
-    await markBackedUp(backup.exportedAt)
-  })
 }
