@@ -2,9 +2,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { errorMessage } from '../../src/components/toast'
 import { AppError } from '../../src/domain/appError'
 import { feedbackUrl } from '../../src/pages/settings/feedbackUrl'
+import { UNKNOWN_STORAGE } from '../../src/pages/settings/phoneState'
 import { freezeDate } from '../helpers/clock'
 
-const reportBody = () => new URL(feedbackUrl('bug', 'דיווח')).searchParams.get('body')
+const reportBody = () => new URL(feedbackUrl('bug', 'דיווח', UNKNOWN_STORAGE)).searchParams.get('body')
 
 describe('the last error in a report', () => {
   freezeDate(new Date(2026, 10, 7, 0, 30).getTime())

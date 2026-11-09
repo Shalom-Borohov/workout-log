@@ -1,5 +1,5 @@
-import { readLastError } from '../../data/lastError'
 import { SETTINGS_COPY } from './copy'
+import { readDeviceDetails, type StorageState } from './phoneState'
 
 export type FeedbackKind = 'bug' | 'idea'
 
@@ -17,10 +17,10 @@ function title(text: string): string {
   return first.length > MAX_TITLE ? `${first.slice(0, MAX_TITLE - 1)}…` : first
 }
 
-export function feedbackUrl(kind: FeedbackKind, text: string): string {
+export function feedbackUrl(kind: FeedbackKind, text: string, storage: StorageState): string {
   const params = new URLSearchParams({
     title: title(text),
-    body: SETTINGS_COPY.issueBody(text.trim(), navigator.userAgent, __APP_VERSION__, __BUILD_TIME__, readLastError()),
+    body: SETTINGS_COPY.issueBody(text.trim(), readDeviceDetails(storage)),
     labels: ISSUE_LABELS[kind],
   })
 
