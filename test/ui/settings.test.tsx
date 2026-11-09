@@ -148,7 +148,15 @@ describe('settings', () => {
     expect(searchParams.get('title')).toBe('הכפתור לא עובד')
     expect(searchParams.get('labels')).toBe('bug')
     expect(searchParams.get('body')).toBe(
-      `הכפתור לא עובד\nלחצתי פעמיים\n\n### מכשיר\n${navigator.userAgent}\nגרסה: ${__APP_VERSION__} (${__BUILD_TIME__})`,
+      [
+        'הכפתור לא עובד\nלחצתי פעמיים\n\n### מכשיר',
+        navigator.userAgent,
+        `גרסה: ${__APP_VERSION__} (${__BUILD_TIME__})`,
+        'אפליקציה ממסך הבית: לא',
+        'מחובר לרשת: כן',
+        'אחסון קבוע: לא ידוע',
+        'אחסון בשימוש: לא ידוע',
+      ].join('\n'),
     )
   })
 
