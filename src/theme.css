@@ -1,12 +1,28 @@
 :root {
   --ion-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Arial Hebrew', sans-serif;
 
-  --ion-color-primary: #b34e00;
-  --ion-color-primary-rgb: 179, 78, 0;
+  --app-accent-orange: #b34e00;
+  --app-accent-orange-rgb: 179, 78, 0;
+  --app-accent-teal: #007585;
+  --app-accent-teal-rgb: 0, 117, 133;
+  --app-accent-blue: #0040dd;
+  --app-accent-blue-rgb: 0, 64, 221;
+  --app-accent-indigo: #3634a3;
+  --app-accent-indigo-rgb: 54, 52, 163;
+  --app-accent-purple: #8944ab;
+  --app-accent-purple-rgb: 137, 68, 171;
+  --app-accent-pink: #c0157a;
+  --app-accent-pink-rgb: 192, 21, 122;
+
+  --app-accent: var(--app-accent-orange);
+  --app-accent-rgb: var(--app-accent-orange-rgb);
+
+  --ion-color-primary: var(--app-accent);
+  --ion-color-primary-rgb: var(--app-accent-rgb);
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #9e4500;
-  --ion-color-primary-tint: #bb601a;
+  --ion-color-primary-shade: color-mix(in srgb, var(--app-accent) 88%, #000000);
+  --ion-color-primary-tint: color-mix(in srgb, var(--app-accent) 90%, #ffffff);
 
   --ion-color-success: #248a3d;
   --ion-color-success-rgb: 36, 138, 61;
@@ -25,7 +41,7 @@
   --app-fill: rgba(118, 118, 128, 0.12);
   --app-up: #1e7b34;
   --app-skipped: #8a6100;
-  --app-record: #b34e00;
+  --app-record: var(--ion-color-primary);
   --app-drill-red: #ff3b30;
   --app-drill-orange: #ff9500;
   --app-drill-yellow: #ffcc00;
@@ -39,12 +55,23 @@
 @media (prefers-color-scheme: dark) {
   :root,
   :root.ios {
-    --ion-color-primary: #ff9f0a;
-    --ion-color-primary-rgb: 255, 159, 10;
+    --app-accent-orange: #ff9f0a;
+    --app-accent-orange-rgb: 255, 159, 10;
+    --app-accent-teal: #40c8e0;
+    --app-accent-teal-rgb: 64, 200, 224;
+    --app-accent-blue: #409cff;
+    --app-accent-blue-rgb: 64, 156, 255;
+    --app-accent-indigo: #8a88ff;
+    --app-accent-indigo-rgb: 138, 136, 255;
+    --app-accent-purple: #da8fff;
+    --app-accent-purple-rgb: 218, 143, 255;
+    --app-accent-pink: #ff73c0;
+    --app-accent-pink-rgb: 255, 115, 192;
+
+    --ion-color-primary: var(--app-accent);
+    --ion-color-primary-rgb: var(--app-accent-rgb);
     --ion-color-primary-contrast: #000000;
     --ion-color-primary-contrast-rgb: 0, 0, 0;
-    --ion-color-primary-shade: #e08c09;
-    --ion-color-primary-tint: #ffa923;
 
     --ion-color-success: #30d158;
     --ion-color-success-rgb: 48, 209, 88;
@@ -63,7 +90,6 @@
     --app-fill: rgba(118, 118, 128, 0.24);
     --app-up: #30d158;
     --app-skipped: var(--ion-color-warning-shade);
-    --app-record: #ff9f0a;
     --app-drill-red: #ff453a;
     --app-drill-orange: #ff9f0a;
     --app-drill-yellow: #ffd60a;

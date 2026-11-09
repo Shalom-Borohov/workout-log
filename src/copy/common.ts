@@ -37,4 +37,16 @@ export const COMMON_COPY = {
   saveAsNewRoutine: 'שמירה כאימון חדש',
   deleteWorkoutQuestion: 'למחוק את האימון?',
   deleteWorkout: 'מחיקת האימון',
+  color: 'צבע',
+  colorNames: {
+    red: 'אדום',
+    orange: 'כתום',
+    yellow: 'צהוב',
+    green: 'ירוק',
+    teal: 'טורקיז',
+    blue: 'כחול',
+    indigo: 'אינדיגו',
+    purple: 'סגול',
+    pink: 'ורוד',
+  },
 } as const
