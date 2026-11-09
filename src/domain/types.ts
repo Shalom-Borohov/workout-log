@@ -116,4 +116,22 @@ export interface BackupSetting extends BackupStatus {
   key: 'backup'
 }
 
-export type Setting = BackgroundSetting | BackupSetting
+export interface DataSnapshot {
+  routines: Routine[]
+  workouts: WorkoutRecord[]
+  dailyLogs: DailyLog[]
+  exerciseAreas: ExerciseArea[]
+}
+
+export interface RestoreUndoSetting {
+  key: 'restoreUndo'
+  until: number
+  undone: boolean
+}
+
+export interface RestoreCopySetting extends DataSnapshot {
+  key: 'restoreCopy'
+  status: BackupStatus
+}
+
+export type Setting = BackgroundSetting | BackupSetting | RestoreUndoSetting | RestoreCopySetting

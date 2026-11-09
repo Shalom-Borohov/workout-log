@@ -20,6 +20,10 @@ function saveStatus(backedUpAt: (current: BackupStatus) => number | null) {
   })
 }
 
+export async function setBackupStatus(status: BackupStatus) {
+  await db.settings.put({ key: BACKUP_KEY, ...status })
+}
+
 export async function markBackedUp(at: number) {
   await saveStatus(() => at)
 }

@@ -4,6 +4,7 @@ import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
+import { chooseFile } from '../helpers/files'
 import { ionChange, ionField, ionInput, toasts } from '../helpers/ionic'
 import { renderAt } from '../helpers/renderAt'
 import { mockShare } from '../helpers/share'
@@ -27,10 +28,6 @@ async function readJson(file: Blob | undefined) {
 
 const { summary: _summary, ...noSummary } = past
 
-
-function chooseFile(input: HTMLElement, text: string) {
-  fireEvent.change(input, { target: { files: [new File([text], 'backup.json', { type: 'application/json' })] } })
-}
 
 describe('settings', () => {
   beforeEach(resetDb)
@@ -218,7 +215,7 @@ describe('settings', () => {
     renderAt('/tabs/routines/settings')
     chooseFile(await screen.findByLabelText('קובץ גיבוי'), JSON.stringify(backup))
 
-    expect(await screen.findByText('הייבוא יחליף את כל הנתונים')).toBeInTheDocument()
+    expect(await screen.findByText(/הייבוא יחליף את כל הנתונים במכשיר\.$/)).toBeInTheDocument()
     fireEvent.click(screen.getByText('ייבוא', { selector: '.alert-button *' }))
 
     await waitFor(() => expect(toasts()).toContain('הגיבוי שוחזר'))
@@ -237,7 +234,7 @@ describe('settings', () => {
     chooseFile(await screen.findByLabelText('קובץ גיבוי'), text())
 
     await waitFor(() => expect(toasts()).toEqual(['קובץ הגיבוי לא תקין']))
-    expect(screen.queryByText('הייבוא יחליף את כל הנתונים')).not.toBeInTheDocument()
+    expect(screen.queryByText(/הייבוא יחליף את כל הנתונים במכשיר\.$/)).not.toBeInTheDocument()
     expect(await db.routines.toArray()).toEqual([legs])
     expect(await db.workouts.toArray()).toEqual([past])
   })
