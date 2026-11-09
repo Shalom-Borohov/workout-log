@@ -14,6 +14,8 @@ import './theme.css'
 import './tapTargets.css'
 
 import { App } from './App'
+import { recordLastError } from './data/lastError'
+import { dropExpiredRestoreUndo } from './data/restore'
 import { blockSystemEdgeSwipe } from './navigation/edgeSwipe'
 import { guardTapsDuringTransitions } from './navigation/tapGuard'
 
@@ -23,6 +25,8 @@ guardTapsDuringTransitions(document)
 blockSystemEdgeSwipe(document)
 
 navigator.storage?.persist?.()
+
+dropExpiredRestoreUndo(Date.now()).catch(recordLastError)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

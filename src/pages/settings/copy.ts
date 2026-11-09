@@ -1,11 +1,12 @@
 export const SETTINGS_COPY = {
   backupRestored: 'הגיבוי שוחזר',
-  importBackup: 'ייבוא גיבוי',
-  importReplacesAllData: 'הייבוא יחליף את כל הנתונים',
-  import: 'ייבוא',
+  undoRestore: 'ביטול השחזור',
+  redoRestore: 'שחזור הגיבוי שוב',
+  undoUntil: (date: string) => `אפשר עד ${date}`,
+  restoreUndone: 'השחזור בוטל',
+  restoreRedone: 'הגיבוי שוחזר שוב',
   backupFooter:
     'הנתונים נשמרים רק במכשיר הזה. הייצוא יוצר קובץ עם כל האימונים וההיסטוריה, שאפשר לשמור בקבצים ולשחזר ממנו בייבוא.',
-  backupFile: 'קובץ גיבוי',
   noBackupYet: 'עוד לא בוצע גיבוי',
   lastBackup: (when: string) => `גיבוי אחרון: ${when}`,
   history: 'היסטוריה',

@@ -20,8 +20,12 @@ export function formatTime(timestamp: number): string {
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
+export function formatDate(timestamp: number): string {
+  return `${dayMonth(timestamp)}.${new Date(timestamp).getFullYear()}`
+}
+
 export function formatDateTime(timestamp: number): string {
-  return `${dayMonth(timestamp)}.${new Date(timestamp).getFullYear()} ${formatTime(timestamp)}`
+  return `${formatDate(timestamp)} ${formatTime(timestamp)}`
 }
 
 export function dayMonth(timestamp: number): string {

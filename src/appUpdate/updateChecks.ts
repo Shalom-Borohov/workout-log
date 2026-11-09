@@ -9,7 +9,7 @@ interface UpdatableRegistration {
   update(): Promise<object>
 }
 
-async function checkNow(swUrl: string, registration: UpdatableRegistration) {
+export async function checkNow(swUrl: string, registration: UpdatableRegistration) {
   if (registration.installing || !navigator.onLine) {
     return
   }

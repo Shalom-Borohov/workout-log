@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { exportBackup, parseBackup, restoreBackup } from '../../src/data/backup'
+import { exportBackup, parseBackup } from '../../src/data/backup'
+import { restoreBackup } from '../../src/data/restore'
 import { db } from '../../src/data/db'
 import { background, setBackground } from '../../src/data/background'
 import { backupStatus } from '../../src/data/backupStatus'
@@ -46,7 +47,7 @@ describe('backup', () => {
 
     await resetDb()
     await saveRoutine({ ...fullBody, id: 'other' })
-    await restoreBackup(parseBackup(json))
+    await restoreBackup(parseBackup(json), oct(27))
 
     expect(json.version).toBe(2)
     expect(json.exportedAt).toBe(oct(26))
@@ -61,7 +62,7 @@ describe('backup', () => {
     const json = JSON.parse(JSON.stringify(await exportBackup(oct(26))))
 
     await resetDb()
-    await restoreBackup(parseBackup(json))
+    await restoreBackup(parseBackup(json), oct(27))
 
     expect(await finishedRecords()).toEqual([boxing, past])
   })
@@ -74,7 +75,7 @@ describe('backup', () => {
 
     await resetDb()
     await db.dailyLogs.put(dailyLog('other', '2026-10-20'))
-    await restoreBackup(parseBackup(json))
+    await restoreBackup(parseBackup(json), oct(27))
 
     expect(await db.routines.toArray()).toEqual([drills])
     expect(await db.dailyLogs.toArray()).toEqual([sundayDrills])
@@ -107,7 +108,7 @@ describe('backup', () => {
     const { daily: _daily, ...plain } = fullBody
     await db.dailyLogs.put(sundayDrills)
 
-    await restoreBackup(parseBackup({ version: 1, exportedAt: oct(26), routines: [plain], workouts: [] }))
+    await restoreBackup(parseBackup({ version: 1, exportedAt: oct(26), routines: [plain], workouts: [] }), oct(27))
 
     expect(await db.routines.toArray()).toEqual([fullBody])
     expect(await db.dailyLogs.count()).toBe(0)
@@ -135,7 +136,7 @@ describe('backup', () => {
   it('an activity from before locations imports with an empty location', async () => {
     const { location: _location, ...noLocation } = boxing
 
-    await restoreBackup(parseBackup({ version: 1, exportedAt: oct(26), routines: [], workouts: [noLocation] }))
+    await restoreBackup(parseBackup({ version: 1, exportedAt: oct(26), routines: [], workouts: [noLocation] }), oct(27))
 
     expect(await finishedRecords()).toEqual([{ ...boxing, location: '' }])
   })
@@ -222,7 +223,7 @@ describe('backup', () => {
       ],
     }
 
-    await restoreBackup(parseBackup(legacy))
+    await restoreBackup(parseBackup(legacy), oct(27))
 
     const [squatPlan] = (await db.routines.toArray())[0].sections[0].items
     const [restored] = await finishedWorkouts()
@@ -242,7 +243,7 @@ describe('backup', () => {
   it('a backup from before creation dates dates each routine from its last edit', async () => {
     const { createdAt: _createdAt, ...undated } = fullBody
 
-    await restoreBackup(parseBackup({ version: 1, exportedAt: oct(26), routines: [undated], workouts: [] }))
+    await restoreBackup(parseBackup({ version: 1, exportedAt: oct(26), routines: [undated], workouts: [] }), oct(27))
 
     expect(await db.routines.toArray()).toEqual([{ ...fullBody, createdAt: 5 }])
   })
@@ -252,7 +253,7 @@ describe('backup', () => {
     await saveRoutine(fullBody)
 
     const json = JSON.parse(JSON.stringify(await exportBackup(oct(26))))
-    await restoreBackup(parseBackup(json))
+    await restoreBackup(parseBackup(json), oct(27))
 
     expect(Object.keys(json).sort()).toEqual(['dailyLogs', 'exerciseAreas', 'exportedAt', 'routines', 'version', 'workouts'])
     expect(await background()).toBeDefined()
@@ -261,7 +262,7 @@ describe('backup', () => {
   it('a restore counts as a backup made when the file was exported', async () => {
     const active = workout({ id: 'w2', startedAt: oct(25), finishedAt: null, exercises: [] })
 
-    await restoreBackup(parseBackup({ version: 2, exportedAt: oct(25, 12), routines: [], workouts: [past, boxing, active] }))
+    await restoreBackup(parseBackup({ version: 2, exportedAt: oct(25, 12), routines: [], workouts: [past, boxing, active] }), oct(27))
 
     expect(await backupStatus()).toEqual({ backedUpAt: oct(25, 12), records: 2 })
   })
