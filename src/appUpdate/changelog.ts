@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.16.0',
+    features: ['אפשר לבחור צבע לאפליקציה בהגדרות'],
+    fixes: [],
+  },
+  {
     version: '1.15.0',
     features: [
       'לפני ייבוא גיבוי רואים כמה אימונים יש בקובץ ובמכשיר, ומתי היה האחרון בכל אחד',

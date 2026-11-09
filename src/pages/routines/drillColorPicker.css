@@ -1,54 +1,9 @@
 .drill-color-picker {
-  width: 100%;
-  min-width: 0;
-  margin: 0;
   padding: 10px 0 8px;
-  border: 0;
 }
 
 .drill-color-picker legend {
-  padding: 0;
+  padding: 0 0 4px;
   font-size: 0.75rem;
   color: var(--app-label-secondary);
-}
-
-.drill-color-options {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  justify-items: center;
-  margin-block-start: 4px;
-}
-
-.drill-color-option {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-}
-
-.drill-color-option input {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.drill-color-option span {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: currentColor;
-  pointer-events: none;
-}
-
-.drill-color-option input:checked + span {
-  outline: 3px solid currentColor;
-  outline-offset: 3px;
-}
-
-.drill-color-option:has(input:focus-visible) {
-  outline: 2px solid var(--ion-color-primary);
 }

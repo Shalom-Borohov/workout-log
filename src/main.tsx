@@ -14,12 +14,16 @@ import './theme.css'
 import './tapTargets.css'
 
 import { App } from './App'
+import { applyAccentColor } from './components/accentColor'
+import { readAccentColor } from './data/accentColor'
 import { recordLastError } from './data/lastError'
 import { dropExpiredRestoreUndo } from './data/restore'
 import { blockSystemEdgeSwipe } from './navigation/edgeSwipe'
 import { guardTapsDuringTransitions } from './navigation/tapGuard'
 
 setupIonicReact({ mode: 'ios' })
+
+applyAccentColor(readAccentColor())
 
 guardTapsDuringTransitions(document)
 blockSystemEdgeSwipe(document)

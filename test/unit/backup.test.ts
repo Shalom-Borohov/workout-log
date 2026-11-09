@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { readAccentColor, saveAccentColor } from '../../src/data/accentColor'
 import { exportBackup, parseBackup } from '../../src/data/backup'
 import { restoreBackup } from '../../src/data/restore'
 import { db } from '../../src/data/db'
@@ -257,6 +258,20 @@ describe('backup', () => {
 
     expect(Object.keys(json).sort()).toEqual(['dailyLogs', 'exerciseAreas', 'exportedAt', 'routines', 'version', 'workouts'])
     expect(await background()).toBeDefined()
+  })
+
+  it('the accent colour stays out of the backup and survives a restore', async () => {
+    saveAccentColor('indigo')
+    await saveRoutine(fullBody)
+
+    const exported = JSON.stringify(await exportBackup(oct(26)))
+
+    expect(exported).not.toContain('indigo')
+
+    saveAccentColor('blue')
+    await restoreBackup(parseBackup(JSON.parse(exported)), oct(27))
+
+    expect(readAccentColor()).toBe('blue')
   })
 
   it('a restore counts as a backup made when the file was exported', async () => {

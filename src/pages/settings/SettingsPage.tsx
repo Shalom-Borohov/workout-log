@@ -31,6 +31,7 @@ import { useBackUp } from '../../hooks/useBackUp'
 import { useSave } from '../../hooks/useSave'
 import { useShare } from '../../hooks/useShare'
 import type { HostTabPath } from '../../navigation/paths'
+import { AccentSettings } from './AccentSettings'
 import { BackgroundSettings } from './BackgroundSettings'
 import { BackupFooter } from './BackupFooter'
 import { FeedbackSettings } from './FeedbackSettings'
@@ -122,6 +123,7 @@ export function SettingsPage({ tab }: { tab: HostTabPath }) {
           </IonItem>
         </IonList>
         <IonNote className="list-footer">{SETTINGS_COPY.historyFooter}</IonNote>
+        <AccentSettings />
         <BackgroundSettings onError={(error) => void toast(errorMessage(error))} />
         <IonList inset>
           <IonItem button onClick={() => setShowingChangelog(true)}>
