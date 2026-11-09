@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.14.0',
+    features: ['בחיפוש של "הוספת תרגיל", "תרגיל חדש" מקבל את השם שהקלדת'],
+    fixes: ['⊖ ברשימת התרגילים בעריכה מציג עכשיו את "מחיקה"'],
+  },
+  {
     version: '1.13.5',
     features: [],
     fixes: [

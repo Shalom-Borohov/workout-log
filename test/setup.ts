@@ -34,6 +34,8 @@ Object.defineProperty(HTMLMediaElement.prototype, 'play', { writable: true, valu
 Object.defineProperty(HTMLMediaElement.prototype, 'pause', { writable: true, value: () => {} })
 Object.defineProperty(Element.prototype, 'scrollTo', { writable: true, value: () => {} })
 
+document.documentElement.dir = 'rtl'
+
 setupIonicReact({ mode: 'ios' })
 
 beforeEach(() => {

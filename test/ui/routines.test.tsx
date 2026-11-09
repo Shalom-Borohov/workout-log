@@ -4,7 +4,7 @@ import { db } from '../../src/data/db'
 import { activeWorkout, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
 import { actionSheetPresented, buttonByLabel, ionChange, ionElement, ionEvent, ionField, ionInput } from '../helpers/ionic'
-import { exercisePicker } from '../helpers/picker'
+import { exercisePicker, pickerSearch } from '../helpers/picker'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
 
@@ -273,6 +273,18 @@ describe('routines', () => {
     )
     await waitFor(() => expect(document.querySelector('ion-modal ion-searchbar')).toBeNull())
     expect(screen.queryByText('מחיקת התרגיל')).not.toBeInTheDocument()
+  })
+
+  it('editor names a new exercise after the search and opens it', async () => {
+    await saveRoutine(fullBody)
+    renderAt('/tabs/routines/r1')
+
+    fireEvent.click(await screen.findByText('הוספת תרגיל', { selector: 'ion-label' }))
+    ionInput(await pickerSearch(), 'פולאובר')
+    fireEvent.click(await (await exercisePicker()).findByText('תרגיל חדש: פולאובר'))
+
+    await waitFor(async () => expect((await db.routines.get('r1'))?.sections[0].items[2].exercises[0].name).toBe('פולאובר'))
+    expect(await screen.findByLabelText('שם התרגיל')).toHaveValue('פולאובר')
   })
 
   it('editor deletes the routine', async () => {

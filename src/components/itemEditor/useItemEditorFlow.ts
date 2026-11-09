@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { newItem } from '../../domain/routineEdit'
+import { namedOrDefault, newExercise, newItem } from '../../domain/routineEdit'
 import type { RoutineExercise, RoutineItem } from '../../domain/types'
 
 export type AddTarget<Section> = { section: Section } | { after: string }
@@ -8,7 +8,8 @@ export interface ItemSheetsFlow {
   picking: boolean
   addAfter: (id: string) => void
   sheetClosed: () => void
-  pick: (exercise?: RoutineExercise) => void
+  pick: (exercise: RoutineExercise) => void
+  create: (name: string) => void
   cancelAdding: () => void
 }
 
@@ -26,16 +27,16 @@ export function useItemEditorFlow<Section>(
   const [adding, setAdding] = useState<AddTarget<Section> | null>(null)
   const [addingOnceClosed, setAddingOnceClosed] = useState<AddTarget<Section> | null>(null)
 
-  function pick(exercise?: RoutineExercise) {
+  function add(exercise: RoutineExercise, edit: boolean) {
     if (adding === null) {
       return
     }
     const id = crypto.randomUUID()
 
-    insert(adding, exercise ? newItem(id, [exercise]) : newItem(id))
+    insert(adding, newItem(id, [exercise]))
     setAdding(null)
 
-    if (!exercise) {
+    if (edit) {
       setEditingId(id)
     }
   }
@@ -67,7 +68,8 @@ export function useItemEditorFlow<Section>(
     addTo: (section) => setAdding({ section }),
     addAfter,
     sheetClosed,
-    pick,
+    pick: (exercise) => add(exercise, false),
+    create: (name) => add(newExercise(namedOrDefault(name)), true),
     cancelAdding: () => setAdding(null),
   }
 }
