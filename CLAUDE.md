@@ -94,6 +94,7 @@ Schema changes:
 - Vitest with jsdom and fake-indexeddb (`test/setup.ts`). Tests live only under `test/`:
   - `test/unit/`: domain and repo tests.
   - `test/ui/`: full-app tests.
+- `test/setup.ts` sets `dir="rtl"` on the page, as `index.html` does, so tests see what the phone sees. Ionic's `IonItemSliding.open()` was a silent no-op in RTL (issue #77) and the suite, then LTR, never caught it.
 - UI tests seed the database with `resetDb()` and `saveRoutine`/`saveWorkout`, then `renderAt('/path')`. That renders `AppRoutes` in a memory router, and `currentPath()` reads the location.
 - Builders are in `test/helpers/workouts.ts`: `routine`, `routineExercise`, `workout`, `exercise`, `done`, `open`, `reps`, `oct`.
 - Ionic inputs and segments need the custom-event helpers in `test/helpers/ionic.ts` (`ionChange`, `ionInput`, `ionField`, `actionSheetPresented`). Plain `fireEvent.change` won't reach them.

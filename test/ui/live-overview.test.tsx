@@ -56,6 +56,27 @@ describe('overview editing', () => {
     expect(await screen.findByLabelText('שם התרגיל')).toHaveValue('תרגיל חדש')
   })
 
+  it('names the new exercise after the search', async () => {
+    await openOverviewEditing()
+
+    fireEvent.click(await screen.findByText('הוספת תרגיל', { selector: 'ion-label' }))
+    ionInput(await pickerSearch(), '  פולאובר ')
+    fireEvent.click(await (await exercisePicker()).findByText('תרגיל חדש: פולאובר'))
+
+    await waitFor(async () => expect(await savedNames()).toEqual([['סקוואט', 'לחיצת חזה', 'חתירה', 'פולאובר']]))
+    expect(await screen.findByLabelText('שם התרגיל')).toHaveValue('פולאובר')
+  })
+
+  it('keeps the default name when the search is blank', async () => {
+    await openOverviewEditing()
+
+    fireEvent.click(await screen.findByText('הוספת תרגיל', { selector: 'ion-label' }))
+    ionInput(await pickerSearch(), '   ')
+    fireEvent.click(await (await exercisePicker()).findByText('תרגיל חדש'))
+
+    await waitFor(async () => expect(await savedNames()).toEqual([['סקוואט', 'לחיצת חזה', 'חתירה', 'תרגיל חדש']]))
+  })
+
   it('renames an exercise through the item editor, keeping its sets', async () => {
     const user = await openOverviewEditing()
 
@@ -147,7 +168,7 @@ describe('adding an existing exercise', () => {
 
     await waitFor(async () => expect(await pickerRows()).toEqual(['תרגיל חדש', 'דדליפט 22.10', 'מתח 22.10', 'פלאנק']))
     ionInput(await pickerSearch(), ' דד ')
-    await waitFor(async () => expect(await pickerRows()).toEqual(['תרגיל חדש', 'דדליפט 22.10']))
+    await waitFor(async () => expect(await pickerRows()).toEqual(['תרגיל חדש: דד', 'דדליפט 22.10']))
   })
 
   it('adds the picked exercise with its target, tip and last sets, without opening the editor', async () => {

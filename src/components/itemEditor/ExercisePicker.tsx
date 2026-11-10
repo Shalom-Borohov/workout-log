@@ -30,7 +30,8 @@ import { ITEM_EDITOR_COPY } from './copy'
 
 interface Props {
   isOpen: boolean
-  onPick: (exercise?: RoutineExercise) => void
+  onPick: (exercise: RoutineExercise) => void
+  onCreate: (name: string) => void
   onClose: () => void
 }
 
@@ -61,8 +62,9 @@ function ChoiceRows({ matches, onPick }: ChoiceRowsProps) {
     ))
 }
 
-export function ExercisePicker({ isOpen, onPick, onClose }: Props) {
+export function ExercisePicker({ isOpen, onPick, onCreate, onClose }: Props) {
   const search = useSearch()
+  const typedName = search.query.trim()
 
   function dismiss() {
     search.clear()
@@ -88,9 +90,11 @@ export function ExercisePicker({ isOpen, onPick, onClose }: Props) {
       </IonHeader>
       <IonContent>
         <IonList inset>
-          <IonItem button detail={false} onClick={() => onPick()}>
+          <IonItem button detail={false} onClick={() => onCreate(typedName)}>
             <IonIcon slot="start" color="primary" icon={addCircle} aria-hidden="true" />
-            <IonLabel color="primary">{ITEM_EDITOR_COPY.newExercise}</IonLabel>
+            <IonLabel color="primary">
+              {typedName ? ITEM_EDITOR_COPY.newExerciseNamed(typedName) : ITEM_EDITOR_COPY.newExercise}
+            </IonLabel>
           </IonItem>
           <ChoiceRows matches={search.matches} onPick={onPick} />
         </IonList>

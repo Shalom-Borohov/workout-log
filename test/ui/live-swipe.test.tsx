@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
 import { ionElement } from '../helpers/ionic'
@@ -22,14 +22,7 @@ const threeItems = workout({
 
 const right = window.innerWidth
 
-beforeEach(async () => {
-  await resetDb()
-  document.documentElement.dir = 'rtl'
-})
-
-afterEach(() => {
-  document.documentElement.dir = ''
-})
+beforeEach(resetDb)
 
 const listRows = () => screen.queryAllByText('חתירה', { selector: 'ion-modal ion-item ion-label' })
 

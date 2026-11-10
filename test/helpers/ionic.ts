@@ -58,7 +58,36 @@ export const startTimePicker = () => ionElement('ion-datetime', 'body')
 
 export const radioByLabel = (name: string) => screen.findByLabelText(name, { selector: 'input[type="radio"]' })
 
-export const buttonByLabel =(label: string) => ionElement(`ion-button[aria-label="${label}"]`)
+export function nativeButton(host: Element) {
+  return waitFor(() => {
+    const native = host.shadowRoot?.querySelector('button')
+
+    if (!native) {
+      throw new Error('ion-button has not rendered')
+    }
+
+    return native
+  })
+}
+
+const hasLabel = (element: Element | null | undefined, label: string) => element?.getAttribute('aria-label') === label
+
+export const queryButtonByLabel = (label: string, scope = VISIBLE_PAGE) =>
+  Array.from(document.querySelectorAll(`${scope} ion-button`)).find(
+    (button) => hasLabel(button, label) || hasLabel(button.shadowRoot?.querySelector('button'), label),
+  )
+
+export function buttonByLabel(label: string, scope = VISIBLE_PAGE) {
+  return waitFor(() => {
+    const button = queryButtonByLabel(label, scope)
+
+    if (!button) {
+      throw new Error(`no button labelled ${label}`)
+    }
+
+    return button
+  })
+}
 
 export async function expectInOrder(texts: string[]) {
   const elements = await Promise.all(texts.map((text) => screen.findByText(text)))

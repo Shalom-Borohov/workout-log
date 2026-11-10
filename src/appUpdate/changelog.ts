@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '1.17.0',
+    features: ['בחיפוש של "הוספת תרגיל", "תרגיל חדש" מקבל את השם שהקלדת'],
+    fixes: ['⊖ ברשימת התרגילים בעריכה מציג עכשיו את "מחיקה"'],
+  },
+  {
     version: '1.16.0',
     features: ['אפשר לבחור צבע לאפליקציה בהגדרות'],
     fixes: [],

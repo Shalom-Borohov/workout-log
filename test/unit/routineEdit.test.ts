@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addItemAfter, duplicateRoutine, newRoutine, setSectionSets } from '../../src/domain/routineEdit'
+import { addItemAfter, duplicateRoutine, namedOrDefault, newExercise, newRoutine, setSectionSets } from '../../src/domain/routineEdit'
 import type { Routine } from '../../src/domain/types'
 import { counter } from '../helpers/ids'
 import { reps, routineExercise } from '../helpers/workouts'
@@ -112,5 +112,25 @@ describe('addItemAfter', () => {
     const ids = addItemAfter(legs, 'i1', added).sections.map((section) => section.items.map((item) => item.id))
 
     expect(ids).toEqual([['i1', 'new'], ['i2']])
+  })
+})
+
+describe('newExercise', () => {
+  it('takes the given name', () => {
+    expect(newExercise('פולאובר').name).toBe('פולאובר')
+  })
+
+  it('is named "תרגיל חדש" by default', () => {
+    expect(newExercise().name).toBe('תרגיל חדש')
+  })
+})
+
+describe('namedOrDefault', () => {
+  it('trims the name', () => {
+    expect(namedOrDefault('  פולאובר ')).toBe('פולאובר')
+  })
+
+  it('falls back to "תרגיל חדש" for a blank name', () => {
+    expect(namedOrDefault('  ')).toBe('תרגיל חדש')
   })
 })

@@ -1,10 +1,10 @@
 import { clampTarget } from './limits'
 import {
-  DEFAULT_EXERCISE_NAME,
   DEFAULT_ROUTINE_NAME,
   DEFAULT_SECTION_NAME,
   MAX_SETS,
   MIN_SETS,
+  namedOrDefault,
   newItem,
   newSection,
   routineExercise,
@@ -26,8 +26,6 @@ function toTarget(amount: number, unit: string | undefined): Target {
 }
 
 const withinSetLimits = (sets: number) => Math.min(Math.max(sets, MIN_SETS), MAX_SETS)
-
-const namedOrDefault = (text: string) => text.trim() || DEFAULT_EXERCISE_NAME
 
 function parseExercise(text: string): RoutineExercise {
   const match = text.match(AMOUNT)

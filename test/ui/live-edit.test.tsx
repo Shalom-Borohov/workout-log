@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { firstSectionNames, resetDb, savedWorkout } from '../helpers/db'
-import { alertPresented, modalPresented, toasts } from '../helpers/ionic'
+import { alertPresented, buttonByLabel, modalPresented, OPEN_MODAL, queryButtonByLabel, toasts } from '../helpers/ionic'
 import { chooseFromMenu } from '../helpers/live'
 import { exercisePicker } from '../helpers/picker'
 import { renderAt } from '../helpers/renderAt'
@@ -38,6 +38,19 @@ describe('editing the workout from the exercise menu', () => {
 
     await waitFor(() => expect(screen.queryByLabelText('מחיקת סקוואט')).not.toBeInTheDocument())
     expect(screen.getByText('עריכה', { selector: 'ion-modal ion-button' })).toBeInTheDocument()
+  })
+
+  it('leaving edit mode hides a revealed delete', async () => {
+    renderAt('/tabs/timeline/workout/w1')
+    await chooseFromMenu('עריכת האימון')
+
+    fireEvent.click(await buttonByLabel('הצגת מחיקה · סקוואט', OPEN_MODAL))
+    await buttonByLabel('מחיקת סקוואט', OPEN_MODAL)
+    fireEvent.click(screen.getByText('סיום', { selector: 'ion-modal ion-button' }))
+    fireEvent.click(await screen.findByText('עריכה', { selector: 'ion-modal ion-button' }))
+
+    await buttonByLabel('הצגת מחיקה · סקוואט', OPEN_MODAL)
+    expect(queryButtonByLabel('מחיקת סקוואט', OPEN_MODAL)).toBeUndefined()
   })
 
   it('adds an exercise after the one open in the exercise sheet', async () => {
@@ -86,6 +99,21 @@ describe('deleting an exercise from the list', () => {
 
     fireEvent.click(await screen.findByLabelText('מחיקת סקוואט'))
     await confirmed
+    fireEvent.click(screen.getByText('מחיקה', { selector: '.alert-button-inner' }))
+
+    await waitFor(async () => expect(await firstSectionNames('w1')).toEqual(['לחיצת חזה', 'חתירה']))
+  })
+
+  it('⊖ then the revealed "מחיקה" asks first when the exercise has a ticked set', async () => {
+    renderAt('/tabs/timeline/workout/w1')
+    await chooseFromMenu('עריכת האימון')
+    const presented = alertPresented()
+
+    fireEvent.click(await buttonByLabel('הצגת מחיקה · סקוואט', OPEN_MODAL))
+    fireEvent.click(await buttonByLabel('מחיקת סקוואט', OPEN_MODAL))
+    await presented
+
+    expect(screen.getByText('למחוק את התרגיל?')).toBeInTheDocument()
     fireEvent.click(screen.getByText('מחיקה', { selector: '.alert-button-inner' }))
 
     await waitFor(async () => expect(await firstSectionNames('w1')).toEqual(['לחיצת חזה', 'חתירה']))

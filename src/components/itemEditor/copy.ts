@@ -9,4 +9,5 @@ export const ITEM_EDITOR_COPY = {
   startWeight: 'משקל התחלתי (ק״ג)',
   tips: 'דגשים',
   newExercise: 'תרגיל חדש',
+  newExerciseNamed: (name: string) => `תרגיל חדש: ${name}`,
 } as const

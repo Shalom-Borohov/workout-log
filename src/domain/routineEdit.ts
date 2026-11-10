@@ -91,12 +91,14 @@ export const DEFAULT_SECTION_NAME = APP_COPY.defaultSectionName
 
 export const DEFAULT_EXERCISE_NAME = APP_COPY.defaultExerciseName
 
+export const namedOrDefault = (text: string) => text.trim() || DEFAULT_EXERCISE_NAME
+
 const DEFAULT_REPS = 10
 
 export const DEFAULT_SETS = 3
 
-export function newExercise(): RoutineExercise {
-  return { name: DEFAULT_EXERCISE_NAME, target: { kind: 'reps', reps: DEFAULT_REPS }, weight: null, tip: '' }
+export function newExercise(name: string = DEFAULT_EXERCISE_NAME): RoutineExercise {
+  return { name, target: { kind: 'reps', reps: DEFAULT_REPS }, weight: null, tip: '' }
 }
 
 export function routineExercise(name: string, target: Target): RoutineExercise {

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
-import { buttonByLabel, ionElement } from '../helpers/ionic'
+import { buttonByLabel, ionElement, nativeButton, queryButtonByLabel } from '../helpers/ionic'
 import { exercisePicker } from '../helpers/picker'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { dailyRoutine, done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
@@ -24,6 +24,27 @@ const deadlifts = workout({ id: 'prev', startedAt: oct(22), exercises: [exercise
 
 const deleteOption = (title: string) => ionElement(`ion-item-option[aria-label="מחיקת ${title}"]`)
 
+const revealButton = (title: string) => buttonByLabel(`הצגת מחיקה · ${title}`)
+
+const revealedDelete = (title: string) => buttonByLabel(`מחיקת ${title}`)
+
+function touch(element: Element) {
+  fireEvent.pointerDown(element)
+  fireEvent.click(element)
+}
+
+const noRevealedDelete = (title: string) =>
+  waitFor(() => expect(queryButtonByLabel(`מחיקת ${title}`)).toBeUndefined())
+
+async function revealSquatDelete() {
+  await saveRoutine(fullBody)
+  renderAt('/tabs/routines/r1')
+
+  fireEvent.click(await revealButton('סקוואט'))
+
+  return revealedDelete('סקוואט')
+}
+
 describe('routine editor actions', () => {
   beforeEach(resetDb)
 
@@ -31,11 +52,59 @@ describe('routine editor actions', () => {
     await saveRoutine(fullBody)
     renderAt('/tabs/routines/r1')
 
-    fireEvent.click(await buttonByLabel('הצגת מחיקה · סקוואט'))
-    fireEvent.click(await deleteOption('סקוואט'))
+    const reveal = await revealButton('סקוואט')
+    const revealNative = await nativeButton(reveal)
+
+    expect(queryButtonByLabel('מחיקת סקוואט')).toBeUndefined()
+    expect(revealNative).toHaveAttribute('aria-expanded', 'false')
+
+    fireEvent.click(reveal)
+
+    const remove = await revealedDelete('סקוואט')
+
+    expect(remove).toHaveTextContent('מחיקה')
+    await waitFor(() => expect(revealNative).toHaveAttribute('aria-expanded', 'true'))
+    fireEvent.click(remove)
 
     await waitFor(async () => expect(await names()).toEqual(['לחיצת חזה + פלאנק', 'מתח']))
     expect(document.querySelector('ion-alert')).toBeNull()
+  })
+
+  it('⊖ on another exercise hides the delete revealed before', async () => {
+    await revealSquatDelete()
+    touch(await revealButton('מתח'))
+
+    await revealedDelete('מתח')
+    await noRevealedDelete('סקוואט')
+  })
+
+  it('tapping a row with delete revealed hides it instead of opening the exercise', async () => {
+    await revealSquatDelete()
+    const squatRow = await screen.findByText('סקוואט', { selector: 'h2' })
+
+    touch(squatRow)
+
+    await noRevealedDelete('סקוואט')
+    expect(screen.queryByText('מחיקת התרגיל')).not.toBeInTheDocument()
+
+    touch(squatRow)
+
+    expect(await screen.findByText('מחיקת התרגיל')).toBeInTheDocument()
+  })
+
+  it('tapping another row hides the revealed delete and opens that exercise', async () => {
+    await revealSquatDelete()
+    touch(await screen.findByText('מתח', { selector: 'h2' }))
+
+    expect(await screen.findByText('מחיקת התרגיל')).toBeInTheDocument()
+    await noRevealedDelete('סקוואט')
+  })
+
+  it('a touch anywhere outside the row hides the revealed delete', async () => {
+    await revealSquatDelete()
+    touch(await screen.findByText('הוספת חלק', { selector: 'ion-label' }))
+
+    await noRevealedDelete('סקוואט')
   })
 
   it('the swipe option deletes a pair', async () => {
