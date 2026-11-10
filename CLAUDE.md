@@ -19,7 +19,7 @@ npx vitest run test/ui/live.test.tsx           # a single file
 npx vitest run test/ui/live.test.tsx -t "skips" # a single test by name
 ```
 
-CI on a PR runs lint, test and build, plus dependency review and Trivy. A push to `main` tests, builds and deploys to GitHub Pages.
+CI on a PR runs lint, test and build, plus dependency review and Trivy. A push to `main` tests, builds and deploys to GitHub Pages. `ios-screenshot.yml`, run by hand from the Actions tab or by PRs that edit it, screenshots the picked branch in Safari on the iOS simulator (spec item 79).
 
 ## Architecture
 
@@ -108,6 +108,6 @@ Schema changes:
 - Ionic is forced to iOS mode, and the look follows native iOS. Colour tokens are in `src/theme.css`: orange tint (darker than system orange in light mode, for contrast), ✓ in iOS green, light/dark follow the phone.
 - No `as` casts (`as const` is fine) and no `?? ''`/`?? 0` fallbacks to satisfy types. Narrow parsed JSON with type guards.
 - Durations are stored in seconds. Minutes are a display unit only.
-- Every PR with a change the user can notice raises `version` in `package.json`: the minor number for features, the patch number for fixes. Dependency and docs-only PRs don't (spec item 35). Settings shows it with the build time.
+- Every PR with a change the user can notice raises `version` in `package.json`: the minor number for features, the patch number for fixes. Dependency, CI and docs-only PRs don't (spec item 35). Settings shows it with the build time.
 - The same PR adds a release to `src/appUpdate/changelog.ts`: short Hebrew lines for what the user will notice, under `features` and `fixes`. The phone shows them once after updating.
 - Keep files under about 250 lines, split by responsibility.
