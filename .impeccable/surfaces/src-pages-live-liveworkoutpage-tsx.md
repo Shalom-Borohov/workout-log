@@ -42,6 +42,7 @@ Each sketch is the composition the build matches for that screen's first viewpor
 - Live workout with a pair, "Two tiles": `.impeccable/mocks/decision/pr-two-tiles.html`
 - Workout detail, "Section blocks": `.impeccable/mocks/decision/wd-section-blocks.html`
 - Exercise history, "Number column": `.impeccable/mocks/decision/eh-number-column.html`
+- Activity page (issue #84, spec item 93), "Field rows": `.impeccable/mocks/decision/ac-field-rows.html`. Picked over "Note is the page" and "Count tile" on 2026-11-12 (seed:896f3f185262e2b6). The פעילויות tile in תרגילים carries a boxing glove (`ai-glove.html`), picked over a stopwatch and a running shoe.
 
 A preview the owner saw, not a choice: `state-timed.html` (a timed exercise with no weight, on the single tile). The `light-*.html` and `lm-*.html` files are a light-mode exploration the owner dropped; they are a record, not a brief.
 

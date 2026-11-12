@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { background } from './background'
 import { backupStatus } from './backupStatus'
 import { db } from './db'
+import { activityDetailsMap } from './activityDetails'
 import { exerciseAreaMap } from './exerciseAreas'
 import { activeWorkout, dailyLogs, finishedRecords, finishedWorkouts } from './repo'
 import { restoreUndo } from './restore'
@@ -52,6 +53,10 @@ export function useRestoreUndo(now: number) {
 
 export function useExerciseAreas() {
   return useLiveQuery(exerciseAreaMap)
+}
+
+export function useActivityDetails() {
+  return useLiveQuery(activityDetailsMap)
 }
 
 export function useBackground() {

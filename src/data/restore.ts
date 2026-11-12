@@ -3,13 +3,11 @@ import { DAY_MS } from '../domain/time'
 import type { RestoreCopySetting, RestoreUndoSetting } from '../domain/types'
 import type { Backup } from './backup'
 import { backupStatus, markBackedUp, setBackupStatus } from './backupStatus'
-import { db } from './db'
+import { db, RESTORE_COPY_KEY } from './db'
 import { phoneWorkoutSummary } from './repo'
 import { readStoredData, replaceStoredData, storedDataTables } from './storedData'
 
 const RESTORE_UNDO_KEY = 'restoreUndo'
-
-const RESTORE_COPY_KEY = 'restoreCopy'
 
 const RESTORE_UNDO_DAYS = 7
 

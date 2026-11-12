@@ -9,6 +9,7 @@ import { LegacyWorkoutLink } from './navigation/LegacyWorkoutLink'
 import { DAILY_PATH, EXERCISES_PATH, isWorkoutPath, ROUTINES_PATH, TIMELINE_PATH } from './navigation/paths'
 import { DailyArchivePage } from './pages/daily/DailyArchivePage'
 import { DailyPage } from './pages/daily/DailyPage'
+import { ActivityPage } from './pages/exercises/ActivityPage'
 import { ExerciseHistoryPage } from './pages/exercises/ExerciseHistoryPage'
 import { ExercisesPage } from './pages/exercises/ExercisesPage'
 import { LiveWorkoutPage } from './pages/live/LiveWorkoutPage'
@@ -42,6 +43,7 @@ export function Tabs() {
         <Route path="daily/archive" element={<DailyArchivePage />} />
         <Route path="daily/:id" element={<RoutineEditPage tab={DAILY_PATH} />} />
         <Route path="exercises" element={<ExercisesPage />} />
+        <Route path="exercises/activity/:name" element={<ActivityPage />} />
         <Route path="exercises/:name" element={<ExerciseHistoryPage />} />
         <Route path="workout/:id" element={<LegacyWorkoutLink />} />
         <Route index element={<Navigate to="timeline" replace />} />
