@@ -9,7 +9,7 @@ export function SessionRow({ session, isRecord }: { session: ExerciseSession; is
   const numeral = best && bestNumeral(best, session.target)
 
   return (
-    <IonItem lines="none" className="session-row">
+    <IonItem className="session-row">
       <IonLabel className="ion-text-wrap">
         <h2>{formatDay(session.startedAt)}</h2>
         <p>{formatSets(session.sets, session.target)}</p>

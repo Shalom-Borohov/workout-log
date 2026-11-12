@@ -25,7 +25,7 @@ export function WorkoutSections({ sections, changes }: { sections: WorkoutSectio
   return sections.map((section, index) => (
     <section key={index}>
       <h2 className="workout-part-title">{section.name}</h2>
-      <IonList className="list-plain">
+      <IonList inset>
         {section.items.flatMap((item) =>
           item.exercises.map((exercise) => (
             <ExerciseRow

@@ -10,7 +10,7 @@ import { ExerciseRow } from './ExerciseRow'
 
 function SearchGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="exercise-search-group">
+    <section>
       <IonListHeader>
         <IonLabel>{title}</IonLabel>
       </IonListHeader>
@@ -30,7 +30,7 @@ export function SearchResults({ groups, latest, activities }: Props) {
     <>
       {groups.map((group) => (
         <SearchGroup key={areaKey(group.area)} title={BODY_AREA_COPY.name(group.area)}>
-          <IonList className="list-plain">
+          <IonList inset>
             {group.names.map((name) => (
               <ExerciseRow key={name} name={name} area={group.area} last={latest.get(name)} />
             ))}

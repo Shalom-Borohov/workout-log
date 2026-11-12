@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '2.2.0',
+    features: ['השורות ברשימות מופרדות זו מזו, כך שקל לראות איפה כל אחת מתחילה'],
+    fixes: [],
+  },
+  {
     version: '2.1.0',
     features: [
       'בתרגילים יש אריח "פעילויות": לכל פעילות דף עם הערה משלה, כמו הוראות הגעה, ועם המיקום',

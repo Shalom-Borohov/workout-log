@@ -5,7 +5,7 @@ import { formatDay, formatTime } from '../../domain/format'
 
 export function ActivitySessionRow({ session }: { session: ActivitySession }) {
   return (
-    <IonItem lines="none" className="session-row">
+    <IonItem className="session-row">
       <IonLabel className="ion-text-wrap">
         <h2>{formatDay(session.startedAt)}</h2>
         <p>{formatTime(session.startedAt)}</p>

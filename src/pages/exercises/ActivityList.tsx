@@ -18,7 +18,7 @@ function ActivityRow({ entry, withIcon }: { entry: LatestActivity; withIcon: boo
 
 export function ActivityList({ entries, withIcons }: { entries: LatestActivity[]; withIcons: boolean }) {
   return (
-    <IonList className="list-plain">
+    <IonList inset>
       {entries.map((entry) => (
         <ActivityRow key={entry.name} entry={entry} withIcon={withIcons} />
       ))}

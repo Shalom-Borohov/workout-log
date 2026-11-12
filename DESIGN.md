@@ -153,6 +153,7 @@ components:
     backgroundColor: "{colors.sheet-graphite}"
     textColor: "{colors.label-white}"
     rounded: "{rounded.panel}"
+    seam: "2px of the ground between rows"
 ---
 
 # Design System: אימונים
@@ -170,6 +171,7 @@ Density is low where the owner reads at arm's length and normal where they manag
 - Heebo Variable, bundled with the app; weight 200 for every numeral and all type from 30px up, 300 at 22 to 26px, 400 for small text.
 - One accent, chosen by the owner from six; used as flat fills with black text on them, or as the colour of text actions.
 - Rounded flat tiles (12 / 16 / 24px) on tonal graphite steps; no borders, dividers, shadows or bar backgrounds.
+- Lists of rows are graphite panels whose rows are split by a 2px seam of the ground.
 - Tabular numerals everywhere.
 
 ## Colors
@@ -244,7 +246,7 @@ Flat. No element casts a shadow; Ionic's default button and toggle shadows are s
 ### Named Rules
 **The Tonal Step Rule.** To lift something, move it one graphite step; to press it, move it one more or drop its opacity to 0.6 to 0.7. Never add a shadow, border or blur.
 
-**The No-Line Rule.** No dividers, hairlines, toolbar or tab bar borders, and no bar backgrounds. Lists separate rows with space alone.
+**The No-Line Rule.** No dividers, hairlines, toolbar or tab bar borders, and no bar backgrounds. A list of rows is one graphite panel (16px corners, 16px from the screen edges), and its rows are split by a 2px seam where the ground shows through (`--app-seam`): black on a page, Sheet Graphite in a sheet. The seam is space, not a drawn line. There is no seam after the last row, and a label row stays joined to the rows it labels (a drill exercise's name and its two steppers are one block). The live screen's done and upcoming set rows stay flat on black, since a graphite row there would read as the waiting tile.
 
 ## Shapes
 
@@ -297,7 +299,7 @@ The live screen's signature move. Below the actions, a Caption label "הבא" an
 
 ### Don't:
 - **Don't** add a light mode, an appearance setting or a token-swapped light theme; a token swap was tried and rejected.
-- **Don't** use borders, dividers, hairlines, shadows or bar backgrounds; strokes appear only as state rings.
+- **Don't** use borders, dividers, hairlines, shadows or bar backgrounds; strokes appear only as state rings, and rows are split by a seam of the ground, never a line.
 - **Don't** use decorative gradients. The only gradient is the black scrim over the owner's background photo on the live screen, there for legibility.
 - **Don't** put white text on the accent or on a drill colour.
 - **Don't** use weight 200 below 30px, bold for hierarchy, or uppercase.

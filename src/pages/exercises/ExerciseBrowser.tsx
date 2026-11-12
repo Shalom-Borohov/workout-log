@@ -47,7 +47,7 @@ export function ExerciseBrowser({ records, routines, areas, query, matches }: Pr
         {selected === ACTIVITIES_TILE ? (
           <ActivityList entries={activities} withIcons={false} />
         ) : (
-          <IonList className="list-plain">
+          <IonList inset>
             {groups
               .find((group) => areaKey(group.area) === selected)
               ?.names.map((name) => <ExerciseRow key={name} name={name} last={latest.get(name)} />)}

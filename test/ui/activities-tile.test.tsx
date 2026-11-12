@@ -59,6 +59,17 @@ describe('activities tile', () => {
     expect(activityRow('פילאטיס')).toHaveTextContent('יום ה׳ 22.10')
   })
 
+  it('lists the activities in one panel', async () => {
+    await saveRoutine(fullBody)
+    await saveActivities()
+    renderAt('/tabs/exercises')
+
+    fireEvent.click(await screen.findByRole('button', { name: 'פעילויות, 2' }))
+
+    await screen.findByText('פילאטיס', { selector: 'h2' })
+    expect(activityRow('פילאטיס')?.closest('ion-list')).toHaveClass('list-inset')
+  })
+
   it('with activities and no exercises, shows only the פעילויות tile, selected, and no empty state', async () => {
     await saveActivities()
     renderAt('/tabs/exercises')

@@ -48,6 +48,8 @@ A preview the owner saw, not a choice: `state-timed.html` (a timed exercise with
 
 Sketch noise that is not part of the choice: tab bar icons and body-area icons are stand-ins (the app's own icons stay), the sketches use teal #00ABA9 where the build uses the app's accent tokens, and sample data other than "אימון גוף מלא" is made up.
 
+Changed since the locks (#90, spec item 94): the lists in ציר זמן, workout detail, תרגילים (activities included) and exercise history are now graphite panels with a 2px seam of the ground between rows. The sketches above still show them as flat rows. The chosen sketch is `.impeccable/mocks/decision/sep-ground-seam.html`.
+
 ## Unresolved
 
 - Screens with no round of their own inherit the world: routine editor, note import, Settings, every sheet and alert, empty states, the update bar, the backup reminder, the recovery screen. The owner chose not to run rounds for these.

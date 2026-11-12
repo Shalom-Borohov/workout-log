@@ -70,6 +70,17 @@ describe('activity page', () => {
     expect(screen.queryByText('יום ה׳ 22.10')).not.toBeInTheDocument()
   })
 
+  it('lists the sessions in one panel, split by seams', async () => {
+    await saveSessions()
+    renderAt(pagePath)
+
+    await screen.findByText('יום ש׳ 24.10')
+    const latest = sessionRow('יום ש׳ 24.10')
+
+    expect(latest.closest('ion-list')).toHaveClass('list-inset')
+    expect(latest).not.toHaveClass('item-lines-none')
+  })
+
   it('shows the location placeholder when no session has a location', async () => {
     await saveRecord(activity({ id: 'a1', startedAt: oct(20, 19) }))
     renderAt(pagePath)

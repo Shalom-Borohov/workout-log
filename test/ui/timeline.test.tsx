@@ -49,6 +49,17 @@ describe('timeline', () => {
     expect(screen.getByText('45 דק׳ · 3 סטים')).toBeInTheDocument()
   })
 
+  it('lists a week’s workouts in one panel', async () => {
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(25), exercises: [exercise('סקוואט', [done(20, 10)])] }))
+    await saveWorkout(workout({ id: 'w2', startedAt: oct(26, 8), exercises: [exercise('סקוואט', [done(22, 10)])] }))
+    renderAt('/tabs/timeline')
+
+    const week = (await screen.findByText('יום ב׳ 26.10')).closest('ion-list')
+
+    expect(week).toHaveClass('list-inset')
+    expect(screen.getByText('יום א׳ 25.10').closest('ion-list')).toBe(week)
+  })
+
   it('week header shows workouts and sets count', async () => {
     await saveWorkout(workout({ id: 'w1', startedAt: oct(25), exercises: [exercise('סקוואט', [done(20, 10), done(20, 10)])] }))
     await saveWorkout(workout({ id: 'w2', startedAt: oct(26, 8), exercises: [exercise('סקוואט', [done(20, 10), open(20, 10)])] }))
@@ -133,6 +144,22 @@ describe('timeline', () => {
     expect(screen.getByText('דילגת')).toBeInTheDocument()
     expect(screen.getByText('1 דק׳')).toBeInTheDocument()
     expect(screen.getByText('עיקרי')).toBeInTheDocument()
+  })
+
+  it('detail lists a part’s exercises in one panel', async () => {
+    await saveWorkout(
+      workout({
+        id: 'w1',
+        startedAt: oct(26, 8),
+        exercises: [exercise('סקוואט', [done(20, 10)]), exercise('לחיצה', [done(30, 8)])],
+      }),
+    )
+    renderAt('/tabs/timeline/w1')
+
+    const squat = (await screen.findByText('סקוואט')).closest('ion-list')
+
+    expect(squat).toHaveClass('list-inset')
+    expect(screen.getByText('לחיצה').closest('ion-list')).toBe(squat)
   })
 
   it('detail shows a repeated weight once', async () => {

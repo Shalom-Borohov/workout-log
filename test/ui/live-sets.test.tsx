@@ -88,6 +88,20 @@ describe('live current set', () => {
     expect(screen.queryByLabelText('סקוואט סט 2 משקל')).not.toBeInTheDocument()
   })
 
+  it('done and upcoming sets stay flat rows, not a panel', async () => {
+    await saveWorkout(
+      workout({
+        id: 'w1',
+        startedAt: oct(26),
+        finishedAt: null,
+        exercises: [exercise('סקוואט', [done(60, 10), open(62.5, 8), open(62.5, 8)])],
+      }),
+    )
+    renderAt('/tabs/timeline/workout/w1')
+
+    expect((await screen.findByText('60 × 10')).closest('ion-list')).not.toHaveClass('list-inset')
+  })
+
   it('ticking the current set moves focus to the next undone set', async () => {
     await saveWorkout(
       workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10), open(60, 10)])] }),

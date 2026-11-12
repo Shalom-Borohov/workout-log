@@ -22,7 +22,7 @@ export function ActivityDetail({ name }: { name: string }) {
         />
       )}
       {sessions.length > 0 && (
-        <IonList className="list-plain activity-sessions">
+        <IonList inset className="activity-sessions">
           {sessions.map((session) => (
             <ActivitySessionRow key={session.id} session={session} />
           ))}
