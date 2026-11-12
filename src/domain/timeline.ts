@@ -43,16 +43,18 @@ export function changeHolders(exercises: WorkoutExercise[], changes: Change[]): 
   return holders
 }
 
-function weekStart(timestamp: number): number {
+export function midnight(timestamp: number, dayOffset = 0): number {
   const date = new Date(timestamp)
 
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay()).getTime()
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + dayOffset).getTime()
+}
+
+export function weekStart(timestamp: number): number {
+  return midnight(timestamp, -new Date(timestamp).getDay())
 }
 
 function shiftWeeks(start: number, weeks: number): number {
-  const date = new Date(start)
-
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + weeks * DAYS_PER_WEEK).getTime()
+  return midnight(start, weeks * DAYS_PER_WEEK)
 }
 
 function weekTitle(start: number, now: number): string {
@@ -67,7 +69,10 @@ function weekTitle(start: number, now: number): string {
   return `${dayMonth(start)}–${dayMonth(shiftWeeks(start, 1) - 1)}`
 }
 
-export function groupByWeek<W extends WorkoutRecord>(workouts: W[], now: number): { title: string; workouts: W[] }[] {
+export function groupByWeek<W extends WorkoutRecord>(
+  workouts: W[],
+  now: number,
+): { title: string; start: number; workouts: W[] }[] {
   const groups = new Map<number, W[]>()
   for (const workout of [...workouts].sort((first, second) => second.startedAt - first.startedAt)) {
     const start = weekStart(workout.startedAt)
@@ -79,5 +84,44 @@ export function groupByWeek<W extends WorkoutRecord>(workouts: W[], now: number)
     }
   }
 
-  return [...groups].map(([start, items]) => ({ title: weekTitle(start, now), workouts: items }))
+  return [...groups].map(([start, items]) => ({ title: weekTitle(start, now), start, workouts: items }))
+}
+
+export type DayKind = 'gym' | 'activity' | 'none'
+
+export interface WeekDay {
+  date: number
+  kind: DayKind
+  isToday: boolean
+  isFuture: boolean
+  record: WorkoutRecord | null
+}
+
+function recordToOpen(records: WorkoutRecord[]): WorkoutRecord | null {
+  if (records.length === 0) {
+    return null
+  }
+  const earliestFirst = [...records].sort((first, second) => first.startedAt - second.startedAt)
+
+  return earliestFirst.find(isRoutineWorkout) ?? earliestFirst[0]
+}
+
+function dayKind(record: WorkoutRecord | null): DayKind {
+  if (record === null) {
+    return 'none'
+  }
+
+  return isRoutineWorkout(record) ? 'gym' : 'activity'
+}
+
+export function weekDays(start: number, records: WorkoutRecord[], now: number): WeekDay[] {
+  const today = midnight(now)
+
+  return Array.from({ length: DAYS_PER_WEEK }, (_, index) => {
+    const date = midnight(start, index)
+    const nextDate = midnight(start, index + 1)
+    const record = recordToOpen(records.filter((candidate) => candidate.startedAt >= date && candidate.startedAt < nextDate))
+
+    return { date, kind: dayKind(record), isToday: date === today, isFuture: date > today, record }
+  })
 }

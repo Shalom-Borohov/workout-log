@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 אימונים: a Hebrew (RTL) iPhone PWA for running workout routines live and logging them. No backend. Data lives in IndexedDB on the phone, and the user moves it with a JSON backup file. Live at https://shalom-borohov.github.io/workout-log/.
 
 - `docs/specs/2026-10-26-workout-log-design.md` is the source of truth for behaviour. Read it before changing a flow. Record new product decisions there as numbered items marked "(added YYYY-MM-DD)".
-- `PRODUCT.md` holds the product context: users, principles, Hebrew terms, and the iOS-native design commitments. Where Apple HIG and the Impeccable design guidance conflict, HIG wins.
+- `PRODUCT.md` holds the product context: users, principles, Hebrew terms, and the design commitments (iPhone behaviour, the app's own look). Where Apple HIG and the Impeccable design guidance conflict on behaviour, HIG wins.
 ## Commands
 
 ```bash
@@ -105,9 +105,9 @@ Schema changes:
 
 - All UI copy is Hebrew and lives in constants, never inline in components. A screen's own text is in its feature folder (`src/pages/<feature>/copy.ts`, one `<FEATURE>_COPY` object). Text used by more than one feature is in `src/copy/` (`COMMON_COPY`, `FORMAT_COPY`, `APP_COPY`). Tests keep Hebrew literals, as an independent check. Use the terms in `PRODUCT.md` (אימון, חלק, סט, חזרות, סיכום, …).
 - Name values that encode a decision (limits, defaults, durations, MIME types, keys) as consts in the module that owns them. Discriminated-union tags (`'reps'`, `'duration'`) and framework API values (`'cancel'`, `'root'`) stay inline; the types check them.
-- Ionic is forced to iOS mode, and the look follows native iOS. Colour tokens are in `src/theme.css`: orange tint (darker than system orange in light mode, for contrast), ✓ in iOS green, light/dark follow the phone.
+- Ionic is forced to iOS mode, so behaviour follows native iOS; the look is the app's own (spec items 80 to 82). The app is always dark. Design tokens (colours, radii, type scale) are in `src/theme.css`, Ionic restyling in `src/ionicOverrides.css`, shared classes (`.tile`, `.tile-accent`, `.tile-quiet`, `.list-plain`, `.visually-hidden`, `.visually-hidden-focusable`) in `src/utilities.css`. Use the tokens, never hex, in feature CSS. The accent fills tiles with black text; ✓ stays iOS green; thin weights only from 30px up. The font is Heebo, bundled from `@fontsource-variable/heebo`.
 - No `as` casts (`as const` is fine) and no `?? ''`/`?? 0` fallbacks to satisfy types. Narrow parsed JSON with type guards.
 - Durations are stored in seconds. Minutes are a display unit only.
-- Every PR with a change the user can notice raises `version` in `package.json`: the minor number for features, the patch number for fixes. Dependency, CI and docs-only PRs don't (spec item 35). Settings shows it with the build time.
+- Every PR with a change the user can notice raises `version` in `package.json`: the minor number for features, the patch number for fixes, and the major number only when the whole app changes how it looks or works (2.0.0 was the "Type tiles" redesign). Dependency, CI and docs-only PRs don't (spec item 35). Settings shows it with the build time.
 - The same PR adds a release to `src/appUpdate/changelog.ts`: short Hebrew lines for what the user will notice, under `features` and `fixes`. The phone shows them once after updating.
 - Keep files under about 250 lines, split by responsibility.

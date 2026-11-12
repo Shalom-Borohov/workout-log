@@ -23,8 +23,9 @@ import { useItemSwipe } from './useSwipe'
 import { ItemEditorSheets } from '../../components/itemEditor/ItemEditorSheets'
 import { useSave } from '../../hooks/useSave'
 import { useWakeLock } from '../../hooks/useWakeLock'
-import './live.css'
+import './chrome.css'
 import './photo.css'
+import './sheets.css'
 
 export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHostPath }) {
   const router = useIonRouter()
@@ -37,6 +38,7 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
     total,
     ref,
     item,
+    next,
     active,
     previous,
     restTimer,
@@ -135,11 +137,13 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
             item={item}
             onToggleSkip={toggleItemSkip}
             onAddSet={() => apply((current) => addSet(current, ref))}
+            onNote={openNote}
           />
         </ItemCard>
-        {active && backTo !== null && backTo !== index && <BackToCurrent onBack={() => move(backTo)} />}
       </IonContent>
-      <LiveFooter index={index} total={total} onMove={move} onList={() => setListing('progress')} />
+      <LiveFooter index={index} total={total} next={next} onMove={move} onList={() => setListing('progress')}>
+        {active && backTo !== null && backTo !== index && <BackToCurrent onBack={() => move(backTo)} />}
+      </LiveFooter>
       <ItemListModal
         mode={listing}
         workout={workout}

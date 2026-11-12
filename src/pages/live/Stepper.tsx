@@ -1,6 +1,7 @@
 import { IonIcon, IonInput } from '@ionic/react'
 import { add, remove } from 'ionicons/icons'
 import { LIVE_COPY } from './copy'
+import { numeralChars } from './numeral'
 
 interface StepperProps {
   field: string
@@ -16,37 +17,38 @@ interface StepperProps {
 
 export function Stepper({ field, label, value, unit, inputMode, canDecrease, canIncrease, onStep, onType }: StepperProps) {
   return (
-    <div className="stepper">
-      <button
-        type="button"
-        className="stepper-button"
-        aria-label={LIVE_COPY.decrease(field)}
-        disabled={!canDecrease}
-        onClick={() => onStep(-1)}
-      >
-        <IonIcon icon={remove} aria-hidden="true" />
-      </button>
-      <div className="stepper-value">
-        <IonInput
-          className="stepper-input"
-          aria-label={label}
-          type="text"
-          inputmode={inputMode}
-          placeholder="–"
-          value={value}
-          onIonChange={(event) => typeof event.detail.value === 'string' && onType(event.detail.value)}
-        />
-        <span className="stepper-unit">{unit}</span>
+    <div className="tile-number">
+      <IonInput
+        className="tile-numeral"
+        data-chars={numeralChars(value)}
+        aria-label={label}
+        type="text"
+        inputmode={inputMode}
+        placeholder={LIVE_COPY.noValue}
+        value={value}
+        onIonChange={(event) => typeof event.detail.value === 'string' && onType(event.detail.value)}
+      />
+      <span className="tile-unit">{unit}</span>
+      <div className="tile-steps">
+        <button
+          type="button"
+          className="tile-step"
+          aria-label={LIVE_COPY.decrease(field)}
+          disabled={!canDecrease}
+          onClick={() => onStep(-1)}
+        >
+          <IonIcon icon={remove} aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          className="tile-step"
+          aria-label={LIVE_COPY.increase(field)}
+          disabled={!canIncrease}
+          onClick={() => onStep(1)}
+        >
+          <IonIcon icon={add} aria-hidden="true" />
+        </button>
       </div>
-      <button
-        type="button"
-        className="stepper-button"
-        aria-label={LIVE_COPY.increase(field)}
-        disabled={!canIncrease}
-        onClick={() => onStep(1)}
-      >
-        <IonIcon icon={add} aria-hidden="true" />
-      </button>
     </div>
   )
 }

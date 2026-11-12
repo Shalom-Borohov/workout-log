@@ -1,0 +1,57 @@
+.set-row {
+  --min-height: 48px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+}
+
+.set-select {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-block-size: 48px;
+  text-align: start;
+}
+
+.set-title {
+  flex: 0 0 52px;
+  font-size: var(--app-type-note);
+  color: var(--app-label-secondary);
+}
+
+.set-value {
+  font-size: var(--app-type-heading);
+  font-weight: var(--app-weight-thin);
+  line-height: 48px;
+  color: var(--app-label-secondary);
+  white-space: nowrap;
+}
+
+.set-done .set-value {
+  color: var(--app-label);
+}
+
+.set-row .set-check-small {
+  margin-inline: 12px 24px;
+}
+
+.pair-row .set-value {
+  margin-inline-end: 20px;
+  font-size: 28px;
+}
+
+.pair-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 72px;
+  margin-inline: auto 12px;
+  font-size: 28px;
+  color: var(--ion-color-success);
+}
+
+.pair-ring {
+  box-sizing: border-box;
+  inline-size: 24px;
+  block-size: 24px;
+  border: 1.5px solid var(--app-label-secondary);
+  border-radius: 50%;
+}

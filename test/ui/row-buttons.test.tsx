@@ -21,6 +21,16 @@ async function rowOf(text: string) {
   return row
 }
 
+async function tileOf(text: string) {
+  const tile = (await screen.findByText(text)).closest<HTMLElement>('.routine-tile')
+
+  if (!tile) {
+    throw new Error(`no tile for ${text}`)
+  }
+
+  return tile
+}
+
 describe('rows with a control inside', () => {
   beforeEach(async () => {
     await resetDb()
@@ -28,24 +38,31 @@ describe('rows with a control inside', () => {
     await saveRoutine(drills)
   })
 
-  it.each([
-    ['routine row', '/tabs/routines', 'אימון רגליים', '/tabs/routines/r1'],
-    ['daily card', '/tabs/daily', 'חטיפי תנועה', '/tabs/daily/d1'],
-  ])('a %s is not one big button, and its own button opens the routine', async (_, path, name, opened) => {
-    renderAt(path)
-    const row = await rowOf(name)
+  it('a routine row is not one big button, and its own button opens the routine', async () => {
+    renderAt('/tabs/routines')
+    const row = await rowOf('אימון רגליים')
 
     expect(row.button).toBeFalsy()
-    fireEvent.click(within(row).getByRole('button', { name }))
+    fireEvent.click(within(row).getByRole('button', { name: 'אימון רגליים' }))
 
-    await waitFor(() => expect(currentPath()).toBe(opened))
+    await waitFor(() => expect(currentPath()).toBe('/tabs/routines/r1'))
   })
 
-  it('✓ on a daily card logs today without opening the routine', async () => {
+  it('a daily tile is not one big button, and its own button opens the routine', async () => {
     renderAt('/tabs/daily')
-    const row = await rowOf('חטיפי תנועה')
+    const tile = await tileOf('חטיפי תנועה')
 
-    fireEvent.click(within(row).getByRole('button', { pressed: false }))
+    expect(tile.matches('button, [role="button"]')).toBe(false)
+    fireEvent.click(within(tile).getByRole('button', { name: 'חטיפי תנועה' }))
+
+    await waitFor(() => expect(currentPath()).toBe('/tabs/daily/d1'))
+  })
+
+  it('✓ on a daily tile logs today without opening the routine', async () => {
+    renderAt('/tabs/daily')
+    const tile = await tileOf('חטיפי תנועה')
+
+    fireEvent.click(within(tile).getByRole('button', { pressed: false }))
 
     await waitFor(async () => expect(await db.dailyLogs.count()).toBe(1))
     expect(currentPath()).toBe('/tabs/daily')

@@ -26,7 +26,6 @@ export function Stepper({ value, min, max, step = 1, decreaseLabel, increaseLabe
         >
           <IonIcon icon={remove} aria-hidden="true" />
         </button>
-        <span className="count-stepper-divider" />
         <button
           type="button"
           className="plain-button count-stepper-half"

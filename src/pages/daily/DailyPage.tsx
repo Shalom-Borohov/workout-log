@@ -20,6 +20,7 @@ import { useSave } from '../../hooks/useSave'
 import { DAILY_PATH, routinePath } from '../../navigation/paths'
 import { DAILY_COPY } from './copy'
 import { DailyBody } from './DailyBody'
+import { RoutineTiles } from './RoutineTiles'
 import './daily.css'
 
 export function DailyPage() {
@@ -58,6 +59,7 @@ export function DailyPage() {
         </IonHeader>
         {routines && logs && records && <DailyBody routines={routines} logs={logs} records={records} now={now} />}
       </IonContent>
+      {routines && logs && <RoutineTiles routines={routines} logs={logs} now={now} />}
     </IonPage>
   )
 }

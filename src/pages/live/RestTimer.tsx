@@ -6,7 +6,7 @@ import { SECOND_MS } from '../../domain/time'
 import { useNow } from '../../hooks/useNow'
 import { LIVE_COPY } from './copy'
 import type { Rest } from '../../rest/restClock'
-import './controls.css'
+import './chrome.css'
 
 export function RestButton({ rest, onToggle }: { rest: Rest; onToggle: () => void }) {
   return (
@@ -44,7 +44,7 @@ export function RestRow({ rest, seconds, sound, onAdjust, onToggleSound }: RestR
         >
           <IonIcon icon={sound ? volumeHighOutline : volumeMuteOutline} aria-hidden="true" />
         </button>
-        <div className="stepper rest-stepper">
+        <div className="rest-stepper">
           <button
             type="button"
             className="stepper-button"

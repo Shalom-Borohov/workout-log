@@ -1,6 +1,6 @@
 import { IonContent, IonItem, IonList, IonModal, IonTextarea } from '@ionic/react'
 import { useState } from 'react'
-import { HALF_SHEET } from '../../components/sheet'
+import { FULL_SHEET } from '../../components/sheet'
 import { LIVE_COPY } from './copy'
 import type { WorkoutItem } from '../../domain/types'
 import { SheetHeader } from './SheetHeader'
@@ -48,7 +48,7 @@ type NoteSheetProps = NoteFormProps & { isOpen: boolean }
 
 export function NoteSheet({ isOpen, ...form }: NoteSheetProps) {
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={form.onCancel} {...HALF_SHEET}>
+    <IonModal isOpen={isOpen} onDidDismiss={form.onCancel} {...FULL_SHEET}>
       <NoteForm {...form} />
     </IonModal>
   )

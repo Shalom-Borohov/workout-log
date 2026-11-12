@@ -27,7 +27,7 @@ import { type DetailHostPath, workoutPath } from '../../navigation/paths'
 import { ActivityEditButton } from './ActivityEditButton'
 import { SummaryEditor } from './SummaryEditor'
 import { WorkoutSections } from './WorkoutSections'
-import './timeline.css'
+import './workoutDetail.css'
 
 const overview = (workout: WorkoutRecord) => `${formatDay(workout.startedAt)} · ${summaryLine(workout)}`
 
@@ -82,17 +82,17 @@ export function WorkoutDetail({ id, tab }: { id: string; tab: DetailHostPath }) 
           <>
             <IonHeader collapse="condense">
               <IonToolbar>
-                <IonTitle size="large">{recordName(workout)}</IonTitle>
+                <IonTitle size="large" className="workout-detail-title">
+                  {recordName(workout)}
+                </IonTitle>
               </IonToolbar>
             </IonHeader>
             <p className="workout-overview">{overview(workout)}</p>
             <SummaryEditor workout={workout} />
             <WorkoutSections sections={sectionsOf(workout)} changes={changes} />
-            <IonList inset className="workout-delete">
+            <IonList className="list-plain workout-delete">
               <IonItem button detail={false} onClick={confirmRemove}>
-                <IonLabel color="danger" className="ion-text-center">
-                  {COMMON_COPY.deleteWorkout}
-                </IonLabel>
+                <IonLabel color="danger">{COMMON_COPY.deleteWorkout}</IonLabel>
               </IonItem>
             </IonList>
           </>

@@ -1,7 +1,7 @@
 import { IonContent, IonItem, IonList, IonModal, IonTextarea } from '@ionic/react'
 import { type ReactNode, useState } from 'react'
 import { DurationMinutesItem } from '../../components/DurationMinutesItem'
-import { HALF_SHEET } from '../../components/sheet'
+import { FULL_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
 import { finishMinutes, isClockPastLimit, MAX_DURATION_MINUTES } from '../../domain/pastTime'
 import { MINUTE_MS } from '../../domain/time'
@@ -88,7 +88,7 @@ export function FinishSheet({ mode, ...form }: FinishSheetProps) {
   }
 
   return (
-    <IonModal isOpen={mode !== null} onDidDismiss={form.onCancel} {...HALF_SHEET}>
+    <IonModal isOpen={mode !== null} onDidDismiss={form.onCancel} {...FULL_SHEET}>
       <FinishForm mode={shown} {...form} />
     </IonModal>
   )

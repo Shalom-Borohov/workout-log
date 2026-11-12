@@ -26,7 +26,14 @@
 }
 
 .set-check-large {
-  inline-size: 76px;
-  block-size: 76px;
-  font-size: 68px;
+  inline-size: 72px;
+  block-size: 72px;
+  border-radius: 50%;
+  background: var(--app-on-accent);
+  color: var(--ion-color-primary);
+  font-size: 38px;
+}
+
+.set-check-large[aria-pressed='true'] {
+  color: var(--ion-color-success);
 }

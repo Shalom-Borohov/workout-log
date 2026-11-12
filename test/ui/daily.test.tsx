@@ -31,6 +31,8 @@ const plannedDrills = [
 
 const dayButton = (name: string | RegExp) => screen.findByRole('button', { name })
 
+const tileNames = (page: Element) => Array.from(page.querySelectorAll('h2'), (name) => name.textContent)
+
 function swipe(element: Element, dx: number, dy: number, startX = 200) {
   fireEvent.touchStart(element, { touches: [{ clientX: startX, clientY: 300 }] })
   fireEvent.touchEnd(element, { changedTouches: [{ clientX: startX + dx, clientY: 300 + dy }] })
@@ -96,7 +98,7 @@ describe('daily tab', () => {
     expect(document.querySelector('ion-alert')).toBeNull()
   })
 
-  describe('removing today from a card when its numbers were edited', () => {
+  describe('removing today from a tile when its numbers were edited', () => {
     const editedLog = dailyLog('d1', '2026-10-26', [{ ...plannedDrills[0], sets: 5 }, plannedDrills[1]])
 
     async function tapCheckUntilAsked() {
@@ -166,7 +168,7 @@ describe('daily tab', () => {
     })
   })
 
-  it('the today card opens the routine in the editor', async () => {
+  it('a tile opens the routine in the editor', async () => {
     await saveRoutine(drills)
     renderAt('/tabs/daily')
 
@@ -243,36 +245,53 @@ describe('daily tab', () => {
     expect(await screen.findByText('אוקטובר 2026')).toBeInTheDocument()
   })
 
-  it('archiving a card from its swipe hides it, and its days stay in the calendar', async () => {
+  it('pages the tiles four at a time, newest first, so a fifth routine starts a second page', async () => {
+    const names = ['נשימות', 'מתיחות ערב', 'ניידות בוקר', 'יציבה', 'חטיפי תנועה']
+
+    for (const [index, name] of names.entries()) {
+      await saveRoutine({ ...routine(`d${index}`, name, []), daily: true, color: 'green', createdAt: oct(20 - index) })
+    }
+    renderAt('/tabs/daily')
+    await screen.findByText('חטיפי תנועה', { selector: 'h2' })
+
+    expect(Array.from(document.querySelectorAll('.routine-tiles-page'), tileNames)).toEqual([
+      ['נשימות', 'מתיחות ערב', 'ניידות בוקר', 'יציבה'],
+      ['חטיפי תנועה'],
+    ])
+  })
+
+  it('a tile has no archive swipe; its editor archives it, and its days stay in the calendar', async () => {
     await saveRoutine(drills)
     await db.dailyLogs.put(dailyLog('d1', '2026-10-25'))
     renderAt('/tabs/daily')
 
-    fireEvent.click(await screen.findByText('ארכיון', { selector: 'ion-item-option' }))
+    const tile = await screen.findByRole('button', { name: 'חטיפי תנועה' })
 
+    expect(screen.queryByText('ארכיון', { selector: 'ion-item-option' })).not.toBeInTheDocument()
+    fireEvent.click(tile)
+    await waitFor(() => expect(currentPath()).toBe('/tabs/daily/d1'))
+
+    fireEvent.click(await screen.findByText('העברה לארכיון'))
     await waitFor(async () => expect((await db.routines.get('d1'))?.archived).toBe(true))
+    fireEvent.click(await ionElement('ion-back-button'))
+
+    await waitFor(() => expect(currentPath()).toBe('/tabs/daily'))
     await waitFor(() => expect(screen.queryByText('חטיפי תנועה', { selector: 'h2' })).not.toBeInTheDocument())
     expect(await dayButton('יום א׳ 25.10, חטיפי תנועה')).toBeInTheDocument()
+    expect(await screen.findByText('בארכיון')).toBeInTheDocument()
     expect(screen.queryByText('עוד אין אימון יומי')).not.toBeInTheDocument()
   })
 
-  it('a full swipe on a card archives it', async () => {
-    await saveRoutine(drills)
-    renderAt('/tabs/daily')
-
-    expect(await screen.findByText('ארכיון', { selector: 'ion-item-option' })).toBeInTheDocument()
-    fireEvent(await ionElement('ion-item-options'), new CustomEvent('ionSwipe', { detail: { side: 'end' }, bubbles: true }))
-
-    await waitFor(async () => expect((await db.routines.get('d1'))?.archived).toBe(true))
-  })
-
-  it('a "בארכיון" row opens the archive, where "החזרה" brings a drill back', async () => {
+  it('a "בארכיון" link among the tiles opens the archive, where "החזרה" brings a drill back', async () => {
     await saveRoutine({ ...drills, archived: true })
     await saveRoutine(stretches)
     renderAt('/tabs/daily')
 
-    expect(await screen.findByText('מתיחות', { selector: 'h2' })).toBeInTheDocument()
-    fireEvent.click(await screen.findByText('בארכיון'))
+    const tile = await screen.findByText('מתיחות', { selector: 'h2' })
+    const archiveLink = await screen.findByText('בארכיון')
+
+    expect(archiveLink.closest('.routine-tiles-page')).toContainElement(tile)
+    fireEvent.click(archiveLink)
 
     await waitFor(() => expect(currentPath()).toBe('/tabs/daily/archive'))
     expect(await screen.findByText('חטיפי תנועה', { selector: '.ion-page:not(.ion-page-hidden) h2' })).toBeInTheDocument()

@@ -34,7 +34,8 @@ Used mid-workout: one hand, sweaty fingers, quick glances between sets, screen k
 
 - Name: אימונים.
 - Icon: white dumbbell on an orange→red gradient (`public/favicon.svg`).
-- Must look and feel like a native iPhone app.
+- Must behave like a native iPhone app: iOS navigation, gestures and controls.
+- The look is the app's own, "Type tiles": always black, Heebo with large thin numbers, and one accent colour as flat rounded tiles (spec items 80 to 82).
 
 ## Evidence on Hand
 
@@ -44,7 +45,7 @@ Used mid-workout: one hand, sweaty fingers, quick glances between sets, screen k
 ## Product Principles
 
 1. One tap at the gym: the usual action (✓ on a prefilled set) never needs typing.
-2. Native, not novel: iOS conventions over custom ones.
+2. Native behaviour, own look: iOS conventions for navigation, gestures and controls over custom ones. The look is the app's own.
    - Wherever iOS uses a swipe, offer it too: swipe actions on list rows, swiping between periods such as months, and swipe-down to close a sheet. A swipe is always a shortcut for a visible control, never the only way. The app's own sideways swipes never start within 20px of either screen edge, and on a page that can swipe back they also leave the 50px at the back edge where that gesture starts.
 3. Progress at a glance.
 4. The phone owns the data: nothing leaves the device unless the owner exports it.
@@ -57,4 +58,4 @@ Used mid-workout: one hand, sweaty fingers, quick glances between sets, screen k
 
 ## Accessibility & Inclusion
 
-Touch targets of at least 44pt and readable numbers for use mid-set; follows the system light/dark setting.
+Touch targets of at least 44pt and readable numbers for use mid-set; always dark, whatever the phone is set to (spec item 81).

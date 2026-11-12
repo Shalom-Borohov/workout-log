@@ -14,7 +14,7 @@
 .count-stepper {
   display: flex;
   align-items: center;
-  border-radius: 8px;
+  border-radius: var(--app-radius-control);
   background: var(--app-fill);
 }
 
@@ -23,7 +23,7 @@
   place-items: center;
   inline-size: 48px;
   block-size: 44px;
-  border-radius: 8px;
+  border-radius: var(--app-radius-control);
   color: var(--app-label);
   font-size: 1.375rem;
   transition: background-color 150ms ease-out;
@@ -40,10 +40,4 @@
 
 .count-stepper-half:disabled {
   color: var(--app-label-tertiary);
-}
-
-.count-stepper-divider {
-  inline-size: 1px;
-  block-size: 18px;
-  background: var(--app-label-tertiary);
 }

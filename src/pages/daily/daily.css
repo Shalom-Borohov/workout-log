@@ -1,78 +1,3 @@
-.month-day:active {
-  opacity: 0.6;
-}
-
-.month-calendar {
-  margin: 1rem 16px 2rem;
-}
-
-.month-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.month-title {
-  margin: 0;
-  font-size: 1.0625rem;
-  font-weight: 600;
-  color: var(--app-label);
-}
-
-.month-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(44px, 1fr));
-  row-gap: 0.25rem;
-  margin-top: 0.5rem;
-  text-align: center;
-}
-
-.month-weekday {
-  padding-block: 0.25rem;
-  font-size: 0.75rem;
-  color: var(--app-label-secondary);
-}
-
-.month-day {
-  display: grid;
-  justify-items: center;
-  align-content: center;
-  row-gap: 2px;
-  min-height: 44px;
-}
-
-.month-day:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.month-day-number {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  font-size: 1.0625rem;
-  color: var(--app-label);
-}
-
-.month-day[aria-current='date'] .month-day-number {
-  box-shadow: inset 0 0 0 2px var(--ion-color-primary);
-  color: var(--ion-color-primary);
-  font-weight: 600;
-}
-
-.month-day-dots {
-  display: flex;
-  gap: 2px;
-  height: 6px;
-}
-
-.month-day-dots .drill-dot {
-  width: 6px;
-  height: 6px;
-}
-
 .daily-name {
   display: flex;
   align-items: center;
@@ -103,7 +28,6 @@
 .daily-drill-summary {
   font-size: 0.875rem;
   color: var(--app-label-secondary);
-  font-variant-numeric: tabular-nums;
 }
 
 .daily-drill-chevron {
@@ -127,32 +51,4 @@
   --min-height: 32px;
   font-size: 0.8125rem;
   color: var(--app-label-secondary);
-}
-
-.month-grid[data-slide='back'] {
-  animation: month-from-right 0.2s ease-out;
-}
-
-.month-grid[data-slide='forward'] {
-  animation: month-from-left 0.2s ease-out;
-}
-
-@keyframes month-from-right {
-  from {
-    opacity: 0;
-    transform: translateX(24px);
-  }
-}
-
-@keyframes month-from-left {
-  from {
-    opacity: 0;
-    transform: translateX(-24px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .month-grid[data-slide] {
-    animation: none;
-  }
 }

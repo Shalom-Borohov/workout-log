@@ -1,0 +1,15 @@
+.feedback-kind {
+  --background: var(--app-fill);
+}
+
+.feedback-kind ion-segment-button {
+  --indicator-box-shadow: none;
+}
+
+.feedback-send {
+  --border-radius: var(--app-radius-panel);
+  height: 56px;
+  margin: 8px 16px 16px;
+  font-size: var(--app-type-body);
+  font-weight: var(--app-weight-regular);
+}

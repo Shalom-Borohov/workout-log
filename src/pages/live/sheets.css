@@ -1,0 +1,10 @@
+.list-current {
+  --background: var(--app-fill);
+  font-weight: var(--app-weight-strong);
+}
+
+.finish-delete {
+  inline-size: 100%;
+  text-align: center;
+  color: var(--ion-color-danger);
+}

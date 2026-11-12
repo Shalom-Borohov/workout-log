@@ -1,4 +1,4 @@
-import { IonItem, IonLabel, IonList, IonListHeader } from '@ionic/react'
+import { IonItem, IonLabel, IonList } from '@ionic/react'
 import { ChangeBadge } from '../../components/ChangeBadge'
 import { exerciseResult, formatChange, formatSets } from '../../domain/format'
 import { type Change, exercisesOf } from '../../domain/progress'
@@ -7,7 +7,7 @@ import type { WorkoutExercise, WorkoutSection } from '../../domain/types'
 
 function ExerciseRow({ exercise, change }: { exercise: WorkoutExercise; change: Change | undefined }) {
   return (
-    <IonItem>
+    <IonItem className="workout-exercise-item">
       <IonLabel className="ion-text-wrap workout-exercise">
         <div className="workout-exercise-heading">
           <h3 className="workout-exercise-name">{exercise.name}</h3>
@@ -24,10 +24,8 @@ export function WorkoutSections({ sections, changes }: { sections: WorkoutSectio
 
   return sections.map((section, index) => (
     <section key={index}>
-      <IonListHeader>
-        <IonLabel>{section.name}</IonLabel>
-      </IonListHeader>
-      <IonList inset>
+      <h2 className="workout-part-title">{section.name}</h2>
+      <IonList className="list-plain">
         {section.items.flatMap((item) =>
           item.exercises.map((exercise) => (
             <ExerciseRow

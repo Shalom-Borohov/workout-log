@@ -59,7 +59,7 @@ function ActivityForm({ activity, onClose }: FormProps) {
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent color="light">
+      <IonContent>
         <IonList inset>
           <IonItem>
             <IonInput

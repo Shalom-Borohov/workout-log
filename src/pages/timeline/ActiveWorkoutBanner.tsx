@@ -4,6 +4,7 @@ import { ElapsedClock } from '../../components/ElapsedClock'
 import { TIMELINE_COPY } from './copy'
 import type { Workout } from '../../domain/types'
 import { TIMELINE_PATH, workoutPath } from '../../navigation/paths'
+import './startBar.css'
 
 export function ActiveWorkoutBanner({ workout }: { workout: Workout }) {
   return (

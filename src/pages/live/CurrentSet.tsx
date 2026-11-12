@@ -7,35 +7,43 @@ import type { SetLog, Target } from '../../domain/types'
 import { WEIGHT_STEP, amountStep, stepValue } from '../../domain/workoutEdits'
 import { SetCheck } from '../../components/SetCheck'
 import { Stepper } from './Stepper'
+import './tile.css'
 
 interface CurrentSetProps {
   title: string
+  name: string | null
   label: string
   target: Target
   set: SetLog
   onChange: (patch: Partial<SetLog>) => void
 }
 
-export function CurrentSet({ title, label, target, set, onChange }: CurrentSetProps) {
+export function CurrentSet({ title, name, label, target, set, onChange }: CurrentSetProps) {
   const unit = amountUnit(target)
   const max = maxAmount(target)
 
   return (
-    <div className="current-set">
+    <section className={name === null ? 'current-set tile tile-accent' : 'current-set tile tile-accent tile-pair'}>
+      {name !== null && <h2 className="tile-name">{name}</h2>}
       <span className="current-title">{title}</span>
-      <div className="current-steppers">
+      <div className="tile-numbers">
         {target.kind === 'reps' && (
-          <Stepper
-            field={LIVE_COPY.weight}
-            label={`${label} ${LIVE_COPY.weight}`}
-            value={weightText(set.weight)}
-            unit={LIVE_COPY.kg}
-            inputMode="decimal"
-            canDecrease={set.weight !== null && set.weight > 0}
-            canIncrease={set.weight === null || set.weight < MAX_WEIGHT}
-            onStep={(direction) => onChange({ weight: stepValue(set.weight, direction * WEIGHT_STEP, MAX_WEIGHT) })}
-            onType={(text) => onChange(weightPatch(text))}
-          />
+          <>
+            <Stepper
+              field={LIVE_COPY.weight}
+              label={`${label} ${LIVE_COPY.weight}`}
+              value={weightText(set.weight)}
+              unit={LIVE_COPY.kg}
+              inputMode="decimal"
+              canDecrease={set.weight !== null && set.weight > 0}
+              canIncrease={set.weight === null || set.weight < MAX_WEIGHT}
+              onStep={(direction) => onChange({ weight: stepValue(set.weight, direction * WEIGHT_STEP, MAX_WEIGHT) })}
+              onType={(text) => onChange(weightPatch(text))}
+            />
+            <span className="tile-times" aria-hidden="true">
+              {LIVE_COPY.times}
+            </span>
+          </>
         )}
         <Stepper
           field={target.kind === 'reps' ? COMMON_COPY.reps : LIVE_COPY.time}
@@ -50,6 +58,6 @@ export function CurrentSet({ title, label, target, set, onChange }: CurrentSetPr
         />
       </div>
       <SetCheck label={label} done={set.done} size="large" onToggle={() => onChange({ done: !set.done })} />
-    </div>
+    </section>
   )
 }

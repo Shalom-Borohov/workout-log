@@ -1,18 +1,65 @@
 .update-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px 6px 4px;
-  background: var(--ion-item-background);
-  border-top: 0.55px solid var(--app-label-tertiary);
+  gap: 4px;
+  margin: 8px 16px;
+  padding-block: 8px;
+  padding-inline: 4px 8px;
+  border-radius: var(--app-radius-panel);
+  background: var(--app-fill-quiet);
   color: var(--app-label);
 }
 
 .update-bar ion-label {
   flex: 1;
+  font-size: var(--app-type-body);
+}
+
+.update-dismiss {
+  --color: var(--app-label-secondary);
+  height: 40px;
+  margin: 0;
+}
+
+.update-now {
+  --border-radius: var(--app-radius-control);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  height: 40px;
+  margin: 0;
+  font-size: var(--app-type-note);
+  font-weight: var(--app-weight-regular);
+}
+
+.release-title {
+  margin: 20px 16px 0;
+  font-size: var(--app-type-heading);
+  font-weight: var(--app-weight-thin);
+  line-height: 1.2;
+}
+
+.release-title + ion-list.list-inset {
+  margin-block-start: 8px;
+}
+
+ion-label.release-label h3 {
+  margin-block-end: 4px;
+  color: var(--app-label);
+  font-size: var(--app-type-caption);
+  font-weight: var(--app-weight-regular);
 }
 
 .release-changes {
-  margin: 4px 0 0;
+  margin: 0;
   padding-inline-start: 20px;
+  font-size: var(--app-type-body);
+  line-height: 1.35;
+}
+
+.release-changes li + li {
+  margin-block-start: 6px;
+}
+
+.release-changes li::marker {
+  color: var(--app-label-secondary);
 }

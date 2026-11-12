@@ -41,13 +41,16 @@ describe('routines list', () => {
   beforeEach(resetDb)
   freezeDate(oct(29, 12))
 
-  it('routine row shows exercise and section counts and the creation date', async () => {
+  it('routine row shows each part with its exercise count, a pair counting two, and the creation date', async () => {
     await saveRoutine(twoSections)
     await saveRoutine({ ...short, createdAt: lastYear })
     renderAt('/tabs/routines')
 
-    expect(await screen.findByText('3 תרגילים · 2 חלקים · נוצר 20.10')).toBeInTheDocument()
-    expect(screen.getByText('תרגיל אחד · חלק אחד · נוצר 29.10.25')).toBeInTheDocument()
+    expect(await screen.findByText('חימום 1 · עיקרי 2')).toBeInTheDocument()
+    expect(screen.getByText('עיקרי 1')).toBeInTheDocument()
+    expect(screen.getByText('נוצר 20.10')).toBeInTheDocument()
+    expect(screen.getByText('נוצר 29.10.25')).toBeInTheDocument()
+    expect(screen.queryByText(/\d+ תרגילים|תרגיל אחד|חלקים|חלק אחד/)).not.toBeInTheDocument()
   })
 
   it('lists the newest routine first', async () => {

@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { activeWorkout, saveRoutine, saveWorkout } from '../../src/data/repo'
@@ -29,6 +29,11 @@ async function exerciseAt(index: number) {
   return (await db.routines.get('r1'))?.sections[0].items[0].exercises[index]
 }
 
+const START_LABEL = 'התחל'
+
+const labelledStart = (button: Element) =>
+  [button, button.shadowRoot?.querySelector('button')].some((element) => element?.getAttribute('aria-label') === START_LABEL)
+
 function startButton(name: HTMLElement) {
   const row = name.closest('ion-item')
 
@@ -36,7 +41,15 @@ function startButton(name: HTMLElement) {
     throw new Error('row not found')
   }
 
-  return within(row).getByText('התחל', { selector: 'ion-button' })
+  return waitFor(() => {
+    const button = Array.from(row.querySelectorAll('ion-button')).find(labelledStart)
+
+    if (!button) {
+      throw new Error(`no ${START_LABEL} button in the row`)
+    }
+
+    return button
+  })
 }
 
 describe('routines', () => {
@@ -47,9 +60,9 @@ describe('routines', () => {
     renderAt('/tabs/routines')
 
     expect(await screen.findByText('אימון גוף מלא')).toBeInTheDocument()
-    expect(screen.getByText(/^3 תרגילים · חלק אחד · נוצר /)).toBeInTheDocument()
+    expect(screen.getByText('עיקרי 3')).toBeInTheDocument()
 
-    fireEvent.click(startButton(screen.getByText('אימון גוף מלא')))
+    fireEvent.click(await startButton(screen.getByText('אימון גוף מלא')))
 
     await waitFor(async () => expect((await activeWorkout())?.routineId).toBe('r1'))
 
@@ -62,7 +75,7 @@ describe('routines', () => {
     await saveRoutine(routine('r2', 'אימון חדש', []))
     renderAt('/tabs/routines')
 
-    expect(startButton(await screen.findByText('אימון חדש'))).toHaveAttribute('disabled')
+    expect(await startButton(await screen.findByText('אימון חדש'))).toHaveAttribute('disabled')
   })
 
   it('start on the routine in progress opens it', async () => {
@@ -70,7 +83,7 @@ describe('routines', () => {
     await saveWorkout(workout({ id: 'w-active', startedAt: oct(26), finishedAt: null, exercises: [] }))
     renderAt('/tabs/routines')
 
-    fireEvent.click(startButton(await screen.findByText('אימון גוף מלא')))
+    fireEvent.click(await startButton(await screen.findByText('אימון גוף מלא')))
 
     await waitFor(() => expect(currentPath()).toBe('/tabs/routines/workout/w-active'))
     expect(await db.workouts.count()).toBe(1)
@@ -84,7 +97,7 @@ describe('routines', () => {
 
     const presented = actionSheetPresented()
 
-    fireEvent.click(startButton(await screen.findByText('אימון רגליים')))
+    fireEvent.click(await startButton(await screen.findByText('אימון רגליים')))
     await presented
     expect(screen.getByText('יש אימון בתהליך', { selector: '.action-sheet-title' })).toBeInTheDocument()
     fireEvent.click(screen.getByText('המשך את אימון גוף מלא', { selector: '.action-sheet-button-label' }))
