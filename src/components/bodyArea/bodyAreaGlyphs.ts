@@ -1,12 +1,12 @@
 import type { areaKey } from '../../domain/bodyAreas'
 
-interface Glyph {
+export interface Glyph {
   viewBox: string
   strokeWidth: number
   paths: string[]
 }
 
-const hugeicon = (...paths: string[]): Glyph => ({ viewBox: '0 0 24 24', strokeWidth: 1.5, paths })
+const hugeicon =(...paths: string[]): Glyph => ({ viewBox: '0 0 24 24', strokeWidth: 1.5, paths })
 
 const iconPark = (...paths: string[]): Glyph => ({ viewBox: '0 0 48 48', strokeWidth: 3, paths })
 

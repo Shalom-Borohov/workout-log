@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { activityDetailsMap, setActivityNote } from '../../src/data/activityDetails'
 import { exportBackup, parseBackup } from '../../src/data/backup'
 import { backupStatus, markBackedUp } from '../../src/data/backupStatus'
 import { db } from '../../src/data/db'
@@ -41,6 +42,17 @@ describe('undoing a restore', () => {
     expect(await ids()).toEqual(['phone'])
     expect(await backupStatus()).toEqual({ backedUpAt: oct(24, 12), records: 1 })
     expect(await restoreUndo(oct(27))).toEqual({ undone: true, until: oct(26) + 7 * DAY_MS })
+  })
+
+  it('undoing brings back the activity details from before the restore', async () => {
+    await setActivityNote('ריצה', 'קצב קל')
+    await restoreBackup(oldFile, oct(26))
+
+    expect(await activityDetailsMap()).toEqual(new Map())
+
+    await swapRestore()
+
+    expect(await activityDetailsMap()).toEqual(new Map([['ריצה', { name: 'ריצה', note: 'קצב קל', location: '' }]]))
   })
 
   it('undoing the undo puts the restored file back, with what was logged since kept aside', async () => {
@@ -118,7 +130,7 @@ describe('undoing a restore', () => {
     await saveRoutine(routine('r2', 'חדש', []))
     await restoreBackup(oldFile, oct(26))
 
-    expect(Object.keys(await exportBackup(oct(27))).sort()).toEqual(['dailyLogs', 'exerciseAreas', 'exportedAt', 'routines', 'version', 'workouts'])
+    expect(Object.keys(await exportBackup(oct(27))).sort()).toEqual(['activityDetails', 'dailyLogs', 'exerciseAreas', 'exportedAt', 'routines', 'version', 'workouts'])
     expect((await exportBackup(oct(27))).routines.map((saved) => saved.id)).toEqual(['r1'])
   })
 })

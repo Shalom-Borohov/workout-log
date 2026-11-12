@@ -3,7 +3,7 @@ import { AppError } from '../domain/appError'
 import { isBodyArea } from '../domain/bodyAreas'
 import { dailyLogId } from '../domain/daily'
 import { isDrillColor } from '../domain/drillColors'
-import type { DailyExercise, DataSnapshot, ExerciseArea, SetLog, Target } from '../domain/types'
+import type { ActivityDetails, DailyExercise, DataSnapshot, ExerciseArea, SetLog, Target } from '../domain/types'
 import { isNumber, isObject, isString } from './guards'
 import { readStoredData } from './storedData'
 import {
@@ -41,6 +41,7 @@ type LegacyBackup = {
   workouts: LegacyRecord[]
   dailyLogs?: LegacyDailyLog[]
   exerciseAreas?: ExerciseArea[]
+  activityDetails?: ActivityDetails[]
 }
 
 type Guard<T> = (value: unknown) => value is T
@@ -160,6 +161,9 @@ const isDailyLog = (log: unknown): log is LegacyDailyLog =>
 const isExerciseArea = (exerciseArea: unknown): exerciseArea is ExerciseArea =>
   isObject(exerciseArea) && isString(exerciseArea.name) && isBodyArea(exerciseArea.area)
 
+const isActivityDetails = (details: unknown): details is ActivityDetails =>
+  isObject(details) && isString(details.name) && isString(details.note) && isString(details.location)
+
 const isBackup = (backup: unknown): backup is LegacyBackup =>
   isObject(backup) &&
   (backup.version === VERSION_BEFORE_CARRIED_NOTES || backup.version === BACKUP_VERSION) &&
@@ -167,7 +171,8 @@ const isBackup = (backup: unknown): backup is LegacyBackup =>
   arrayOf(isRoutine)(backup.routines) &&
   arrayOf(isRecord)(backup.workouts) &&
   optional(arrayOf(isDailyLog))(backup.dailyLogs) &&
-  optional(arrayOf(isExerciseArea))(backup.exerciseAreas)
+  optional(arrayOf(isExerciseArea))(backup.exerciseAreas) &&
+  optional(arrayOf(isActivityDetails))(backup.activityDetails)
 
 export function parseBackup(json: unknown): Backup {
   if (!isBackup(json)) {
@@ -184,6 +189,7 @@ export function parseBackup(json: unknown): Backup {
     workouts: json.version === VERSION_BEFORE_CARRIED_NOTES ? carryNotesForward(workouts) : workouts,
     dailyLogs: upgradeDailyLogs(json.dailyLogs ?? [], routines),
     exerciseAreas: json.exerciseAreas ?? [],
+    activityDetails: json.activityDetails ?? [],
   }
 }
 
@@ -194,11 +200,11 @@ export async function exportBackup(now: number): Promise<Backup> {
 const countFailing = (guard: (value: unknown) => boolean, records: unknown[]) =>
   records.filter((record) => !guard(record)).length
 
-type ExportedLists = Record<'routines' | 'workouts' | 'dailyLogs' | 'exerciseAreas', unknown[]>
+type ExportedLists = Record<'routines' | 'workouts' | 'dailyLogs' | 'exerciseAreas' | 'activityDetails', unknown[]>
 
 const isExportedLists = (json: unknown): json is ExportedLists =>
   isObject(json) &&
-  [json.routines, json.workouts, json.dailyLogs, json.exerciseAreas].every((list) => Array.isArray(list))
+  [json.routines, json.workouts, json.dailyLogs, json.exerciseAreas, json.activityDetails].every((list) => Array.isArray(list))
 
 export function countBadRecords(fileText: string): number {
   const json: unknown = JSON.parse(fileText)
@@ -207,12 +213,13 @@ export function countBadRecords(fileText: string): number {
     throw new Error(APP_COPY.invalidBackup)
   }
 
-  const { routines, workouts, dailyLogs, exerciseAreas } = json
+  const { routines, workouts, dailyLogs, exerciseAreas, activityDetails } = json
 
   return (
     countFailing(isRoutine, routines) +
     countFailing(isRecord, workouts) +
     countFailing(isDailyLog, dailyLogs) +
-    countFailing(isExerciseArea, exerciseAreas)
+    countFailing(isExerciseArea, exerciseAreas) +
+    countFailing(isActivityDetails, activityDetails)
   )
 }

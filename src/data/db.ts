@@ -1,14 +1,16 @@
 import Dexie, { type EntityTable, type Transaction } from 'dexie'
-import type { DailyLog, ExerciseArea, Routine, Setting, WorkoutRecord } from '../domain/types'
+import type { ActivityDetails, DailyLog, ExerciseArea, Routine, Setting, WorkoutRecord } from '../domain/types'
 import {
   carryNotesForward,
   colorDailyRoutines,
   type LegacyDailyLog,
   type LegacyRecord,
+  type LegacyRestoreCopy,
   type LegacyRoutine,
   type LegacyWorkout,
   upgradeDailyLogs,
   upgradeRecord,
+  upgradeRestoreCopy,
   upgradeRoutine,
   upgradeWorkout,
 } from './migrate'
@@ -16,6 +18,8 @@ import {
 const DB_NAME = 'workout-log'
 
 export const BACKUP_KEY = 'backup'
+
+export const RESTORE_COPY_KEY = 'restoreCopy'
 
 function upgradeRoutines(transaction: Transaction) {
   return transaction
@@ -42,6 +46,7 @@ class WorkoutDb extends Dexie {
   settings!: EntityTable<Setting, 'key', Setting>
   dailyLogs!: EntityTable<DailyLog, 'id'>
   exerciseAreas!: EntityTable<ExerciseArea, 'name'>
+  activityDetails!: EntityTable<ActivityDetails, 'name'>
 
   constructor() {
     super(DB_NAME)
@@ -98,6 +103,17 @@ class WorkoutDb extends Dexie {
         await logs.bulkPut(upgradeDailyLogs(await logs.toArray(), upgraded))
       })
     this.version(10).stores({ exerciseAreas: 'name' })
+    this.version(11)
+      .stores({ activityDetails: 'name' })
+      .upgrade((transaction) =>
+        transaction
+          .table<LegacyRestoreCopy>('settings')
+          .where('key')
+          .equals(RESTORE_COPY_KEY)
+          .modify((copy, ref) => {
+            ref.value = upgradeRestoreCopy(copy)
+          }),
+      )
   }
 }
 

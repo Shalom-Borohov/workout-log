@@ -3,6 +3,7 @@ import { nextDrillColor } from '../domain/drillColors'
 import type {
   Activity,
   DailyLog,
+  RestoreCopySetting,
   Routine,
   RoutineExercise,
   RoutineItem,
@@ -39,6 +40,8 @@ export type LegacyWorkout = Omit<Legacy<Workout, 'kind'>, 'sections'> & { sectio
 export type LegacyActivity = Legacy<Activity, 'location'>
 
 export type LegacyRecord = LegacyWorkout | LegacyActivity
+
+export type LegacyRestoreCopy = Legacy<RestoreCopySetting, 'activityDetails'>
 
 export function upgradeRoutine(routine: LegacyRoutine): Routine {
   return {
@@ -97,6 +100,11 @@ const upgradeActivity = (activity: LegacyActivity): Activity => ({ ...activity, 
 export function upgradeRecord(record: LegacyRecord): WorkoutRecord {
   return record.kind === 'activity' ? upgradeActivity(record) : upgradeWorkout(record)
 }
+
+export const upgradeRestoreCopy = (copy: LegacyRestoreCopy): RestoreCopySetting => ({
+  ...copy,
+  activityDetails: copy.activityDetails ?? [],
+})
 
 function carryInto(workout: Workout, latest: Map<string, string>): Workout {
   return {

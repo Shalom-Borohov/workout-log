@@ -9,7 +9,7 @@ ion-title.title-large.exercise-history-title {
   text-wrap: balance;
 }
 
-.body-area-row {
+.field-row {
   --color: var(--ion-color-primary);
   --min-height: 44px;
   --padding-start: 16px;
@@ -17,18 +17,18 @@ ion-title.title-large.exercise-history-title {
   font-size: var(--app-type-body);
 }
 
-.body-area-value {
+.field-row-value {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.body-area-row .body-area-icon {
+.field-row .body-area-icon {
   width: 22px;
   height: 22px;
 }
 
-.body-area-value ion-icon {
+.field-row-value ion-icon {
   font-size: 14px;
 }
 

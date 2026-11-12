@@ -2,9 +2,9 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLis
 import { useMemo, useState } from 'react'
 import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
-import { useFinishedRecords } from '../../data/hooks'
-import { saveRecord } from '../../data/repo'
-import { activityNames, lastLocation } from '../../domain/activities'
+import { saveActivity } from '../../data/activityDetails'
+import { useActivityDetails, useFinishedRecords } from '../../data/hooks'
+import { activityNames, rememberedLocation } from '../../domain/activities'
 import { pastTimeProblems } from '../../domain/pastTime'
 import { MINUTE_MS } from '../../domain/time'
 import type { Activity } from '../../domain/types'
@@ -27,19 +27,20 @@ function ActivityForm({ activity, onClose }: FormProps) {
   const [typedLocation, setTypedLocation] = useState<string | null>(activity ? activity.location : null)
   const [pastTime, setPastTime] = useState(() => (activity ? pastTimeOf(activity) : defaultPastTime(now)))
   const records = useFinishedRecords()
+  const details = useActivityDetails()
   const names = useMemo(() => (records ? activityNames(records) : []), [records])
 
   const { startedAt, minutes } = readPastTime(pastTime)
   const problems = pastTimeProblems(startedAt, minutes, now)
   const trimmedName = name.trim()
-  const location = typedLocation ?? (records ? lastLocation(records, trimmedName) : '')
+  const location = typedLocation ?? (records && details ? rememberedLocation(records, details, trimmedName) : '')
   const valid = trimmedName !== '' && problems.valid
 
-  async function saveActivity() {
+  async function submit() {
     const base: Pick<Activity, 'kind' | 'id' | 'summary'> = activity ?? { kind: 'activity', id: newId, summary: '' }
     const record = { ...base, name: trimmedName, location: location.trim(), startedAt, finishedAt: startedAt + minutes * MINUTE_MS }
 
-    if (await save(() => saveRecord(record))) {
+    if (await save(() => saveActivity(record, activity))) {
       onClose()
     }
   }
@@ -53,7 +54,7 @@ function ActivityForm({ activity, onClose }: FormProps) {
           </IonButtons>
           <IonTitle>{activity ? TIMELINE_COPY.editActivity : TIMELINE_COPY.otherActivity}</IonTitle>
           <IonButtons slot="end">
-            <IonButton strong disabled={!valid} onClick={() => void saveActivity()}>
+            <IonButton strong disabled={!valid} onClick={() => void submit()}>
               {COMMON_COPY.save}
             </IonButton>
           </IonButtons>
@@ -71,7 +72,7 @@ function ActivityForm({ activity, onClose }: FormProps) {
           </IonItem>
           <IonItem>
             <IonInput
-              label={TIMELINE_COPY.location}
+              label={COMMON_COPY.location}
               placeholder={TIMELINE_COPY.locationPlaceholder}
               value={location}
               onIonInput={(event) => typeof event.detail.value === 'string' && setTypedLocation(event.detail.value)}

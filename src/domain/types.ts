@@ -17,6 +17,12 @@ export interface ExerciseArea {
   area: BodyArea
 }
 
+export interface ActivityDetails {
+  name: string
+  note: string
+  location: string
+}
+
 export interface RoutineItem {
   id: string
   sets: number | null
@@ -121,6 +127,7 @@ export interface DataSnapshot {
   workouts: WorkoutRecord[]
   dailyLogs: DailyLog[]
   exerciseAreas: ExerciseArea[]
+  activityDetails: ActivityDetails[]
 }
 
 export interface RestoreUndoSetting {

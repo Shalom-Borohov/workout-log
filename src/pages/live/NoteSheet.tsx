@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { FULL_SHEET } from '../../components/sheet'
 import { LIVE_COPY } from './copy'
 import type { WorkoutItem } from '../../domain/types'
-import { SheetHeader } from './SheetHeader'
+import { SheetHeader } from '../../components/SheetHeader'
 
 interface NoteFormProps {
   item: WorkoutItem

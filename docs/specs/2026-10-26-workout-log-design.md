@@ -80,10 +80,11 @@ Replaces Apple Notes workout notes. iPhone-only PWA that behaves like a native a
     - Saving closes the form and stays on the timeline.
     - Its card shows the name, day and "N דק׳", plus the location when it has one (items 41 and 50), with no sets and no ↑/★ (updated 2026-11-07). It counts as a workout in the week header and adds no sets.
     - Its detail page shows the overview, "סיכום" and delete. "עריכה" reopens the same form, filled in.
-    - Activities never open the live workout and never appear in the exercises tab or in prefills. Backups and the history export include them.
+    - Activities never open the live workout and never appear in prefills. In the exercises tab they appear only under their own "פעילויות" tile, never mixed in with the exercises (updated 2026-11-12, item 93). Backups and the history export include them.
 41. **Activity location (added 2026-11-03):**
     - The activity form has an optional free-text "מיקום" under the name. Saving still needs only a name.
     - The location is remembered per activity name. When the name matches an earlier activity, tapped from the quick picks or typed in full, the location fills in from the newest one of that name that has a location. Activities left without one are skipped.
+    - Updated 2026-11-12 (item 93): the remembered location can also be set on the activity's own page, and it wins over the sessions' locations. Logging an activity with a location, or changing the location of a logged one, sets it again, so the last location typed anywhere is the one that fills in. Editing only the time or name of an old session leaves it alone.
     - A location you typed stays when the name changes. "עריכה" opens with the saved location, and changing the name there keeps it.
     - The card, the detail overview and the history export show it after the minutes ("60 דק׳ · פארק הירקון"). Without a location they look as before.
     - Activities logged before this, on the phone or in a backup file, have no location.
@@ -234,6 +235,16 @@ Replaces Apple Notes workout notes. iPhone-only PWA that behaves like a native a
 90. **אימונים parts line (added 2026-11-12, updates 36):** a routine row shows its name large, then its parts with how many exercises each has ("חימום 3 · עיקרי 9 · סיום 2", a pair counting two), then "נוצר". A part with no name shows the default part name, as everywhere else in the app. The start button is a round accent ▶. Why: the parts tell routines apart better than totals.
 91. **תרגילים area tiles (added 2026-11-12, updates 52):** under the search box, a tile for each body area that has exercises, and for ללא when needed, with its icon, name and count, three to a row. The first is chosen on arrival, and the list shows only the chosen area's exercises, each with its best set in large numbers. While the search has text, the tiles hide and matches from every area are listed. Why: one area at a time keeps the list short.
 92. **Exercise history as a number column (added 2026-11-12, updates 17):** under a smaller weight chart, each session is a row with its date and sets on one side and its best set as a large number on the other: its weight, or with no weight its amount and unit. The record's number is in the accent, with ★. Why: reading down the column shows the progress.
+93. **Activity page and notes (added 2026-11-12, issue #84, updates 40 and 41):** each activity name has its own note (directions, what to bring) and remembered location, which you can read before going.
+    - In תרגילים, a "פעילויות" tile with the number of activity names (like the area tiles count exercise names) comes after the body-area tiles, once at least one activity is logged. Selecting it lists the activity names, most recent first, each with the day of its last session. With activities but no exercises, the tiles still show. Search also finds activity names, in their own "פעילויות" group.
+    - Tapping a name opens its page under תרגילים: the name, a "מיקום" row and a "הערה" row (the note's first line), then each session with its day and start time and its minutes as a large number, newest first. Sessions don't open anything.
+    - The location row opens a half sheet and the note row a full sheet, each with ביטול and שמירה. Saved text is trimmed. An empty row reads "הוספת מיקום" or "הוספת הערה".
+    - Note and location belong to the activity name, kept on the phone in a table keyed by name, like the body areas (item 52). Backups carry them; a backup without them still imports, and restoring replaces them.
+    - Renaming an activity in its form gives the new name the note and location saved for the old name, unless the new name already has its own saved ones. The old name keeps them. "Saved" means set on the page or by logging with a location; a location known only from older sessions is neither carried nor blocks the carry.
+    - Clearing the location in the activity form leaves the remembered one alone; only the page clears it. Why: an empty field in one session usually means "not recorded", not "the place is gone".
+    - The tile's boxing glove and the rows' pin and note icons were drawn for the app (no third-party source), picked from a glove, a stopwatch and a running shoe.
+    - Only the page shows the note: the activity form, the detail page, the timeline card and the history export stay as they were. Re-confirmed for the form: it is filled in after the session, while the note is read before going, and "סיכום" (per session) next to a per-name note would be easy to confuse.
+    - Why: activities are logged after the fact, so directions only help on a page you can open before you go. The page reuses the exercise page's shape ("Field rows", picked on the decision page) so it's familiar. Renaming across sessions, adding an activity before its first log and hiding names from the picks were left out.
 
 ## Assumptions (accepted by the user)
 
