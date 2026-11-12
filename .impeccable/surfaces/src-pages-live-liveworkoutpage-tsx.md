@@ -42,12 +42,13 @@ Each sketch is the composition the build matches for that screen's first viewpor
 - Live workout with a pair, "Two tiles": `.impeccable/mocks/decision/pr-two-tiles.html`
 - Workout detail, "Section blocks": `.impeccable/mocks/decision/wd-section-blocks.html`
 - Exercise history, "Number column": `.impeccable/mocks/decision/eh-number-column.html`
+- Activity page (issue #84, spec item 93), "Field rows": `.impeccable/mocks/decision/ac-field-rows.html`. Picked over "Note is the page" and "Count tile" on 2026-11-12 (seed:896f3f185262e2b6). The פעילויות tile in תרגילים carries a boxing glove (`ai-glove.html`), picked over a stopwatch and a running shoe.
 
 A preview the owner saw, not a choice: `state-timed.html` (a timed exercise with no weight, on the single tile). The `light-*.html` and `lm-*.html` files are a light-mode exploration the owner dropped; they are a record, not a brief.
 
 Sketch noise that is not part of the choice: tab bar icons and body-area icons are stand-ins (the app's own icons stay), the sketches use teal #00ABA9 where the build uses the app's accent tokens, and sample data other than "אימון גוף מלא" is made up.
 
-Changed since the locks (#90, spec item 93): the lists in ציר זמן, workout detail, תרגילים and exercise history are now graphite panels with a 2px seam of the ground between rows. The sketches above still show them as flat rows. The chosen sketch is `.impeccable/mocks/decision/sep-ground-seam.html`.
+Changed since the locks (#90, spec item 94): the lists in ציר זמן, workout detail, תרגילים (activities included) and exercise history are now graphite panels with a 2px seam of the ground between rows. The sketches above still show them as flat rows. The chosen sketch is `.impeccable/mocks/decision/sep-ground-seam.html`.
 
 ## Unresolved
 

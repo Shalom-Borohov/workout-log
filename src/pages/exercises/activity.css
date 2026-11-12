@@ -1,0 +1,30 @@
+.activity-field-value {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.activity-field-icon {
+  flex: none;
+  inline-size: 20px;
+  block-size: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.activity-field-text {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activity-field-value ion-icon {
+  flex: none;
+}
+
+.activity-sessions {
+  margin-block-start: 12px;
+}

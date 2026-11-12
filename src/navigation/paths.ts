@@ -34,3 +34,5 @@ export const workoutDetailPath = (tab: WorkoutHostPath, id: string) =>
 export const routinePath = (tab: RoutineHostPath, id: string) => `${tab}/${id}`
 
 export const exerciseHistoryPath = (name: string) => `${EXERCISES_PATH}/${encodeURIComponent(name)}`
+
+export const activityPath = (name: string) => `${EXERCISES_PATH}/activity/${encodeURIComponent(name)}`

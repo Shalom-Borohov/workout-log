@@ -1,5 +1,5 @@
 import { IonButton, IonButtons, IonHeader, IonTitle, IonToolbar } from '@ionic/react'
-import { COMMON_COPY } from '../../copy/common'
+import { COMMON_COPY } from '../copy/common'
 
 interface SheetHeaderProps {
   title: string

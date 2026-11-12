@@ -8,4 +8,10 @@ export const EXERCISES_COPY = {
     `משקל מרבי: מ־${fromWeight} ב־${fromDate} ל־${toWeight} ב־${toDate}`,
   areaTile: (area: string, exercises: string) => `${area}, ${exercises}`,
   oneExercise: 'תרגיל אחד',
+  activities: 'פעילויות',
+  activitiesTile: (count: number) => `פעילויות, ${count}`,
+  areasAndActivities: 'אזור בגוף ופעילויות',
+  note: 'הערה',
+  addLocation: 'הוספת מיקום',
+  addNote: 'הוספת הערה',
 } as const

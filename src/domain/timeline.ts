@@ -1,15 +1,14 @@
 import { FORMAT_COPY } from '../copy/format'
-import { isRoutineWorkout, locationOf, sectionsOf } from './activities'
+import { isRoutineWorkout, locationOf, recordMinutes, sectionsOf } from './activities'
 import { dayMonth, formatSummary, LIST_SEPARATOR } from './format'
 import { type Change, completedSets, exercisesOf } from './progress'
-import { DAYS_PER_WEEK, MINUTE_MS } from './time'
+import { DAYS_PER_WEEK } from './time'
 import type { SetLog, WorkoutExercise, WorkoutRecord } from './types'
 
 export function summarize(record: WorkoutRecord): { minutes: number; doneSets: number } {
   const doneSets = exercisesOf({ sections: sectionsOf(record) }).flatMap(completedSets).length
-  const minutes = record.finishedAt === null ? 0 : Math.round((record.finishedAt - record.startedAt) / MINUTE_MS)
 
-  return { minutes, doneSets }
+  return { minutes: recordMinutes(record), doneSets }
 }
 
 export function minutesAndLocation(record: WorkoutRecord): string {
