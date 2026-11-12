@@ -11,7 +11,7 @@ export function WorkoutCard({ workout }: { workout: WorkoutWithChanges }) {
   const tally = changeTally(workout.changes)
 
   return (
-    <IonItem button detail routerLink={workoutDetailPath(TIMELINE_PATH, workout.id)}>
+    <IonItem button detail={false} className="workout-card-item" routerLink={workoutDetailPath(TIMELINE_PATH, workout.id)}>
       <DateColumn record={workout} />
       <IonLabel className="workout-card">
         <h2 className="workout-card-title">{recordName(workout)}</h2>

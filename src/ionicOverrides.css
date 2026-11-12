@@ -1,0 +1,96 @@
+ion-toolbar {
+  --background: var(--ion-toolbar-background);
+  --border-color: transparent;
+}
+
+ion-toolbar ion-button {
+  --opacity: 1;
+}
+
+ion-toolbar ion-button.button-has-icon-only {
+  --color: var(--app-label);
+}
+
+ion-header[collapse='condense'] ion-toolbar {
+  --background: var(--ion-background-color);
+}
+
+ion-title.title-large {
+  padding-block: 4px 8px;
+  font-size: var(--app-type-title);
+  font-weight: var(--app-weight-thin);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+ion-content::part(scroll) {
+  scrollbar-width: none;
+}
+
+ion-tab-bar {
+  --background: var(--ion-tab-bar-background);
+  --border: 0;
+  --color: var(--app-label-secondary);
+  --color-selected: var(--ion-color-primary);
+}
+
+ion-tab-button {
+  --padding-top: 2px;
+}
+
+ion-tab-button ion-label {
+  font-size: 11px;
+}
+
+ion-list.list-inset {
+  background: var(--app-fill-quiet);
+  border-radius: var(--app-radius-panel);
+}
+
+ion-item {
+  --border-width: 0;
+  --inner-border-width: 0;
+  --background-activated: #ffffff;
+  --background-activated-opacity: 0.08;
+  --background-focused: #ffffff;
+  --background-focused-opacity: 0.12;
+}
+
+ion-item-sliding.item-sliding-active-slide > ion-item {
+  --background: var(--ion-background-color);
+}
+
+ion-list-header {
+  --color: var(--app-label-secondary);
+  font-size: var(--app-type-caption);
+  font-weight: var(--app-weight-regular);
+  letter-spacing: 0;
+  min-height: 2rem;
+  padding-block-start: 1rem;
+  padding-inline-start: 32px;
+}
+
+ion-list-header ion-label {
+  margin-block: 0.25rem;
+}
+
+ion-list-header + ion-list.list-ios.list-inset {
+  margin-block-start: 6px;
+}
+
+ion-note {
+  --color: var(--app-label-secondary);
+}
+
+ion-label p {
+  --ion-color-step-400: var(--app-label-secondary);
+}
+
+ion-searchbar {
+  --background: var(--app-fill-quiet);
+  --border-radius: var(--app-radius-control);
+  --color: var(--app-label);
+  --icon-color: var(--app-label-secondary);
+  --placeholder-color: var(--app-label-secondary);
+  --placeholder-opacity: 1;
+}

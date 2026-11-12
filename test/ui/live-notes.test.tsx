@@ -59,6 +59,18 @@ describe('live exercise note', () => {
     expect(await screen.findByLabelText('הערה · סקוואט')).toHaveValue('לעלות במשקל')
   })
 
+  it('shows a note as its own row above the actions, which then offer no "הוספת הערה"', async () => {
+    const squat = { ...exercise('סקוואט', [open(60, 10)]), note: 'לעלות במשקל' }
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [squat] }))
+    renderAt('/tabs/timeline/workout/w1')
+
+    const note = await screen.findByText('לעלות במשקל', { selector: '.item-note' })
+    const actions = visibleAll('.item-actions ion-button')
+
+    expect(actions.map((button) => button.textContent)).toEqual(['דלג', 'הוספת סט'])
+    expect(note.compareDocumentPosition(actions[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
   it('offers to add a note when there is none', async () => {
     await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10)])] }))
     const user = userEvent.setup()
@@ -67,6 +79,16 @@ describe('live exercise note', () => {
     await user.click(await screen.findByText('הוספת הערה', { selector: '.item-note' }))
 
     expect(await screen.findByLabelText('הערה · סקוואט')).toHaveValue('')
+  })
+
+  it('opens the note sheet at full height, so the keyboard does not cover the text box', async () => {
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10)])] }))
+    const user = userEvent.setup()
+    renderAt('/tabs/timeline/workout/w1')
+
+    await user.click(await screen.findByText('הוספת הערה', { selector: '.item-note' }))
+
+    expect((await screen.findByLabelText('הערה · סקוואט')).closest('ion-modal')?.initialBreakpoint).toBe(1)
   })
 })
 
@@ -92,6 +114,22 @@ describe('live summary mid-workout', () => {
 
     expect(await screen.findByText('סיכום האימון', { selector: 'ion-title' })).toBeInTheDocument()
     expect(screen.getByLabelText('סיכום האימון')).toHaveValue('כתף כואבת')
+  })
+
+  it('opens the summary sheet at full height, at סיום and from the menu', async () => {
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [exercise('סקוואט', [open(60, 10)])] }))
+    const user = userEvent.setup()
+    renderAt('/tabs/timeline/workout/w1')
+    const summarySheet = async () => (await screen.findByLabelText('סיכום האימון')).closest('ion-modal')
+
+    await user.click(await screen.findByText('סיום', { selector: 'ion-button' }))
+    expect((await summarySheet())?.initialBreakpoint).toBe(1)
+
+    await user.click(screen.getByText('ביטול', { selector: 'ion-modal ion-button' }))
+    await waitFor(() => expect(document.querySelector('ion-modal.show-modal')).toBeNull())
+    await chooseFromMenu('הוספה לסיכום')
+
+    expect((await summarySheet())?.initialBreakpoint).toBe(1)
   })
 })
 

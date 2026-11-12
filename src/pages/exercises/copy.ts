@@ -6,4 +6,6 @@ export const EXERCISES_COPY = {
   maxWeight: 'משקל מרבי',
   maxWeightTrend: (fromWeight: string, fromDate: string, toWeight: string, toDate: string) =>
     `משקל מרבי: מ־${fromWeight} ב־${fromDate} ל־${toWeight} ב־${toDate}`,
+  areaTile: (area: string, exercises: string) => `${area}, ${exercises}`,
+  oneExercise: 'תרגיל אחד',
 } as const

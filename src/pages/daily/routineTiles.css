@@ -1,0 +1,135 @@
+.routine-tiles-footer {
+  background: var(--app-ground);
+}
+
+.routine-tiles {
+  display: flex;
+  gap: 32px;
+  padding: 8px 16px;
+  scroll-padding-inline: 16px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.routine-tiles::-webkit-scrollbar {
+  display: none;
+}
+
+.routine-tiles-page {
+  display: grid;
+  flex: 0 0 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 100px;
+  gap: 10px;
+  align-content: start;
+  scroll-snap-align: start;
+}
+
+.routine-tile {
+  position: relative;
+  box-sizing: border-box;
+  padding: 12px 16px 0;
+  border-radius: 20px;
+  background: var(--app-fill-quiet);
+  color: var(--app-label-secondary);
+  text-align: start;
+  transition: opacity 150ms ease-out;
+}
+
+.routine-tile-done {
+  background: currentColor;
+}
+
+.routine-tile:has(> .routine-tile-button:active) {
+  opacity: 0.7;
+}
+
+.routine-tile-name {
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--app-type-row);
+  font-weight: var(--app-weight-light);
+  line-height: 28px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--app-label);
+}
+
+.routine-tile-name .drill-dot {
+  width: 10px;
+  height: 10px;
+  margin-inline-end: 8px;
+  vertical-align: 2px;
+}
+
+.routine-tile-drills {
+  display: -webkit-box;
+  margin: 2px 0 0;
+  padding-inline-end: 28px;
+  overflow: hidden;
+  font-size: var(--app-type-caption);
+  line-height: 18px;
+  color: var(--app-label-secondary);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.routine-tile-done .routine-tile-name,
+.routine-tile-done .routine-tile-drills {
+  color: var(--app-on-accent);
+}
+
+.routine-tile-button {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.routine-tile-check {
+  position: absolute;
+  inset-inline-end: 3px;
+  inset-block-end: 3px;
+  display: grid;
+  place-items: center;
+  inline-size: 48px;
+  block-size: 48px;
+  border-radius: 50%;
+}
+
+.routine-tile-check:active {
+  opacity: 0.6;
+}
+
+.routine-tile-ring {
+  box-sizing: border-box;
+  inline-size: 26px;
+  block-size: 26px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.routine-tile-check ion-icon {
+  --ionicon-stroke-width: 44px;
+  font-size: 28px;
+  color: var(--app-on-accent);
+}
+
+.routine-tiles-archive {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 20px;
+  font-size: var(--app-type-note);
+  color: var(--app-label-secondary);
+}
+
+.routine-tiles-archive:active {
+  opacity: 0.6;
+}
+
+.routine-tiles-archive ion-icon {
+  font-size: var(--app-type-note);
+}

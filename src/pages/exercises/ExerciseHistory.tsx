@@ -1,24 +1,13 @@
-import {
-  IonBackButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/react'
-import { ChangeBadge } from '../../components/ChangeBadge'
+import { IonBackButton, IonButtons, IonContent, IonHeader, IonList, IonTitle, IonToolbar } from '@ionic/react'
 import { COMMON_COPY } from '../../copy/common'
 import { useFinishedWorkouts } from '../../data/hooks'
-import { formatDay, formatSets } from '../../domain/format'
 import { exerciseHistory, recordSessionId, weightTrend } from '../../domain/progress'
 import { EXERCISES_PATH } from '../../navigation/paths'
 import { BodyAreaRow } from './BodyAreaRow'
+import { SessionRow } from './SessionRow'
 import { MIN_TREND_POINTS } from './trendGeometry'
 import { WeightChart } from './WeightChart'
-import './exercises.css'
+import './exerciseHistory.css'
 
 export function ExerciseHistory({ name }: { name: string }) {
   const workouts = useFinishedWorkouts()
@@ -39,25 +28,17 @@ export function ExerciseHistory({ name }: { name: string }) {
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">{name}</IonTitle>
+            <IonTitle size="large" className="exercise-history-title">
+              <span className="exercise-history-title-text">{name}</span>
+            </IonTitle>
           </IonToolbar>
         </IonHeader>
         <BodyAreaRow name={name} />
         {trend.length >= MIN_TREND_POINTS && <WeightChart points={trend} />}
         {sessions.length > 0 && (
-          <IonList inset>
+          <IonList className="list-plain">
             {sessions.map((session) => (
-              <IonItem key={session.workoutId}>
-                <IonLabel className="ion-text-wrap">
-                  <h2>{formatDay(session.startedAt)}</h2>
-                  <p>{formatSets(session.sets, session.target)}</p>
-                </IonLabel>
-                {session.workoutId === record && (
-                  <span slot="end">
-                    <ChangeBadge kind="record" />
-                  </span>
-                )}
-              </IonItem>
+              <SessionRow key={session.workoutId} session={session} isRecord={session.workoutId === record} />
             ))}
           </IonList>
         )}

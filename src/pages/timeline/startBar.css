@@ -1,0 +1,51 @@
+.timeline-footer ion-toolbar {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+}
+
+.start-workout {
+  --border-radius: 20px;
+  --box-shadow: none;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  height: 64px;
+  margin: 0;
+  font-size: var(--app-type-row);
+  font-weight: var(--app-weight-regular);
+  letter-spacing: 0;
+}
+
+.active-workout-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  text-align: start;
+}
+
+.active-workout-text strong {
+  font-size: var(--app-type-note);
+  font-weight: var(--app-weight-regular);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.active-workout-routine {
+  max-width: 100%;
+  overflow: hidden;
+  line-height: 28px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.active-workout-clock {
+  margin-inline-start: 12px;
+  font-weight: var(--app-weight-light);
+}
+
+.active-workout ion-icon[slot='end'] {
+  font-size: 20px;
+}

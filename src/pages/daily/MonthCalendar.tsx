@@ -8,6 +8,7 @@ import { formatDay } from '../../domain/format'
 import type { Routine } from '../../domain/types'
 import { DAILY_COPY } from './copy'
 import { useMonthSwipe } from './useMonthSwipe'
+import './monthCalendar.css'
 
 const MAX_DAY_DOTS = 4
 
@@ -39,18 +40,15 @@ export function MonthCalendar({ drills, workoutDates, month, now, opensSheet, on
   return (
     <section className="month-calendar" {...swipe}>
       <div className="month-header">
-        <IonButton fill="clear" aria-label={DAILY_COPY.previousMonth} onClick={() => move(1)}>
-          <IonIcon slot="icon-only" icon={chevronForward} aria-hidden="true" />
-        </IonButton>
         <h2 className="month-title">{DAILY_COPY.monthTitle(DAILY_COPY.months[shown.getMonth()], shown.getFullYear())}</h2>
-        <IonButton
-          fill="clear"
-          aria-label={DAILY_COPY.nextMonth}
-          disabled={atLatest}
-          onClick={() => move(-1)}
-        >
-          <IonIcon slot="icon-only" icon={chevronBack} aria-hidden="true" />
-        </IonButton>
+        <div className="month-paging">
+          <IonButton fill="clear" aria-label={DAILY_COPY.previousMonth} onClick={() => move(1)}>
+            <IonIcon slot="icon-only" icon={chevronForward} aria-hidden="true" />
+          </IonButton>
+          <IonButton fill="clear" aria-label={DAILY_COPY.nextMonth} disabled={atLatest} onClick={() => move(-1)}>
+            <IonIcon slot="icon-only" icon={chevronBack} aria-hidden="true" />
+          </IonButton>
+        </div>
       </div>
       <div key={month} className="month-grid" data-slide={slide} onAnimationEnd={() => setSlide(undefined)}>
         {FORMAT_COPY.weekdays.map((weekday) => (

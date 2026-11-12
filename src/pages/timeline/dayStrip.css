@@ -1,0 +1,74 @@
+.day-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+  margin: 0 0 10px;
+  padding: 0 16px;
+  list-style: none;
+}
+
+.day-tile {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 58px;
+  border-radius: var(--app-radius-control);
+  color: var(--app-label-dim);
+}
+
+.day-tile-weekday {
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--app-label-secondary);
+}
+
+.day-tile-number {
+  font-size: 24px;
+  font-weight: var(--app-weight-light);
+  line-height: 28px;
+}
+
+.day-tile-gym {
+  background: var(--ion-color-primary);
+  color: var(--app-on-accent);
+}
+
+.day-tile-activity {
+  background: var(--app-fill-raised);
+  color: var(--app-label);
+}
+
+.day-tile-gym .day-tile-weekday,
+.day-tile-activity .day-tile-weekday {
+  color: inherit;
+}
+
+.day-tile-today {
+  border: 1.5px solid var(--app-label);
+}
+
+.day-tile-none.day-tile-today {
+  color: var(--app-label);
+}
+
+.day-tile-future,
+.day-tile-future .day-tile-weekday {
+  color: var(--app-label-tertiary);
+}
+
+button.day-tile {
+  transition: opacity 120ms ease-out;
+}
+
+button.day-tile:active {
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.day-tile {
+    transition: none;
+  }
+}

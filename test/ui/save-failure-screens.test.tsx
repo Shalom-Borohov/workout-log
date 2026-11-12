@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
-import { ionChange, ionEvent, ionField, toasts } from '../helpers/ionic'
+import { buttonByLabel, ionChange, ionEvent, ionField, toasts } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { LOST_CONNECTION, SAVE_FAILED, saveFailureShown, stepClockPastMessageThrottle } from '../helpers/saveFailure'
 import { dailyLog, dailyRoutine, done, exercise, oct, reps, routine, workout } from '../helpers/workouts'
@@ -98,7 +98,7 @@ describe('other screens when a save fails', () => {
   it('says so when starting a workout cannot read the stored data', async () => {
     await saveRoutine(legs)
     renderAt('/tabs/routines')
-    const start = await screen.findByText('התחל', { selector: 'ion-button' })
+    const start = await buttonByLabel('התחל')
 
     vi.spyOn(db.workouts, 'orderBy').mockImplementation(() => {
       throw LOST_CONNECTION

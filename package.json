@@ -1,7 +1,7 @@
 {
   "name": "workout-log",
   "private": true,
-  "version": "1.17.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
     "test": "vitest run --maxWorkers=25%"
   },
   "dependencies": {
+    "@fontsource-variable/heebo": "^5.3.0",
     "@ionic/react": "^9.0.9",
     "@ionic/react-router": "^9.0.9",
     "dexie": "^4.4.7",

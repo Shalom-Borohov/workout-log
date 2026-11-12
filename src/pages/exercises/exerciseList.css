@@ -1,0 +1,37 @@
+.exercise-row {
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  --min-height: 72px;
+}
+
+.exercise-row .body-area-icon {
+  margin-inline-end: 12px;
+}
+
+.exercise-row ion-label h2 {
+  margin: 0;
+  font-size: var(--app-type-row);
+  font-weight: var(--app-weight-light);
+  line-height: 1.3;
+  color: var(--app-label);
+}
+
+.exercise-row ion-label p {
+  margin: 2px 0 0;
+  font-size: var(--app-type-caption);
+  line-height: 18px;
+  color: var(--app-label-secondary);
+}
+
+.exercise-best {
+  --color: var(--app-label);
+  margin-inline-start: 12px;
+  font-size: var(--app-type-heading);
+  font-weight: var(--app-weight-thin);
+  line-height: 36px;
+  white-space: nowrap;
+}
+
+.exercise-search-group ion-list-header {
+  padding-inline-start: 16px;
+}

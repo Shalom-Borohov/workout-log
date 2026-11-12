@@ -24,7 +24,7 @@ import { useSave } from '../../hooks/useSave'
 import { IMPORT_PATH, ROUTINES_PATH, routinePath } from '../../navigation/paths'
 import { EmptyRoutines } from './EmptyRoutines'
 import { RoutineRow } from './RoutineRow'
-import './routines.css'
+import './routineList.css'
 
 export function RoutinesPage() {
   const routines = useRoutines()?.filter((routine) => !routine.daily)
@@ -75,7 +75,7 @@ export function RoutinesPage() {
         </IonHeader>
         {routines?.length === 0 && <EmptyRoutines onPaste={openImport} onEmpty={() => void createEmpty()} />}
         {routines !== undefined && routines.length > 0 && (
-          <IonList inset>
+          <IonList className="list-plain routine-list">
             {routines.map((routine) => (
               <RoutineRow key={routine.id} routine={routine} now={now} />
             ))}

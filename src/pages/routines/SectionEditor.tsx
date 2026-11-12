@@ -45,7 +45,7 @@ export function SectionEditor({ section, onChange, onEditItem, onDeleteItem, onA
 
   return (
     <section>
-      <IonListHeader className="section-header">
+      <IonListHeader className="part-heading">
         <IonInput
           aria-label={ROUTINES_COPY.sectionName}
           placeholder={ROUTINES_COPY.sectionName}

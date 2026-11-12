@@ -7,7 +7,7 @@ import { exerciseHistoryPath } from '../../navigation/paths'
 
 interface Props {
   name: string
-  area: BodyArea | null
+  area?: BodyArea | null
   last?: ExerciseSession
 }
 
@@ -15,8 +15,8 @@ export function ExerciseRow({ name, area, last }: Props) {
   const best = last && bestSet(last.sets)
 
   return (
-    <IonItem button detail routerLink={exerciseHistoryPath(name)}>
-      <BodyAreaIcon slot="start" area={area} />
+    <IonItem button detail={false} className="exercise-row" routerLink={exerciseHistoryPath(name)}>
+      {area !== undefined && <BodyAreaIcon slot="start" area={area} />}
       <IonLabel className="ion-text-wrap">
         <h2>{name}</h2>
         {last && <p>{formatDay(last.startedAt)}</p>}

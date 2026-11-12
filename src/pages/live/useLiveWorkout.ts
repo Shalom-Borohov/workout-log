@@ -37,6 +37,7 @@ export function useLiveWorkout(initial: Workout) {
   const total = refs.length
   const ref = refs[index]
   const item = itemAt(workout, ref)
+  const next = index + 1 < total ? itemAt(workout, refs[index + 1]) : null
   const active = workout.finishedAt === null
   const history = useFinishedWorkouts()
   const restTimer = useRestTimer(initial.id)
@@ -137,6 +138,7 @@ export function useLiveWorkout(initial: Workout) {
     total,
     ref,
     item,
+    next,
     active,
     previous,
     restTimer,

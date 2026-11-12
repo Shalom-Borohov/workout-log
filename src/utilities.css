@@ -1,0 +1,80 @@
+.tile {
+  border-radius: var(--app-radius-tile);
+}
+
+.tile-accent {
+  background: var(--ion-color-primary);
+  color: var(--app-on-accent);
+}
+
+.tile-quiet {
+  background: var(--app-fill-quiet);
+  color: var(--app-label);
+}
+
+ion-list.list-plain {
+  margin: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.visually-hidden,
+.visually-hidden-focusable:not(:focus-within) {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.list-footer {
+  display: block;
+  margin-block: -8px 16px;
+  padding-inline: 32px;
+  font-size: var(--app-type-caption);
+  line-height: 1.35;
+}
+
+.list-footer:not(.ion-color) {
+  color: var(--app-label-secondary);
+}
+
+.list-footer-line {
+  display: block;
+  margin-block-start: 4px;
+}
+
+.empty-state {
+  max-width: 22rem;
+  margin: 3rem auto 0.5rem;
+  padding-inline: 2rem;
+  text-align: center;
+}
+
+.empty-state h2 {
+  margin: 0 0 0.5rem;
+  font-size: var(--app-type-heading);
+  font-weight: var(--app-weight-thin);
+  line-height: 1.1;
+  color: var(--app-label);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: var(--app-type-note);
+  line-height: 1.4;
+  color: var(--app-label-secondary);
+  text-wrap: balance;
+}
+
+.plain-button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}

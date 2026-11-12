@@ -1,0 +1,125 @@
+ion-title.title-large.exercise-history-title {
+  font-size: var(--app-type-display);
+}
+
+.exercise-history-title-text {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.body-area-row {
+  --color: var(--ion-color-primary);
+  --min-height: 44px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  font-size: var(--app-type-body);
+}
+
+.body-area-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.body-area-row .body-area-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.body-area-value ion-icon {
+  font-size: 14px;
+}
+
+.weight-chart {
+  padding-block: 12px 10px;
+  padding-inline: 16px;
+}
+
+.weight-chart-caption {
+  margin: 0;
+  font-size: var(--app-type-caption);
+  line-height: 20px;
+  color: var(--app-label-secondary);
+}
+
+.weight-chart-plot {
+  position: relative;
+}
+
+.weight-chart svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 64px;
+  overflow: visible;
+}
+
+.weight-chart-line {
+  fill: none;
+  stroke: var(--ion-color-primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.weight-chart-dot {
+  position: absolute;
+  inline-size: 7px;
+  block-size: 7px;
+  border-radius: 50%;
+  background: var(--ion-color-primary);
+  transform: translate(-50%, -50%);
+}
+
+.session-row {
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  --min-height: 76px;
+}
+
+.session-row ion-label h2 {
+  margin: 0;
+  font-size: var(--app-type-body);
+  font-weight: var(--app-weight-regular);
+  line-height: 22px;
+  color: var(--app-label);
+}
+
+.session-row ion-label p {
+  margin: 2px 0 0;
+  font-size: var(--app-type-caption);
+  line-height: 18px;
+  color: var(--app-label-secondary);
+}
+
+.session-best {
+  display: flex;
+  flex: none;
+  align-items: baseline;
+  gap: 6px;
+  min-inline-size: 160px;
+  margin-inline-start: 12px;
+  color: var(--app-label);
+}
+
+.session-best-value {
+  font-size: var(--app-type-display);
+  font-weight: var(--app-weight-thin);
+  line-height: 60px;
+  letter-spacing: -0.02em;
+}
+
+.session-best-unit {
+  font-size: var(--app-type-caption);
+  color: var(--app-label-secondary);
+}
+
+.session-best-record,
+.session-best-record .session-best-unit {
+  color: var(--app-record);
+}
+
+.session-best .change-badge ion-icon {
+  font-size: var(--app-type-body);
+}

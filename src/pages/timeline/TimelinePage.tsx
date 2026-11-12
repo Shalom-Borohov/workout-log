@@ -20,7 +20,7 @@ import { useActiveWorkout, useFinishedRecords } from '../../data/hooks'
 import { useNow } from '../../hooks/useNow'
 import { withChanges } from '../../domain/progress'
 import { MINUTE_MS } from '../../domain/time'
-import { groupByWeek } from '../../domain/timeline'
+import { groupByWeek, midnight } from '../../domain/timeline'
 import { TIMELINE_PATH } from '../../navigation/paths'
 import { ActiveWorkoutBanner } from './ActiveWorkoutBanner'
 import { ActivityModal } from './ActivityModal'
@@ -34,8 +34,9 @@ export function TimelinePage() {
   const workouts = useFinishedRecords()
   const active = useActiveWorkout()
   const now = useNow(MINUTE_MS)
+  const today = midnight(now)
   const changes = useMemo(() => (workouts ? withChanges(workouts) : []), [workouts])
-  const groups = useMemo(() => groupByWeek(changes, now), [changes, now])
+  const groups = useMemo(() => groupByWeek(changes, today), [changes, today])
   const [adding, setAdding] = useState<'past' | 'activity' | null>(null)
   const [presentSheet] = useIonActionSheet()
 
@@ -73,7 +74,7 @@ export function TimelinePage() {
         <BackupReminder records={workouts?.length} now={now} />
         {workouts?.length === 0 && <EmptyState title={TIMELINE_COPY.emptyTitle} body={TIMELINE_COPY.emptyBody} />}
         {groups.map((group) => (
-          <WeekSection key={group.title} title={group.title} workouts={group.workouts} />
+          <WeekSection key={group.start} title={group.title} start={group.start} workouts={group.workouts} today={today} />
         ))}
       </IonContent>
       <IonFooter translucent className="timeline-footer">

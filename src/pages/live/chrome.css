@@ -1,0 +1,73 @@
+.live-title {
+  font-size: 16px;
+  font-weight: var(--app-weight-regular);
+  line-height: 22px;
+}
+
+.live-clock {
+  display: block;
+  font-size: var(--app-type-caption);
+  font-weight: var(--app-weight-regular);
+  line-height: 16px;
+}
+
+.live-progress {
+  --background: var(--app-fill-quiet);
+  --progress-background: var(--ion-color-primary);
+  height: 4px;
+}
+
+.rest-button {
+  --color: var(--app-label-secondary);
+}
+
+.rest-button.rest-ended {
+  --color: var(--ion-color-success);
+}
+
+.rest-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-block: 4px;
+  margin-inline: 16px;
+}
+
+.rest-row .stepper-button {
+  display: grid;
+  place-items: center;
+  inline-size: 48px;
+  block-size: 48px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--app-radius-control);
+  background: none;
+  color: var(--ion-color-primary);
+  font-size: 26px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.rest-row .stepper-button:active:not(:disabled) {
+  background: var(--app-fill-quiet);
+}
+
+.rest-row .stepper-button:disabled {
+  color: var(--app-label-tertiary);
+  cursor: default;
+}
+
+.rest-stepper {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+}
+
+.rest-left {
+  text-align: center;
+  font-size: var(--app-type-heading);
+  font-weight: var(--app-weight-thin);
+  line-height: 1;
+}
