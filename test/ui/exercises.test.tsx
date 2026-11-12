@@ -88,6 +88,28 @@ describe('exercises', () => {
     expect(areaIconOf(screen.getByText('סקוואט'))).toBeUndefined()
   })
 
+  it('lists an area’s exercises in one panel', async () => {
+    await saveTaggedExercises()
+    renderAt('/tabs/exercises')
+
+    expect((await screen.findByText('לחיצת חזה')).closest('ion-list')).toHaveClass('list-inset')
+  })
+
+  it('lists each area’s search matches in its own panel', async () => {
+    await saveTaggedExercises()
+    renderAt('/tabs/exercises')
+    await areaTiles()
+
+    ionInput(await ionElement('ion-searchbar'), 'ס')
+
+    const squat = (await screen.findByText('סקוואט')).closest('ion-list')
+    const chinTuck = screen.getByText('הכנסת סנטר').closest('ion-list')
+
+    expect(squat).toHaveClass('list-inset')
+    expect(chinTuck).toHaveClass('list-inset')
+    expect(chinTuck).not.toBe(squat)
+  })
+
   it('searching hides the area tiles and lists matches from every area under their area names, with icons', async () => {
     await saveTaggedExercises()
     renderAt('/tabs/exercises')
@@ -198,6 +220,17 @@ describe('exercises', () => {
     expect(screen.getByLabelText('שיא חדש').closest('ion-item')).toHaveTextContent('יום ב׳ 19.10')
     expect(screen.getAllByLabelText('שיא חדש')).toHaveLength(1)
     expect(screen.queryByText('★')).not.toBeInTheDocument()
+  })
+
+  it('exercise history lists its sessions in one panel, split by seams', async () => {
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(12), exercises: [exercise('סקוואט', [done(20, 10)])] }))
+    await saveWorkout(workout({ id: 'w2', startedAt: oct(19), exercises: [exercise('סקוואט', [done(25, 8)])] }))
+    renderAt(`/tabs/exercises/${encodeURIComponent('סקוואט')}`)
+
+    const latest = sessionRow(await screen.findByText('יום ב׳ 19.10'))
+
+    expect(latest.closest('ion-list')).toHaveClass('list-inset')
+    expect(latest).not.toHaveClass('item-lines-none')
   })
 
   it('exercise history shows each session’s best weight as a number with its unit, and stars only the record', async () => {

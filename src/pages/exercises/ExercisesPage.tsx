@@ -48,7 +48,7 @@ export function ExercisesPage() {
         {latest && selected && !isSearching && (
           <>
             <AreaTiles groups={groups} selected={selected} onSelect={(group) => setChosenArea(areaKey(group.area))} />
-            <IonList className="list-plain">
+            <IonList inset>
               {selected.names.map((name) => (
                 <ExerciseRow key={name} name={name} last={latest.get(name)} />
               ))}

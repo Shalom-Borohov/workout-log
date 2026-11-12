@@ -76,6 +76,8 @@
   --app-radius-panel: 16px;
   --app-radius-control: 12px;
 
+  --app-seam: 2px;
+
   --app-type-poster: 132px;
   --app-type-title: 56px;
   --app-type-display: 46px;

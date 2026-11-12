@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '2.1.0',
+    features: ['השורות ברשימות מופרדות זו מזו, כך שקל לראות איפה כל אחת מתחילה'],
+    fixes: [],
+  },
+  {
     version: '2.0.0',
     features: [
       'מראה חדש לכל האפליקציה: תמיד כהה, מספרים גדולים ואריחים בצבע שבחרת',

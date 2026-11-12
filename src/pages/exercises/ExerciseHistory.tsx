@@ -36,7 +36,7 @@ export function ExerciseHistory({ name }: { name: string }) {
         <BodyAreaRow name={name} />
         {trend.length >= MIN_TREND_POINTS && <WeightChart points={trend} />}
         {sessions.length > 0 && (
-          <IonList className="list-plain">
+          <IonList inset>
             {sessions.map((session) => (
               <SessionRow key={session.workoutId} session={session} isRecord={session.workoutId === record} />
             ))}

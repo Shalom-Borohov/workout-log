@@ -11,11 +11,11 @@ interface Props {
 
 export function SearchResults({ groups, latest }: Props) {
   return groups.map((group) => (
-    <section key={areaKey(group.area)} className="exercise-search-group">
+    <section key={areaKey(group.area)}>
       <IonListHeader>
         <IonLabel>{BODY_AREA_COPY.name(group.area)}</IonLabel>
       </IonListHeader>
-      <IonList className="list-plain">
+      <IonList inset>
         {group.names.map((name) => (
           <ExerciseRow key={name} name={name} area={group.area} last={latest.get(name)} />
         ))}

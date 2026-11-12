@@ -149,6 +149,21 @@ describe('day sheet', () => {
     })
   })
 
+  it('an expanded drill keeps each exercise’s name and steppers as one block, with seams only between exercises', async () => {
+    await saveRoutine(drills)
+    await db.dailyLogs.put(dailyLog('d1', '2026-10-25', plannedDrills))
+    renderAt('/tabs/daily')
+
+    fireEvent.click(await button(/^יום א׳ 25\.10/))
+    fireEvent.click(await screen.findByRole('button', { name: /חטיפי תנועה/, expanded: false }))
+
+    const row = async (control: string) => (await button(control)).closest('ion-item')
+
+    expect(await row('הוספת סט, גשר ישבן')).toHaveClass('item-lines-none')
+    expect(await row('יותר חזרות, גשר ישבן')).not.toHaveClass('item-lines-none')
+    expect(await row('הוספת סט, פלאנק')).toHaveClass('item-lines-none')
+  })
+
   it('a done drill is one row that expands into steppers saving the sets and seconds done', async () => {
     await saveRoutine(drills)
     await db.dailyLogs.put(dailyLog('d1', '2026-10-25', plannedDrills))

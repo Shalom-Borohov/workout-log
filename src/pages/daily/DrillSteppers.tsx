@@ -30,7 +30,7 @@ export function DrillSteppers({ exercise, named, onChange }: DrillSteppersProps)
           <IonLabel>{name}</IonLabel>
         </IonItem>
       )}
-      <IonItem>
+      <IonItem lines="none">
         <IonLabel>{COMMON_COPY.sets}</IonLabel>
         <Stepper
           value={sets}
