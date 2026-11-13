@@ -1,0 +1,106 @@
+.area-split {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--app-gap);
+  padding: var(--app-gutter) var(--app-gutter) 0;
+}
+
+.area-rail {
+  position: sticky;
+  inset-block-start: calc(var(--offset-top, 0px) + var(--app-gap));
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-gap);
+  max-block-size: calc(100dvh - var(--offset-top, 0px) - var(--offset-bottom, 0px) - 2 * var(--app-gap));
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.area-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.area-cell {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-block-size: 60px;
+  padding: 4px 2px;
+  font-size: var(--app-type-caption);
+  font-weight: var(--app-weight-text);
+  line-height: 16px;
+}
+
+.area-cell.plate:active {
+  border-color: var(--app-keyline-strong);
+}
+
+.area-cell-selected {
+  font-weight: var(--app-weight-strong);
+}
+
+.area-cell-icon {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.area-cell .body-area-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.area-cell.area-cell-selected .body-area-icon {
+  stroke: var(--app-on-accent);
+}
+
+.area-cell-count {
+  color: var(--app-label-secondary);
+}
+
+.area-cell-selected .area-cell-count {
+  color: var(--app-on-accent);
+}
+
+.area-cell-name {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.area-list {
+  min-inline-size: 0;
+}
+
+.area-list-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-block-end: 10px;
+}
+
+.area-list-heading h2 {
+  margin: 0;
+  font-size: var(--app-type-heading);
+  font-weight: var(--app-weight-heavy);
+  line-height: 28px;
+  color: var(--app-label);
+}
+
+.area-list-heading span {
+  font-size: var(--app-type-meta);
+  color: var(--app-label-secondary);
+  white-space: nowrap;
+}
+
+.area-list ion-list.list-inset {
+  margin: 0 0 var(--app-gutter);
+}

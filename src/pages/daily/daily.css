@@ -1,7 +1,77 @@
+.daily-routines {
+  --set-check-mark: 38px;
+  --set-check-ring: var(--app-keyline-strong);
+}
+
+.daily-routines ion-item {
+  --min-height: 60px;
+  --padding-start: 12px;
+  --inner-padding-end: 4px;
+}
+
+.daily-routine-bar {
+  flex: none;
+  inline-size: 6px;
+  block-size: 32px;
+  margin-inline-end: 10px;
+  border-radius: 3px;
+  background: currentColor;
+  color: var(--app-label-tertiary);
+}
+
+.daily-routine-label {
+  min-inline-size: 0;
+  margin-block: 8px;
+}
+
+.daily-routine-label .daily-routine-name {
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--app-type-row);
+  font-weight: var(--app-weight-heavy);
+  line-height: 22px;
+  color: var(--app-label);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.daily-routine-label .daily-routine-drills {
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--app-type-meta);
+  line-height: 19px;
+  color: var(--app-label-secondary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+button.daily-archive-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  inline-size: calc(100% - 2 * var(--app-gutter));
+  min-block-size: 44px;
+  margin: var(--app-gap) var(--app-gutter) 0;
+  padding: 0 14px;
+  font-size: var(--app-type-note);
+  font-weight: var(--app-weight-strong);
+  color: var(--app-label-secondary);
+}
+
+.daily-archive-link ion-icon {
+  font-size: 18px;
+}
+
 .daily-name {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+ion-label h2.daily-name {
+  font-size: var(--app-type-body);
+  font-weight: var(--app-weight-strong);
 }
 
 .daily-drill-toggle {
@@ -22,18 +92,19 @@
 }
 
 .daily-drill-name {
-  font-size: 1.0625rem;
+  font-size: var(--app-type-body);
+  font-weight: var(--app-weight-strong);
 }
 
 .daily-drill-summary {
-  font-size: 0.875rem;
+  font-size: var(--app-type-meta);
   color: var(--app-label-secondary);
 }
 
 .daily-drill-chevron {
   flex: none;
-  font-size: 1rem;
-  color: var(--app-label-tertiary);
+  font-size: 16px;
+  color: var(--app-label-secondary);
   transition: transform 0.2s ease-out;
 }
 
@@ -47,8 +118,13 @@
   }
 }
 
+.daily-stepper {
+  --padding-top: 6px;
+  --padding-bottom: 6px;
+}
+
 .daily-exercise-name {
   --min-height: 32px;
-  font-size: 0.8125rem;
+  font-size: var(--app-type-caption);
   color: var(--app-label-secondary);
 }

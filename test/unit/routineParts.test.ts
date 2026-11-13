@@ -28,14 +28,14 @@ describe('routineParts', () => {
       { name: 'עיקרי', exercises: 3 },
       { name: 'סיום', exercises: 1 },
     ])
-    expect(routinePartsLine(fullBody)).toBe('חימום 2 · עיקרי 3 · סיום 1')
+    expect(routinePartsLine(routineParts(fullBody))).toBe('חימום 2 · עיקרי 3 · סיום 1')
   })
 
   it('counts a pair as two exercises', () => {
     const legs = withSections([section('עיקרי', [[squat, pullUp], [bike]])])
 
     expect(routineParts(legs)).toEqual([{ name: 'עיקרי', exercises: 3 }])
-    expect(routinePartsLine(legs)).toBe('עיקרי 3')
+    expect(routinePartsLine(routineParts(legs))).toBe('עיקרי 3')
   })
 
   it('names a part left without a name after the default part', () => {
@@ -45,6 +45,6 @@ describe('routineParts', () => {
       { name: 'חימום', exercises: 1 },
       { name: 'עיקרי', exercises: 2 },
     ])
-    expect(routinePartsLine(unnamed)).toBe('חימום 1 · עיקרי 2')
+    expect(routinePartsLine(routineParts(unnamed))).toBe('חימום 1 · עיקרי 2')
   })
 })

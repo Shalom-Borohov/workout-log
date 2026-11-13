@@ -1,5 +1,5 @@
 .list-current {
-  --background: var(--app-fill);
+  --background: var(--app-keyline);
   font-weight: var(--app-weight-strong);
 }
 

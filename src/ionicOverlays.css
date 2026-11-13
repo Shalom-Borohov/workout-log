@@ -1,0 +1,152 @@
+:root.ios ion-modal {
+  --ion-background-color: var(--app-ground);
+  --ion-toolbar-background: var(--app-ground);
+  --ion-toolbar-border-color: transparent;
+  --box-shadow: none;
+}
+
+ion-modal.modal-sheet {
+  --border-radius: var(--app-radius-plate);
+  --border-width: var(--app-stroke) 0 0;
+  --border-style: solid;
+  --border-color: var(--app-keyline);
+}
+
+ion-modal::part(handle) {
+  background: var(--app-label-tertiary);
+}
+
+ion-alert.sc-ion-alert-ios-h {
+  --background: var(--app-plate);
+  --backdrop-opacity: 0.6;
+}
+
+ion-alert .alert-wrapper.sc-ion-alert-ios {
+  border: var(--app-stroke) solid var(--app-keyline);
+  border-radius: var(--app-radius-plate);
+  background: var(--app-plate);
+  backdrop-filter: none;
+}
+
+ion-alert .alert-title.sc-ion-alert-ios {
+  color: var(--app-label);
+  font-size: var(--app-type-body);
+  font-weight: var(--app-weight-heavy);
+}
+
+ion-alert .alert-sub-title.sc-ion-alert-ios,
+ion-alert .alert-message.sc-ion-alert-ios {
+  color: var(--app-label-secondary);
+  font-size: var(--app-type-note);
+  font-weight: var(--app-weight-text);
+}
+
+ion-alert .alert-button.sc-ion-alert-ios {
+  border-color: var(--app-keyline);
+  border-top-width: var(--app-rule);
+  color: var(--ion-color-primary);
+  font-size: var(--app-type-body);
+  font-weight: var(--app-weight-strong);
+}
+
+ion-alert .alert-button.sc-ion-alert-ios:last-child {
+  font-weight: var(--app-weight-heavy);
+}
+
+ion-alert .alert-button-role-destructive.sc-ion-alert-ios {
+  color: var(--ion-color-danger);
+}
+
+ion-alert .alert-input.sc-ion-alert-ios {
+  border: var(--app-stroke) solid var(--app-keyline);
+  border-radius: var(--app-radius-control);
+  background: var(--app-ground);
+  color: var(--app-label);
+}
+
+ion-action-sheet.sc-ion-action-sheet-ios-h {
+  --background: var(--app-plate);
+  --backdrop-opacity: 0.6;
+  --color: var(--app-label-secondary);
+  --button-color: var(--ion-color-primary);
+  --button-background: linear-gradient(var(--app-keyline), var(--app-keyline)) bottom / 100% var(--app-rule) no-repeat transparent;
+  --button-background-selected: var(--app-plate);
+  --button-background-activated: var(--app-label);
+  --button-background-activated-opacity: 0.08;
+}
+
+ion-action-sheet .action-sheet-group.sc-ion-action-sheet-ios {
+  border: var(--app-stroke) solid var(--app-keyline);
+  border-radius: var(--app-radius-plate);
+  backdrop-filter: none;
+}
+
+ion-action-sheet .action-sheet-title.sc-ion-action-sheet-ios {
+  background: linear-gradient(var(--app-keyline), var(--app-keyline)) bottom / 100% var(--app-rule) no-repeat transparent;
+  font-size: var(--app-type-note);
+  font-weight: var(--app-weight-strong);
+}
+
+ion-action-sheet .action-sheet-sub-title.sc-ion-action-sheet-ios {
+  font-weight: var(--app-weight-text);
+}
+
+ion-action-sheet .action-sheet-button.sc-ion-action-sheet-ios {
+  font-weight: var(--app-weight-text);
+}
+
+ion-action-sheet .action-sheet-cancel.sc-ion-action-sheet-ios,
+ion-action-sheet .action-sheet-selected.sc-ion-action-sheet-ios {
+  font-weight: var(--app-weight-strong);
+}
+
+ion-toast {
+  --background: var(--app-plate);
+  --color: var(--app-label);
+  --button-color: var(--ion-color-primary);
+  --border-radius: var(--app-radius-plate);
+  --border-width: var(--app-stroke);
+  --border-style: solid;
+  --border-color: var(--app-keyline);
+  --box-shadow: none;
+}
+
+ion-toast::part(message) {
+  font-size: var(--app-type-note);
+}
+
+ion-toast::part(header),
+ion-toast::part(button) {
+  font-weight: var(--app-weight-strong);
+}
+
+ion-datetime {
+  --background: var(--app-ground);
+  --background-rgb: var(--ion-background-color-rgb);
+  --title-color: var(--app-label-secondary);
+  --wheel-highlight-background: var(--app-plate);
+  --wheel-fade-background-rgb: var(--ion-background-color-rgb);
+}
+
+ion-datetime::part(wheel-item active) {
+  font-weight: var(--app-weight-strong);
+}
+
+ion-datetime::part(calendar-day active),
+ion-datetime::part(month-year-button) {
+  font-weight: var(--app-weight-strong);
+}
+
+ion-popover {
+  --background: var(--app-plate);
+  --box-shadow: none;
+}
+
+ion-popover::part(content) {
+  border: var(--app-stroke) solid var(--app-keyline);
+  border-radius: var(--app-radius-plate);
+}
+
+ion-popover::part(arrow) {
+  display: none;
+}

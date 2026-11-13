@@ -94,7 +94,7 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
         <IonNote role="status" className="list-footer" color={tooLong ? 'danger' : undefined}>
           {tooLong ? SETTINGS_COPY.feedbackTooLong : SETTINGS_COPY.feedbackFooter}
         </IonNote>
-        <IonButton expand="block" className="feedback-send" disabled={text.trim() === '' || tooLong} onClick={send}>
+        <IonButton expand="block" className="feedback-send bar-button" disabled={text.trim() === '' || tooLong} onClick={send}>
           {SETTINGS_COPY.openInGitHub}
         </IonButton>
       </IonContent>

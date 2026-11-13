@@ -43,7 +43,7 @@ describe('live exercise note', () => {
     await waitFor(async () => expect((await savedExercises())?.map((pairExercise) => pairExercise.note)).toEqual(['אחיזה צרה', 'להוסיף משקל']))
     await waitFor(() => expect(exerciseNotes()).toEqual(['מתח: אחיזה צרה', 'מקבילים: להוסיף משקל']))
 
-    const lastSet = screen.getByRole('button', { name: 'מקבילים סט 1' })
+    const lastSet = screen.getByRole('button', { name: 'מתח סט 1' })
 
     expect(lastSet.compareDocumentPosition(visibleAll('.item-note')[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })

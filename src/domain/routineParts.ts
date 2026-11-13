@@ -14,8 +14,6 @@ export function routineParts(routine: Pick<Routine, 'sections'>): RoutinePart[] 
   }))
 }
 
-export function routinePartsLine(routine: Pick<Routine, 'sections'>): string {
-  return routineParts(routine)
-    .map((part) => `${part.name} ${part.exercises}`)
-    .join(LIST_SEPARATOR)
+export function routinePartsLine(parts: RoutinePart[]): string {
+  return parts.map((part) => `${part.name} ${part.exercises}`).join(LIST_SEPARATOR)
 }

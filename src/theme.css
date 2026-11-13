@@ -21,8 +21,8 @@
 
   --ion-color-primary: var(--app-accent);
   --ion-color-primary-rgb: var(--app-accent-rgb);
-  --ion-color-primary-contrast: #000000;
-  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-contrast: #0b0d0e;
+  --ion-color-primary-contrast-rgb: 11, 13, 14;
   --ion-color-primary-shade: color-mix(in srgb, var(--app-accent) 88%, #000000);
   --ion-color-primary-tint: color-mix(in srgb, var(--app-accent) 90%, #ffffff);
 
@@ -40,25 +40,26 @@
   --ion-color-danger-shade: #e05c55;
   --ion-color-danger-tint: #ff7871;
 
-  --ion-background-color: #000000;
-  --ion-background-color-rgb: 0, 0, 0;
-  --ion-text-color: #ffffff;
-  --ion-text-color-rgb: 255, 255, 255;
+  --ion-background-color: #14171a;
+  --ion-background-color-rgb: 20, 23, 26;
+  --ion-text-color: #f4f5f5;
+  --ion-text-color-rgb: 244, 245, 245;
   --ion-item-background: transparent;
-  --ion-toolbar-background: #000000;
+  --ion-toolbar-background: #14171a;
   --ion-toolbar-border-color: transparent;
-  --ion-tab-bar-background: #000000;
+  --ion-tab-bar-background: #1f2428;
   --ion-tab-bar-border-color: transparent;
 
-  --app-ground: #000000;
-  --app-label: #ffffff;
-  --app-label-secondary: #98989d;
-  --app-label-dim: #6e6e73;
-  --app-label-tertiary: rgba(235, 235, 245, 0.3);
-  --app-fill: rgba(118, 118, 128, 0.24);
-  --app-fill-quiet: #1c1c1e;
-  --app-fill-raised: #2c2c2e;
-  --app-on-accent: #000000;
+  --app-ground: #14171a;
+  --app-plate: #1f2428;
+  --app-keyline: #3a4147;
+  --app-keyline-strong: #f4f5f5;
+  --app-stroke: 2px;
+  --app-rule: 1px;
+  --app-label: #f4f5f5;
+  --app-label-secondary: #a9b1b7;
+  --app-label-tertiary: #6b747b;
+  --app-on-accent: #0b0d0e;
   --app-up: #30d158;
   --app-skipped: var(--ion-color-warning-shade);
   --app-record: var(--ion-color-primary);
@@ -72,32 +73,26 @@
   --app-drill-purple: #bf5af2;
   --app-drill-pink: #ff375f;
 
-  --app-radius-tile: 24px;
-  --app-radius-panel: 16px;
+  --app-radius-plate: 14px;
   --app-radius-control: 12px;
 
-  --app-seam: 2px;
+  --app-gap: 12px;
+  --app-gutter: 16px;
 
-  --app-type-poster: 132px;
-  --app-type-title: 56px;
-  --app-type-display: 46px;
-  --app-type-heading: 30px;
-  --app-type-row: 22px;
+  --app-type-numeral: 64px;
+  --app-type-display: 36px;
+  --app-type-title: 34px;
+  --app-type-figure: 30px;
+  --app-type-name: 24px;
+  --app-type-heading: 22px;
+  --app-type-row: 18px;
   --app-type-body: 17px;
   --app-type-note: 15px;
+  --app-type-meta: 14px;
   --app-type-caption: 13px;
-  --app-weight-thin: 200;
-  --app-weight-light: 300;
-  --app-weight-regular: 400;
-  --app-weight-strong: 600;
-}
-
-:root.ios ion-modal {
-  --ion-background-color: #1c1c1e;
-  --ion-background-color-rgb: 28, 28, 30;
-  --ion-toolbar-background: #1c1c1e;
-  --ion-toolbar-border-color: transparent;
-  --app-fill-quiet: #2c2c2e;
+  --app-weight-text: 500;
+  --app-weight-strong: 700;
+  --app-weight-heavy: 900;
 }
 
 html {
@@ -107,6 +102,7 @@ html {
 body {
   background: var(--app-ground);
   color: var(--app-label);
+  font-weight: var(--app-weight-text);
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -125,7 +121,7 @@ textarea {
 }
 
 :focus-visible {
-  outline: 2px solid var(--ion-color-primary);
+  outline: var(--app-stroke) solid var(--app-keyline-strong);
   outline-offset: 2px;
 }
 

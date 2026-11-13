@@ -29,7 +29,7 @@ export function ActivityField({ label, glyph, value, placeholder, multiline, onS
 
   return (
     <>
-      <IonItem button detail={false} lines="none" className="field-row" onClick={() => setIsOpen(true)}>
+      <IonItem button detail={false} lines="none" className="field-row plate" onClick={() => setIsOpen(true)}>
         <IonLabel className="visually-hidden">{label}</IonLabel>
         <span className="field-row-value activity-field-value">
           <GlyphIcon glyph={glyph} className="activity-field-icon" />

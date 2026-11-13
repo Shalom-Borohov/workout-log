@@ -7,22 +7,22 @@ import { type SetRowsProps, slidingActions } from './slidingActions'
 import './setRows.css'
 
 function SingleSets(props: SetRowsProps) {
-  const { item, selection } = props
+  const { item, selection, rest } = props
   const [workoutExercise] = item.exercises
   const total = workoutExercise.sets.length
 
   return (
-    <IonList className="list-plain">
+    <IonList className="list-plates set-list">
       {workoutExercise.sets.map((set, index) => (
         <SetSliding key={index} {...slidingActions(props, { exercise: 0, set: index })}>
           {selection.current?.set === index ? (
             <IonItem className="set-row set-row-current">
               <CurrentSet
                 title={LIVE_COPY.setPosition(index + 1, total)}
-                name={null}
                 label={LIVE_COPY.setOf(workoutExercise.name, index + 1)}
                 target={workoutExercise.target}
                 set={set}
+                rest={rest}
                 onChange={(patch) => selection.change(0, index, patch)}
               />
             </IonItem>

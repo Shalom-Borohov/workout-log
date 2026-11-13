@@ -1,0 +1,148 @@
+ion-icon {
+  --ionicon-stroke-width: 48px;
+}
+
+ion-button {
+  --box-shadow: none;
+  font-weight: var(--app-weight-strong);
+}
+
+ion-back-button {
+  font-weight: var(--app-weight-strong);
+}
+
+ion-button.button-clear:not(.button-small) {
+  font-size: var(--app-type-body);
+}
+
+ion-button.button-strong {
+  font-weight: var(--app-weight-heavy);
+}
+
+ion-button.button-solid {
+  --border-radius: var(--app-radius-control);
+}
+
+ion-button.bar-button {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --color: var(--app-on-accent);
+  --border-radius: var(--app-radius-control);
+  --box-shadow: var(--accent-ring);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  margin: 0;
+  font-size: var(--app-type-row);
+  font-weight: var(--app-weight-heavy);
+  letter-spacing: 0;
+}
+
+ion-button.button-outline {
+  --border-width: var(--app-stroke);
+  --border-color: var(--ion-color-primary);
+  --border-radius: var(--app-radius-control);
+}
+
+ion-searchbar.sc-ion-searchbar-ios-h {
+  --background: var(--app-plate);
+  --border-radius: var(--app-radius-control);
+  --box-shadow: none;
+  --color: var(--app-label);
+  --icon-color: var(--app-label-secondary);
+  --clear-button-color: var(--app-label-secondary);
+  --cancel-button-color: var(--ion-color-primary);
+  --placeholder-color: var(--app-label-secondary);
+  --placeholder-opacity: 1;
+  --placeholder-font-weight: var(--app-weight-text);
+}
+
+ion-searchbar .searchbar-input-container.sc-ion-searchbar-ios {
+  min-height: 44px;
+}
+
+ion-searchbar .searchbar-input.sc-ion-searchbar-ios {
+  border: var(--app-stroke) solid var(--app-keyline);
+  font-weight: var(--app-weight-text);
+}
+
+ion-searchbar.searchbar-has-focus .searchbar-input.sc-ion-searchbar-ios {
+  border-color: var(--app-keyline-strong);
+}
+
+ion-segment {
+  --background: var(--app-ground);
+  border-radius: var(--app-radius-control);
+}
+
+ion-segment-button {
+  --border-radius: 9px;
+  --border-color: var(--app-keyline);
+  --color: var(--app-label);
+  --color-checked: var(--app-on-accent);
+  --indicator-color: var(--ion-color-primary);
+  --indicator-box-shadow: none;
+  font-weight: var(--app-weight-text);
+}
+
+ion-segment-button.segment-button-checked {
+  font-weight: var(--app-weight-strong);
+}
+
+ion-toggle {
+  --track-background: var(--app-keyline);
+  --track-background-checked: var(--ion-color-primary);
+  --handle-background: var(--app-label);
+  --handle-background-checked: var(--app-label);
+  --handle-box-shadow: none;
+}
+
+ion-input.sc-ion-input-ios-h,
+ion-textarea.sc-ion-textarea-ios-h {
+  --color: var(--app-label);
+  --placeholder-color: var(--app-label-secondary);
+  --placeholder-opacity: 1;
+  --placeholder-font-weight: var(--app-weight-text);
+  --highlight-color-focused: var(--ion-color-primary);
+  font-weight: var(--app-weight-text);
+}
+
+ion-input.input-label-placement-stacked .label-text-wrapper.sc-ion-input-ios,
+ion-input.input-label-placement-floating .label-text-wrapper.sc-ion-input-ios,
+ion-textarea.textarea-label-placement-stacked .label-text-wrapper.sc-ion-textarea-ios,
+ion-textarea.textarea-label-placement-floating .label-text-wrapper.sc-ion-textarea-ios {
+  --ionic-stacked-label-scale: 0.75;
+  font-size: calc(var(--app-type-caption) / var(--ionic-stacked-label-scale));
+}
+
+ion-progress-bar {
+  --background: var(--app-keyline);
+  --progress-background: var(--app-keyline-strong);
+  height: 4px;
+  border-radius: 2px;
+}
+
+ion-item-option {
+  font-size: var(--app-type-note);
+  font-weight: var(--app-weight-strong);
+}
+
+ion-item-option.ion-color-medium {
+  --ion-color-base: var(--app-keyline);
+  --ion-color-contrast: var(--app-label);
+  --ion-color-shade: var(--app-keyline);
+}
+
+ion-reorder {
+  color: var(--app-label-secondary);
+}
+
+ion-reorder::part(icon) {
+  opacity: 1;
+}
+
+ion-datetime-button::part(native) {
+  border-radius: var(--app-radius-control);
+  background: var(--app-keyline);
+  color: var(--app-label);
+  font-weight: var(--app-weight-strong);
+}

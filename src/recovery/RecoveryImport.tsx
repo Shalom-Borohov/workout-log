@@ -88,7 +88,7 @@ export function RecoveryImport() {
         <>
           <button
             type="button"
-            className="recovery-primary"
+            className="bar-button"
             disabled={restoring}
             onClick={() => void importBackup(pending.backup)}
           >

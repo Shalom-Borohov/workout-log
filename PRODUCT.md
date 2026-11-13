@@ -35,7 +35,7 @@ Used mid-workout: one hand, sweaty fingers, quick glances between sets, screen k
 - Name: אימונים.
 - Icon: white dumbbell on an orange→red gradient (`public/favicon.svg`).
 - Must behave like a native iPhone app: iOS navigation, gestures and controls.
-- The look is the app's own, "Type tiles": always black, Heebo with large thin numbers, and one accent colour as flat rounded tiles (spec items 80 to 82).
+- The look is the app's own, "Road Signs": always dark on charcoal, heavy Heebo, outlined plates, and one accent colour filling the thing that matters (spec item 95).
 
 ## Evidence on Hand
 
@@ -55,6 +55,7 @@ Used mid-workout: one hand, sweaty fingers, quick glances between sets, screen k
 8. Signals are reliable: when the app must tell the owner something, like the end of a rest, it works on any tab and over music, even at a small battery cost. It never relies on sound alone; something visible changes too.
 9. Gestures are shortcuts: swipes speed up common actions, and every swipe action can also be reached with a tap (WCAG 2.5.1). Common actions sit on the card, and ⋯ is for rare ones.
 10. Calm screens: grouping, colour and icons over more text. A list row is a title and one short line; names, values and free text (סיכום, notes) sit one tap away on the detail page. When a change adds text, first look for text to remove or move. Keep a text label where an icon alone would be ambiguous, and colour is never the only cue (WCAG 1.4.1).
+11. Judged in the hand: screens are designed at the owner's phone size (375×647, an iPhone SE as a Home Screen app) first, and sketches are checked on the phone before one is locked (spec items 95 and 105).
 
 ## Accessibility & Inclusion
 

@@ -113,7 +113,6 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
       <LiveHeader
         title={active ? workout.routineName : LIVE_COPY.editWorkout}
         startedAt={active ? workout.startedAt : null}
-        progress={workoutProgress(workout)}
         restTimer={restTimer}
         onMenu={openMenu}
         onFinish={leave}
@@ -130,7 +129,9 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
           sectionName={workout.sections[ref.section].name}
           position={index + 1}
           total={total}
+          progress={workoutProgress(workout)}
           selection={selection}
+          rest={restTimer.rest}
           onNote={openNote}
         >
           <ItemActions

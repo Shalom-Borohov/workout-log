@@ -9,6 +9,15 @@ import { done, exercise, oct, open, reps, routine, seconds, workout } from '../h
 
 const squatOnly = [[{ name: 'סקוואט', target: reps(10) }]]
 
+async function setsOf(name: string) {
+  const sets = (await screen.findByText(name)).closest('ion-item')?.querySelector('.workout-exercise-sets')
+  if (!sets) {
+    throw new Error(`no sets for ${name}`)
+  }
+
+  return sets
+}
+
 async function startedWorkout() {
   const active = await activeWorkout()
   if (!active) {
@@ -49,14 +58,15 @@ describe('timeline', () => {
     expect(screen.getByText('45 דק׳ · 3 סטים')).toBeInTheDocument()
   })
 
-  it('lists a week’s workouts in one panel', async () => {
+  it('lists a week’s workouts as a plate each', async () => {
     await saveWorkout(workout({ id: 'w1', startedAt: oct(25), exercises: [exercise('סקוואט', [done(20, 10)])] }))
     await saveWorkout(workout({ id: 'w2', startedAt: oct(26, 8), exercises: [exercise('סקוואט', [done(22, 10)])] }))
     renderAt('/tabs/timeline')
 
     const week = (await screen.findByText('יום ב׳ 26.10')).closest('ion-list')
 
-    expect(week).toHaveClass('list-inset')
+    expect(week).toHaveClass('list-plates')
+    expect(week).not.toHaveClass('list-inset')
     expect(screen.getByText('יום א׳ 25.10').closest('ion-list')).toBe(week)
   })
 
@@ -140,7 +150,7 @@ describe('timeline', () => {
     )
     renderAt('/tabs/timeline/w1')
 
-    expect(await screen.findByText('20 ק״ג × 10 · 22 ק״ג × 10')).toBeInTheDocument()
+    expect(await setsOf('סקוואט')).toHaveTextContent(/^20 × 10 · 22 × 10$/)
     expect(screen.getByText('דילגת')).toBeInTheDocument()
     expect(screen.getByText('1 דק׳')).toBeInTheDocument()
     expect(screen.getByText('עיקרי')).toBeInTheDocument()
@@ -162,7 +172,7 @@ describe('timeline', () => {
     expect(screen.getByText('לחיצה').closest('ion-list')).toBe(squat)
   })
 
-  it('detail shows a repeated weight once', async () => {
+  it('detail spells out every set, one per wrapping unit', async () => {
     await saveWorkout(
       workout({
         id: 'w1',
@@ -172,8 +182,10 @@ describe('timeline', () => {
     )
     renderAt('/tabs/timeline/w1')
 
-    expect(await screen.findByText('27.5 ק״ג × 15, 15, 13')).toBeInTheDocument()
-    expect(screen.getByText('8, 6 חזרות')).toBeInTheDocument()
+    expect(await setsOf('סקוואט')).toHaveTextContent(/^27\.5 × 15 · 27\.5 × 15 · 27\.5 × 13$/)
+    expect(await setsOf('מתח')).toHaveTextContent(/^8 · 6$/)
+    expect(screen.getAllByText('27.5 × 15')).toHaveLength(2)
+    expect(screen.getByText('27.5 × 13')).toBeInTheDocument()
   })
 
   it('detail edits summary', async () => {

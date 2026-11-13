@@ -1,14 +1,12 @@
-import { IonList } from '@ionic/react'
 import { useMemo, useState } from 'react'
 import { EmptyState } from '../../components/EmptyState'
 import { isRoutineWorkout, latestActivities } from '../../domain/activities'
 import { areaKey, groupByArea, type BodyArea } from '../../domain/bodyAreas'
 import { exerciseNames, latestSessions } from '../../domain/progress'
 import type { Routine, WorkoutRecord } from '../../domain/types'
-import { ActivityList } from './ActivityList'
-import { AreaTiles } from './AreaTiles'
+import { AreaList } from './AreaList'
+import { AreaRail } from './AreaRail'
 import { EXERCISES_COPY } from './copy'
-import { ExerciseRow } from './ExerciseRow'
 import { SearchResults } from './SearchResults'
 import { ACTIVITIES_TILE, type TileKey } from './tileKeys'
 
@@ -40,20 +38,12 @@ export function ExerciseBrowser({ records, routines, areas, query, matches }: Pr
     return <EmptyState title={EXERCISES_COPY.emptyTitle} body={EXERCISES_COPY.emptyBody} />
   }
 
-  if (trimmed === '') {
+  if (trimmed === '' && selected) {
     return (
-      <>
-        <AreaTiles groups={groups} activityCount={activities.length} selected={selected} onSelect={setChosen} />
-        {selected === ACTIVITIES_TILE ? (
-          <ActivityList entries={activities} withIcons={false} />
-        ) : (
-          <IonList inset>
-            {groups
-              .find((group) => areaKey(group.area) === selected)
-              ?.names.map((name) => <ExerciseRow key={name} name={name} last={latest.get(name)} />)}
-          </IonList>
-        )}
-      </>
+      <div className="area-split">
+        <AreaRail groups={groups} activityCount={activities.length} selected={selected} onSelect={setChosen} />
+        <AreaList selected={selected} groups={groups} latest={latest} activities={activities} />
+      </div>
     )
   }
 

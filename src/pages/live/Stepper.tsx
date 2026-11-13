@@ -17,22 +17,24 @@ interface StepperProps {
 
 export function Stepper({ field, label, value, unit, inputMode, canDecrease, canIncrease, onStep, onType }: StepperProps) {
   return (
-    <div className="tile-number">
-      <IonInput
-        className="tile-numeral"
-        data-chars={numeralChars(value)}
-        aria-label={label}
-        type="text"
-        inputmode={inputMode}
-        placeholder={LIVE_COPY.noValue}
-        value={value}
-        onIonChange={(event) => typeof event.detail.value === 'string' && onType(event.detail.value)}
-      />
-      <span className="tile-unit">{unit}</span>
-      <div className="tile-steps">
+    <div className="current-field">
+      <div className="current-number">
+        <IonInput
+          className="current-numeral"
+          data-chars={numeralChars(value)}
+          aria-label={label}
+          type="text"
+          inputmode={inputMode}
+          placeholder={LIVE_COPY.noValue}
+          value={value}
+          onIonChange={(event) => typeof event.detail.value === 'string' && onType(event.detail.value)}
+        />
+        <span className="current-unit">{unit}</span>
+      </div>
+      <div className="current-steps">
         <button
           type="button"
-          className="tile-step"
+          className="step-button"
           aria-label={LIVE_COPY.decrease(field)}
           disabled={!canDecrease}
           onClick={() => onStep(-1)}
@@ -41,7 +43,7 @@ export function Stepper({ field, label, value, unit, inputMode, canDecrease, can
         </button>
         <button
           type="button"
-          className="tile-step"
+          className="step-button"
           aria-label={LIVE_COPY.increase(field)}
           disabled={!canIncrease}
           onClick={() => onStep(1)}

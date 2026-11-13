@@ -1,0 +1,65 @@
+.pair-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin-block-end: 8px;
+  padding: 4px;
+  border-radius: var(--app-radius-control);
+  background: var(--app-on-accent);
+}
+
+.pair-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-inline-size: 0;
+  min-block-size: 44px;
+  padding-inline: 8px;
+  border-radius: 9px;
+  color: var(--app-label);
+  font-size: var(--app-type-note);
+  font-weight: var(--app-weight-strong);
+  white-space: nowrap;
+}
+
+.pair-segment[aria-pressed='true'] {
+  background: var(--ion-color-primary);
+  color: var(--app-on-accent);
+  font-size: var(--app-type-body);
+  font-weight: var(--app-weight-heavy);
+}
+
+.pair-segment-name {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pair-segment-value {
+  flex: none;
+  font-size: var(--app-type-body);
+  font-weight: var(--app-weight-heavy);
+}
+
+.pair-segment-done {
+  flex: none;
+  box-sizing: border-box;
+  inline-size: 20px;
+  block-size: 20px;
+  padding: 3px;
+  border-radius: 50%;
+  background: var(--ion-color-success);
+  color: var(--app-on-accent);
+  --ionicon-stroke-width: 64px;
+}
+
+.pair-name {
+  margin: 0 0 6px;
+  font-size: var(--app-type-body);
+  font-weight: var(--app-weight-heavy);
+  line-height: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

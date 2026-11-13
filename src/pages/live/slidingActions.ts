@@ -1,9 +1,11 @@
 import type { WorkoutItem } from '../../domain/types'
+import type { Rest } from '../../rest/restClock'
 import type { Cell, SetSelection } from './useSetSelection'
 
 export interface SetRowsProps {
   item: WorkoutItem
   selection: SetSelection
+  rest: Rest | null
 }
 
 export interface SetSlidingActions {

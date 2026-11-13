@@ -238,7 +238,7 @@ describe('live workout', () => {
     expect(await db.workouts.get('w1')).toMatchObject({ finishedAt: oct(26, 11), summary: 'טוב' })
   })
 
-  it('pair shows the current set as two tiles, A then B, each ticked on its own', async () => {
+  it('pair shows the current set as one plate with one ✓, A then B', async () => {
     const base = workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [] })
     const pair = { id: 'p', exercises: [exercise('מתח', [open(null, 8), open(null, 8)]), exercise('מקבילים', [open(null, 10), open(null, 10)])] }
     await saveWorkout({ ...base, sections: [{ name: 'סופר סט', items: [pair] }] })
@@ -247,11 +247,13 @@ describe('live workout', () => {
 
     const checks = await screen.findAllByRole('button', { name: /סט \d$/ })
 
-    expect(checks.map((check) => check.getAttribute('aria-label'))).toEqual(['מתח סט 1', 'מקבילים סט 1'])
+    expect(checks.map((check) => check.getAttribute('aria-label'))).toEqual(['מתח סט 1'])
 
-    await user.click(screen.getByRole('button', { name: 'מקבילים סט 1' }))
+    await user.click(screen.getByRole('button', { name: 'מתח סט 1' }))
+
+    expect(await screen.findByRole('button', { name: 'מקבילים סט 1', pressed: false })).toBeInTheDocument()
     await waitFor(async () =>
-      expect((await savedWorkout('w1'))?.sections[0].items[0].exercises.map((pairExercise) => pairExercise.sets[0].done)).toEqual([false, true]),
+      expect((await savedWorkout('w1'))?.sections[0].items[0].exercises.map((pairExercise) => pairExercise.sets[0].done)).toEqual([true, false]),
     )
   })
 

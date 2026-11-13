@@ -4,7 +4,9 @@ import { type Change, completedSets } from './progress'
 import { SECOND_MS, SECONDS_PER_HOUR, SECONDS_PER_MINUTE } from './time'
 import type { SetLog, Target, WorkoutExercise } from './types'
 
-export const LIST_SEPARATOR = ' · '
+export const LIST_MARK = '·'
+
+export const LIST_SEPARATOR = ` ${LIST_MARK} `
 
 export const pad = (value: number) => String(value).padStart(2, '0')
 

@@ -18,7 +18,7 @@ export function HistoryLayout({ name, children }: { name: string; children: Reac
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large" className="exercise-history-title">
+            <IonTitle size="large">
               <span className="exercise-history-title-text">{name}</span>
             </IonTitle>
           </IonToolbar>

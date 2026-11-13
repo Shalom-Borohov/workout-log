@@ -3,7 +3,7 @@
   min-height: 0;
   padding-block-start: 28px;
   font-size: var(--app-type-heading);
-  font-weight: var(--app-weight-thin);
+  font-weight: var(--app-weight-heavy);
   line-height: 1.2;
 }
 
@@ -15,7 +15,7 @@
   --padding-top: 0;
   --padding-bottom: 0;
   --color: var(--app-label);
-  --placeholder-color: var(--app-label-tertiary);
+  --placeholder-color: var(--app-label-secondary);
   --placeholder-opacity: 1;
   min-height: 44px;
   font-size: inherit;

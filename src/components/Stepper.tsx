@@ -19,7 +19,7 @@ export function Stepper({ value, min, max, step = 1, decreaseLabel, increaseLabe
       <div className="count-stepper" role="group">
         <button
           type="button"
-          className="plain-button count-stepper-half"
+          className="step-button"
           aria-label={decreaseLabel}
           disabled={value <= min}
           onClick={() => onChange(Math.max(min, value - step))}
@@ -28,7 +28,7 @@ export function Stepper({ value, min, max, step = 1, decreaseLabel, increaseLabe
         </button>
         <button
           type="button"
-          className="plain-button count-stepper-half"
+          className="step-button"
           aria-label={increaseLabel}
           disabled={value >= max}
           onClick={() => onChange(Math.min(max, value + step))}

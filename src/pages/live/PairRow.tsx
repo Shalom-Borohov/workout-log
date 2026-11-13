@@ -1,6 +1,7 @@
 import { IonIcon, IonItem } from '@ionic/react'
 import { checkmark } from 'ionicons/icons'
 import { LIVE_COPY } from './copy'
+import { QuietUnits } from '../../components/QuietUnits'
 import { formatSet } from '../../domain/format'
 import type { WorkoutItem } from '../../domain/types'
 import type { Cell } from './useSetSelection'
@@ -27,7 +28,9 @@ export function PairRow({ item, set, onSelect }: PairRowProps) {
         <span className="set-title">{LIVE_COPY.setNumber(set + 1)}</span>
         {item.exercises.map((workoutExercise, exercise) => (
           <span key={exercise} className="set-value">
-            {set < workoutExercise.sets.length ? formatSet(workoutExercise.sets[set], workoutExercise.target) : LIVE_COPY.noValue}
+            <QuietUnits
+              text={set < workoutExercise.sets.length ? formatSet(workoutExercise.sets[set], workoutExercise.target) : LIVE_COPY.noValue}
+            />
           </span>
         ))}
         <span className="pair-mark">

@@ -16,6 +16,7 @@ export const DAILY_COPY = {
   moreSeconds: 'יותר שניות',
   fewerSeconds: 'פחות שניות',
   records: 'אימונים ופעילויות',
+  archive: 'ארכיון',
   archived: 'בארכיון',
   restore: 'החזרה',
   removeLogQuestion: 'להסיר את הסימון?',

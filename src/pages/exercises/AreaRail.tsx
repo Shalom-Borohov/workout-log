@@ -4,22 +4,22 @@ import { COMMON_COPY } from '../../copy/common'
 import { areaKey, type AreaGroup } from '../../domain/bodyAreas'
 import { countLabel } from '../../domain/format'
 import { ActivityIcon } from './ActivityIcon'
-import { AreaTile } from './AreaTile'
+import { AreaCell } from './AreaCell'
 import { EXERCISES_COPY } from './copy'
 import { ACTIVITIES_TILE, type TileKey } from './tileKeys'
-import './areaTiles.css'
+import './areaRail.css'
 
 interface Props {
   groups: AreaGroup[]
   activityCount: number
-  selected?: TileKey
+  selected: TileKey
   onSelect: (key: TileKey) => void
 }
 
-export function AreaTiles({ groups, activityCount, selected, onSelect }: Props) {
+export function AreaRail({ groups, activityCount, selected, onSelect }: Props) {
   return (
     <div
-      className="area-tiles"
+      className="area-rail"
       role="group"
       aria-label={activityCount > 0 ? EXERCISES_COPY.areasAndActivities : BODY_AREA_COPY.label}
     >
@@ -29,7 +29,7 @@ export function AreaTiles({ groups, activityCount, selected, onSelect }: Props) 
         const count = group.names.length
 
         return (
-          <AreaTile
+          <AreaCell
             key={key}
             icon={<BodyAreaIcon area={group.area} />}
             name={name}
@@ -41,7 +41,7 @@ export function AreaTiles({ groups, activityCount, selected, onSelect }: Props) 
         )
       })}
       {activityCount > 0 && (
-        <AreaTile
+        <AreaCell
           icon={<ActivityIcon />}
           name={EXERCISES_COPY.activities}
           count={activityCount}

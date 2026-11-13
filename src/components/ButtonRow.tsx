@@ -1,6 +1,5 @@
 import { IonItem } from '@ionic/react'
 import type { ReactNode } from 'react'
-import './ButtonRow.css'
 
 interface ButtonRowProps {
   label: string
