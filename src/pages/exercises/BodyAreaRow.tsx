@@ -41,8 +41,8 @@ export function BodyAreaRow({ name }: { name: string }) {
 
   return (
     <>
-      <IonItem button detail={false} lines="none" className="field-row" onClick={() => setIsOpen(true)}>
-        <IonLabel className="visually-hidden">{BODY_AREA_COPY.label}</IonLabel>
+      <IonItem button detail={false} lines="none" className="field-row plate" onClick={() => setIsOpen(true)}>
+        <IonLabel className="field-row-label">{BODY_AREA_COPY.label}</IonLabel>
         <span className="field-row-value">
           <BodyAreaIcon area={area} />
           {BODY_AREA_COPY.name(area)}

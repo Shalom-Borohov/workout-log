@@ -11,7 +11,7 @@ export function ActiveWorkoutBanner({ workout }: { workout: Workout }) {
     <IonButton
       expand="block"
       color="primary"
-      className="start-workout active-workout"
+      className="start-workout bar-button active-workout"
       routerLink={workoutPath(TIMELINE_PATH, workout.id)}
     >
       <span className="active-workout-text">

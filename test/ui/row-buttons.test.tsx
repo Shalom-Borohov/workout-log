@@ -21,16 +21,6 @@ async function rowOf(text: string) {
   return row
 }
 
-async function tileOf(text: string) {
-  const tile = (await screen.findByText(text)).closest<HTMLElement>('.routine-tile')
-
-  if (!tile) {
-    throw new Error(`no tile for ${text}`)
-  }
-
-  return tile
-}
-
 describe('rows with a control inside', () => {
   beforeEach(async () => {
     await resetDb()
@@ -48,21 +38,21 @@ describe('rows with a control inside', () => {
     await waitFor(() => expect(currentPath()).toBe('/tabs/routines/r1'))
   })
 
-  it('a daily tile is not one big button, and its own button opens the routine', async () => {
+  it('a daily row is not one big button, and its own button opens the routine', async () => {
     renderAt('/tabs/daily')
-    const tile = await tileOf('חטיפי תנועה')
+    const row = await rowOf('חטיפי תנועה')
 
-    expect(tile.matches('button, [role="button"]')).toBe(false)
-    fireEvent.click(within(tile).getByRole('button', { name: 'חטיפי תנועה' }))
+    expect(row.button).toBeFalsy()
+    fireEvent.click(within(row).getByRole('button', { name: 'חטיפי תנועה' }))
 
     await waitFor(() => expect(currentPath()).toBe('/tabs/daily/d1'))
   })
 
-  it('✓ on a daily tile logs today without opening the routine', async () => {
+  it('✓ on a daily row logs today without opening the routine', async () => {
     renderAt('/tabs/daily')
-    const tile = await tileOf('חטיפי תנועה')
+    const row = await rowOf('חטיפי תנועה')
 
-    fireEvent.click(within(tile).getByRole('button', { pressed: false }))
+    fireEvent.click(within(row).getByRole('button', { pressed: false }))
 
     await waitFor(async () => expect(await db.dailyLogs.count()).toBe(1))
     expect(currentPath()).toBe('/tabs/daily')

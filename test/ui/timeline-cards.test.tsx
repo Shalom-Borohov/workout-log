@@ -1,12 +1,22 @@
+import { readFileSync } from 'node:fs'
 import { screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { saveWorkout } from '../../src/data/repo'
+import { saveRecord, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
 import { renderAt } from '../helpers/renderAt'
-import { done, exercise, oct, reps, seconds, workout } from '../helpers/workouts'
+import { activity, done, exercise, oct, reps, seconds, workout } from '../helpers/workouts'
 
 const ANY_BADGE = /^(שיפור|שיא חדש)$/
+
+const timelineCss = readFileSync('src/pages/timeline/timeline.css', 'utf8')
+
+const ACCENT_DAY_RULE = /\.(day-mark-[\w-]+) \.day-mark-day \{\s*color: var\(--ion-color-primary\);/g
+
+const accentDayClasses = [...timelineCss.matchAll(ACCENT_DAY_RULE)].map((match) => match[1])
+
+const accentColouredMarks = (day: HTMLElement) =>
+  accentDayClasses.filter((className) => day.closest('.day-mark')?.classList.contains(className))
 
 async function itemOf(title: string, selector: 'h2' | 'h3') {
   const item = (await screen.findByText(title, { selector })).closest('ion-item')
@@ -63,7 +73,7 @@ describe('timeline cards', () => {
     expect(screen.queryByLabelText(ANY_BADGE)).not.toBeInTheDocument()
   })
 
-  it('shows improvements before new bests in the stats line', async () => {
+  it('shows improvements before new bests at the row’s end', async () => {
     await saveImprovingHistory()
     renderAt('/tabs/timeline')
 
@@ -73,7 +83,7 @@ describe('timeline cards', () => {
     expect(badges.map((icon) => icon.parentElement?.textContent)).toEqual(['1', '1'])
   })
 
-  it('shows the weekday and day number in a column, and reads out the full date', async () => {
+  it('shows the weekday and day number before the name, and reads out the full date', async () => {
     await saveWorkout(workout({ id: 'w1', startedAt: oct(26, 8), exercises: [exercise('סקוואט', [done(20, 10)])] }))
     renderAt('/tabs/timeline')
 
@@ -82,6 +92,18 @@ describe('timeline cards', () => {
     expect(card.getByText('ב׳')).toHaveAttribute('aria-hidden', 'true')
     expect(card.getByText('26')).toHaveAttribute('aria-hidden', 'true')
     expect(card.getByText('יום ב׳ 26.10')).not.toHaveAttribute('aria-hidden')
+  })
+
+  it("colours a gym workout's day number with the accent and leaves an activity's grey", async () => {
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(26, 8), exercises: [exercise('סקוואט', [done(20, 10)])] }))
+    await saveRecord(activity({ id: 'a1', startedAt: oct(27, 18) }))
+    renderAt('/tabs/timeline')
+
+    const gymDay = within(await itemOf('אימון גוף מלא', 'h2')).getByText('26')
+    const activityDay = within(await itemOf('אגרוף תאילנדי', 'h2')).getByText('27')
+
+    expect(accentColouredMarks(gymDay)).not.toEqual([])
+    expect(accentColouredMarks(activityDay)).toEqual([])
   })
 
   it('detail page marks each improved exercise and new best with its value', async () => {

@@ -1,5 +1,5 @@
 import { IonIcon } from '@ionic/react'
-import { checkmark, checkmarkCircle, ellipseOutline } from 'ionicons/icons'
+import { checkmark } from 'ionicons/icons'
 import type { MouseEvent } from 'react'
 import './SetCheck.css'
 
@@ -10,12 +10,16 @@ interface SetCheckProps {
   onToggle: (event: MouseEvent<HTMLButtonElement>) => void
 }
 
-function checkIcon(size: SetCheckProps['size'], done: boolean) {
+function CheckMark({ size, done }: Pick<SetCheckProps, 'size' | 'done'>) {
   if (size === 'large') {
-    return checkmark
+    return <IonIcon icon={checkmark} aria-hidden="true" />
   }
 
-  return done ? checkmarkCircle : ellipseOutline
+  return (
+    <span className="set-check-mark" aria-hidden="true">
+      {done && <IonIcon icon={checkmark} />}
+    </span>
+  )
 }
 
 export function SetCheck({ label, done, size, onToggle }: SetCheckProps) {
@@ -27,7 +31,7 @@ export function SetCheck({ label, done, size, onToggle }: SetCheckProps) {
       aria-pressed={done}
       onClick={onToggle}
     >
-      <IonIcon icon={checkIcon(size, done)} aria-hidden="true" />
+      <CheckMark size={size} done={done} />
     </button>
   )
 }

@@ -10,28 +10,44 @@
   touch-action: manipulation;
 }
 
-.set-check[aria-pressed='true'] {
-  color: var(--ion-color-success);
-}
-
 .set-check:active {
   opacity: 0.6;
 }
 
+.set-check ion-icon {
+  --ionicon-stroke-width: 64px;
+}
+
 .set-check-small {
+  flex: none;
   inline-size: 48px;
   block-size: 48px;
-  margin-inline-start: 4px;
-  font-size: 30px;
+}
+
+.set-check-mark {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  inline-size: var(--set-check-mark, 28px);
+  block-size: var(--set-check-mark, 28px);
+  border: var(--app-stroke) solid var(--set-check-ring, var(--app-label-secondary));
+  border-radius: 50%;
+  font-size: calc(var(--set-check-mark, 28px) * 0.6);
+}
+
+.set-check-small[aria-pressed='true'] .set-check-mark {
+  border-color: var(--ion-color-success);
+  background: var(--ion-color-success);
+  color: var(--app-on-accent);
 }
 
 .set-check-large {
-  inline-size: 72px;
-  block-size: 72px;
-  border-radius: 50%;
+  inline-size: 100%;
+  block-size: 64px;
+  border-radius: var(--app-radius-control);
   background: var(--app-on-accent);
   color: var(--ion-color-primary);
-  font-size: 38px;
+  font-size: 34px;
 }
 
 .set-check-large[aria-pressed='true'] {

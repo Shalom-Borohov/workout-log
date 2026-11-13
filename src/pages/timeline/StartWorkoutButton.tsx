@@ -1,4 +1,5 @@
-import { IonButton, useIonActionSheet, useIonRouter } from '@ionic/react'
+import { IonButton, IonIcon, useIonActionSheet, useIonRouter } from '@ionic/react'
+import { play } from 'ionicons/icons'
 import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
 import { useRoutines } from '../../data/hooks'
@@ -39,7 +40,8 @@ export function StartWorkoutButton() {
   }
 
   return (
-    <IonButton expand="block" color="primary" className="start-workout" onClick={handleClick}>
+    <IonButton expand="block" color="primary" className="start-workout bar-button" onClick={handleClick}>
+      <IonIcon slot="start" icon={play} aria-hidden="true" />
       {TIMELINE_COPY.startWorkout}
     </IonButton>
   )

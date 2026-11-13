@@ -9,7 +9,7 @@ export function ExerciseNotes({ item, onNote }: { item: WorkoutItem; onNote: () 
 
   return (
     noted.length > 0 && (
-      <IonList className="list-plain item-notes">
+      <IonList className="list-plates item-notes">
         {noted.map((exercise) => (
           <IonItem key={exercise.name} button detail onClick={onNote}>
             <IonIcon slot="start" icon={createOutline} aria-hidden="true" />

@@ -1,61 +1,39 @@
 .live-title {
-  font-size: 16px;
-  font-weight: var(--app-weight-regular);
-  line-height: 22px;
+  font-size: var(--app-type-note);
+  font-weight: var(--app-weight-strong);
+  line-height: 20px;
 }
 
 .live-clock {
   display: block;
   font-size: var(--app-type-caption);
-  font-weight: var(--app-weight-regular);
+  font-weight: var(--app-weight-text);
   line-height: 16px;
 }
 
-.live-progress {
-  --background: var(--app-fill-quiet);
-  --progress-background: var(--ion-color-primary);
-  height: 4px;
-}
-
-.rest-button {
-  --color: var(--app-label-secondary);
-}
-
-.rest-button.rest-ended {
+.live-header ion-button.rest-button.rest-ended {
   --color: var(--ion-color-success);
+}
+
+[dir='rtl'] .reading-direction {
+  transform: scaleX(-1);
 }
 
 .rest-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-block: 4px;
-  margin-inline: 16px;
+  gap: var(--app-gap);
+  margin-block: 4px 8px;
+  margin-inline: var(--app-gutter);
+  padding: 6px;
 }
 
-.rest-row .stepper-button {
-  display: grid;
-  place-items: center;
-  inline-size: 48px;
-  block-size: 48px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: var(--app-radius-control);
-  background: none;
+.rest-row .rest-controls .step-button {
+  border-color: var(--app-keyline);
+}
+
+.rest-row .rest-controls .step-button:enabled {
   color: var(--ion-color-primary);
-  font-size: 26px;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.rest-row .stepper-button:active:not(:disabled) {
-  background: var(--app-fill-quiet);
-}
-
-.rest-row .stepper-button:disabled {
-  color: var(--app-label-tertiary);
-  cursor: default;
 }
 
 .rest-stepper {
@@ -68,6 +46,6 @@
 .rest-left {
   text-align: center;
   font-size: var(--app-type-heading);
-  font-weight: var(--app-weight-thin);
+  font-weight: var(--app-weight-heavy);
   line-height: 1;
 }

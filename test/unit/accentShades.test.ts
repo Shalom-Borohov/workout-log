@@ -4,8 +4,8 @@ import { ACCENT_COLORS } from '../../src/domain/accentColors'
 import { DRILL_COLORS } from '../../src/domain/drillColors'
 
 const AA_TEXT_CONTRAST = 4.5
-const SURFACES = ['#000000', '#1c1c1e', '#2c2c2e']
-const TEXT_ON_TILE = '#000000'
+const SURFACES = ['#14171a', '#1f2428']
+const TEXT_ON_TILE = '#0b0d0e'
 const SKETCH_TEAL = '#00aba9'
 
 const theme = readFileSync('src/theme.css', 'utf8')

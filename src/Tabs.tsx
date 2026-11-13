@@ -1,5 +1,5 @@
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react'
-import { barbell, calendarOutline, listOutline, timeOutline } from 'ionicons/icons'
+import { barbellOutline, calendarOutline, listOutline, timeOutline } from 'ionicons/icons'
 import { Navigate, Route, useLocation } from 'react-router-dom'
 import { UpdateBar } from './appUpdate/UpdateBar'
 import { useWhatsNew } from './appUpdate/useWhatsNew'
@@ -63,7 +63,7 @@ export function Tabs() {
           <IonLabel>{COMMON_COPY.routines}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="exercises" href={EXERCISES_PATH}>
-          <IonIcon icon={barbell} aria-hidden="true" />
+          <IonIcon icon={barbellOutline} aria-hidden="true" />
           <IonLabel>{COMMON_COPY.exercises}</IonLabel>
         </IonTabButton>
       </IonTabBar>

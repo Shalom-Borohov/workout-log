@@ -19,7 +19,7 @@ export function BackupReminder({ records, now }: { records: number | undefined; 
   }
 
   return (
-    <div className="tile-quiet backup-reminder">
+    <div className="plate backup-reminder">
       <IonItem lines="none">
         <IonButton
           slot="start"
@@ -35,7 +35,7 @@ export function BackupReminder({ records, now }: { records: number | undefined; 
             ? TIMELINE_COPY.neverBackedUp
             : TIMELINE_COPY.lastBackup(daysSince(status.backedUpAt, now))}
         </IonLabel>
-        <IonButton slot="end" size="small" shape="round" onClick={() => void backUp()}>
+        <IonButton slot="end" fill="outline" onClick={() => void backUp()}>
           {COMMON_COPY.backup}
         </IonButton>
       </IonItem>

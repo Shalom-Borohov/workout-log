@@ -1,16 +1,15 @@
 import {
   IonButton,
   IonIcon,
+  IonItem,
   IonItemOption,
   IonItemOptions,
   IonItemSliding,
-  IonLabel,
   useIonRouter,
 } from '@ionic/react'
 import { play } from 'ionicons/icons'
 import type { MouseEvent } from 'react'
 import { useRef } from 'react'
-import { ButtonRow } from '../../components/ButtonRow'
 import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import { deleteRoutine } from '../../data/repo'
@@ -21,7 +20,7 @@ import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import { useSave } from '../../hooks/useSave'
 import { useStartWorkout } from '../../hooks/useStartWorkout'
 import { ROUTINES_PATH, routinePath } from '../../navigation/paths'
-import { RoutinePartsLine } from './RoutinePartsLine'
+import { RoutinePartsTable } from './RoutinePartsTable'
 import { useDuplicateRoutine } from './useDuplicateRoutine'
 
 export function RoutineRow({ routine, now }: { routine: Routine; now: number }) {
@@ -53,28 +52,31 @@ export function RoutineRow({ routine, now }: { routine: Routine; now: number }) 
 
   return (
     <IonItemSliding ref={sliding} className="routine-row">
-      <ButtonRow
-        label={routine.name}
+      <IonItem
+        className="ion-activatable"
+        detail={false}
+        lines="none"
         onClick={() => router.push(routinePath(ROUTINES_PATH, routine.id))}
-        controls={
+      >
+        <div className="routine-plate">
+          <div className="routine-head">
+            <h2 className="routine-name">{routine.name}</h2>
+            <p className="routine-created">{ROUTINES_COPY.created(shortDate(routine.createdAt, now))}</p>
+          </div>
+          <RoutinePartsTable routine={routine} />
+          <button type="button" className="plain-button row-button" aria-label={routine.name} />
           <IonButton
-            slot="end"
-            shape="round"
-            className="start-button"
+            expand="block"
+            className="start-button bar-button"
             aria-label={ROUTINES_COPY.start}
             disabled={!hasExercises(routine)}
             onClick={start}
           >
-            <IonIcon slot="icon-only" icon={play} aria-hidden="true" />
+            <IonIcon slot="start" icon={play} aria-hidden="true" />
+            {ROUTINES_COPY.start}
           </IonButton>
-        }
-      >
-        <IonLabel className="ion-text-wrap">
-          <h2 className="routine-name">{routine.name}</h2>
-          <RoutinePartsLine routine={routine} />
-          <p className="routine-created">{ROUTINES_COPY.created(shortDate(routine.createdAt, now))}</p>
-        </IonLabel>
-      </ButtonRow>
+        </div>
+      </IonItem>
       <IonItemOptions side="end">
         <IonItemOption color="medium" onClick={duplicate}>
           {ROUTINES_COPY.duplicate}

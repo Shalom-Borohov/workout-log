@@ -75,7 +75,7 @@ export function RoutinesPage() {
         </IonHeader>
         {routines?.length === 0 && <EmptyRoutines onPaste={openImport} onEmpty={() => void createEmpty()} />}
         {routines !== undefined && routines.length > 0 && (
-          <IonList className="list-plain routine-list">
+          <IonList className="list-plates routine-list">
             {routines.map((routine) => (
               <RoutineRow key={routine.id} routine={routine} now={now} />
             ))}

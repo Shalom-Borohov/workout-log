@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonHeader, IonIcon, IonNote, IonProgressBar, IonTitle, IonToolbar } from '@ionic/react'
+import { IonButton, IonButtons, IonHeader, IonIcon, IonNote, IonTitle, IonToolbar } from '@ionic/react'
 import { ellipsisHorizontal } from 'ionicons/icons'
 import { ElapsedClock } from '../../components/ElapsedClock'
 import { COMMON_COPY } from '../../copy/common'
@@ -10,18 +10,17 @@ import type { RestTimer } from './useRestTimer'
 interface LiveHeaderProps {
   title: string
   startedAt: number | null
-  progress: { done: number; total: number }
   restTimer: RestTimer
   onMenu: () => void
   onFinish: () => void
 }
 
-export function LiveHeader({ title, startedAt, progress, restTimer, onMenu, onFinish }: LiveHeaderProps) {
+export function LiveHeader({ title, startedAt, restTimer, onMenu, onFinish }: LiveHeaderProps) {
   const peek = useRestPeek()
   const { rest } = restTimer
 
   return (
-    <IonHeader>
+    <IonHeader className="live-header">
       <IonToolbar>
         <IonButtons slot="start">
           <IonButton aria-label={LIVE_COPY.exerciseActions} onClick={onMenu}>
@@ -58,11 +57,6 @@ export function LiveHeader({ title, startedAt, progress, restTimer, onMenu, onFi
           }}
         />
       )}
-      <IonProgressBar
-        className="live-progress"
-        aria-label={LIVE_COPY.workoutProgress}
-        value={progress.total === 0 ? 0 : progress.done / progress.total}
-      />
     </IonHeader>
   )
 }

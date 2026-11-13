@@ -1,115 +1,126 @@
 .week {
+  margin-block-start: 18px;
   content-visibility: auto;
   contain-intrinsic-size: auto 260px;
 }
 
 .week + .week {
-  margin-block-start: 20px;
+  margin-block-start: 28px;
 }
 
 .week-header {
-  box-sizing: border-box;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  min-height: 44px;
-  padding: 2px 16px 0;
+  padding-inline: var(--app-gutter);
 }
 
 .week-title {
   margin: 0;
   font-size: var(--app-type-heading);
-  font-weight: var(--app-weight-thin);
-  line-height: 36px;
+  font-weight: var(--app-weight-heavy);
+  line-height: 28px;
   color: var(--app-label);
 }
 
 .week-summary {
   margin: 0;
-  font-size: var(--app-type-caption);
-  line-height: 18px;
+  font-size: var(--app-type-meta);
+  line-height: 20px;
   color: var(--app-label-secondary);
   white-space: nowrap;
 }
 
+ion-list.list-plates.week-records {
+  margin: 0 var(--app-gutter);
+}
+
 .workout-card-item {
-  --padding-start: 16px;
-  --inner-padding-end: 16px;
-  --min-height: 56px;
-}
-
-.date-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 26px;
-}
-
-.date-column-weekday {
-  font-size: 11px;
-  line-height: 14px;
-  color: var(--app-label-secondary);
-}
-
-.date-column-day {
-  font-size: var(--app-type-row);
-  font-weight: var(--app-weight-light);
-  line-height: 26px;
-  color: var(--ion-color-primary);
-}
-
-.date-column-activity .date-column-day {
-  color: var(--app-label-secondary);
+  --padding-start: 14px;
+  --inner-padding-end: 14px;
+  --min-height: 64px;
 }
 
 ion-item .workout-card {
   display: flex;
   flex-direction: column;
-  margin-block: 3px;
+  margin-block: 8px;
+}
+
+.workout-card-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.day-mark {
+  display: inline-flex;
+  flex: none;
+  align-items: baseline;
+  gap: 4px;
+  font-size: var(--app-type-note);
+  line-height: 24px;
+  color: var(--app-label-secondary);
+}
+
+.day-mark-day {
+  font-weight: var(--app-weight-strong);
+}
+
+.day-mark-routine .day-mark-day {
+  color: var(--ion-color-primary);
 }
 
 .workout-card .workout-card-title {
+  min-width: 0;
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: var(--app-type-row);
-  font-weight: var(--app-weight-light);
-  line-height: 30px;
+  font-weight: var(--app-weight-strong);
+  line-height: 24px;
   color: var(--app-label);
 }
 
 .workout-card .workout-card-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   margin: 0;
-  font-size: var(--app-type-note);
-  line-height: 20px;
-  color: var(--app-label-secondary);
-}
-
-.workout-card-meta .change-badge {
-  gap: 2px;
-  font-size: inherit;
-  font-weight: inherit;
-}
-
-.workout-card-stats {
-  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: var(--app-type-meta);
+  line-height: 19px;
+  color: var(--app-label-secondary);
+}
+
+.workout-card-changes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-inline-start: 12px;
+}
+
+.workout-card-changes .change-badge {
+  font-size: var(--app-type-row);
 }
 
 .backup-reminder {
-  margin: 4px 16px 16px;
-  border-radius: var(--app-radius-panel);
+  margin: 4px var(--app-gutter) var(--app-gutter);
+  overflow: hidden;
 }
 
 .backup-reminder ion-item {
+  --background: transparent;
   --padding-start: 4px;
   --inner-padding-end: 12px;
   --min-height: 60px;
+  font-size: var(--app-type-note);
+}
+
+.backup-reminder ion-button[fill='outline'] {
+  min-height: 44px;
+  font-size: var(--app-type-note);
+  font-weight: var(--app-weight-strong);
 }

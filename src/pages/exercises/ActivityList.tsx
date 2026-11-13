@@ -9,8 +9,10 @@ function ActivityRow({ entry, withIcon }: { entry: LatestActivity; withIcon: boo
     <IonItem button detail={false} className="exercise-row" routerLink={activityPath(entry.name)}>
       {withIcon && <ActivityIcon slot="start" />}
       <IonLabel className="ion-text-wrap">
-        <h2>{entry.name}</h2>
-        <p>{formatDay(entry.last.startedAt)}</p>
+        <div className="exercise-row-top">
+          <h2>{entry.name}</h2>
+          <p>{formatDay(entry.last.startedAt)}</p>
+        </div>
       </IonLabel>
     </IonItem>
   )

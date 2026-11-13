@@ -1,14 +1,15 @@
 .activity-field-value {
   flex: 1;
-  min-inline-size: 0;
+  margin-inline-start: 0;
+  color: var(--app-label);
 }
 
 .activity-field-icon {
   flex: none;
-  inline-size: 20px;
-  block-size: 20px;
+  inline-size: 22px;
+  block-size: 22px;
   fill: none;
-  stroke: currentColor;
+  stroke: var(--ion-color-primary);
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -23,8 +24,13 @@
 
 .activity-field-value ion-icon {
   flex: none;
+  color: var(--app-label-secondary);
 }
 
-.activity-sessions {
-  margin-block-start: 12px;
+.activity-sessions.list-inset {
+  margin: var(--app-gap) var(--app-gutter) var(--app-gutter);
+}
+
+.activity-sessions .session-row {
+  --padding-bottom: 10px;
 }

@@ -82,7 +82,7 @@ export function WorkoutDetail({ id, tab }: { id: string; tab: DetailHostPath }) 
           <>
             <IonHeader collapse="condense">
               <IonToolbar>
-                <IonTitle size="large" className="workout-detail-title">
+                <IonTitle size="large">
                   {recordName(workout)}
                 </IonTitle>
               </IonToolbar>
@@ -90,7 +90,7 @@ export function WorkoutDetail({ id, tab }: { id: string; tab: DetailHostPath }) 
             <p className="workout-overview">{overview(workout)}</p>
             <SummaryEditor workout={workout} />
             <WorkoutSections sections={sectionsOf(workout)} changes={changes} />
-            <IonList className="list-plain workout-delete">
+            <IonList inset className="workout-delete">
               <IonItem button detail={false} onClick={confirmRemove}>
                 <IonLabel color="danger">{COMMON_COPY.deleteWorkout}</IonLabel>
               </IonItem>

@@ -26,7 +26,7 @@ export const WeekSection = memo(function WeekSection({ title, start, workouts, t
         <p className="week-summary">{formatWeekSummary(workouts.length, doneSets)}</p>
       </div>
       <DayStrip days={weekDays(start, workouts, today)} labelledBy={titleId} />
-      <IonList inset>
+      <IonList className="list-plates week-records">
         {workouts.map((workout) => (
           <WorkoutCard key={workout.id} workout={workout} />
         ))}

@@ -13,6 +13,8 @@ import '@ionic/react/css/palettes/dark.always.css'
 import '@fontsource-variable/heebo'
 import './theme.css'
 import './ionicOverrides.css'
+import './ionicControls.css'
+import './ionicOverlays.css'
 import './utilities.css'
 import './tapTargets.css'
 

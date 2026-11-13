@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
-import { buttonByLabel, ionElement } from '../helpers/ionic'
+import { ionElement } from '../helpers/ionic'
 import { heading } from '../helpers/live'
 import { renderAt } from '../helpers/renderAt'
 import { exercise, oct, open, workout } from '../helpers/workouts'
@@ -23,7 +23,7 @@ const hiddenUntilFocused = (element: Element) => element.closest('.visually-hidd
 
 beforeEach(resetDb)
 
-describe('the next exercise peeking above the footer', () => {
+describe('the next exercise plate in the footer', () => {
   it('names the next exercise in order and moves there when tapped', async () => {
     await saveWorkout(threeItems)
     const user = userEvent.setup()
@@ -61,7 +61,7 @@ describe('the live footer', () => {
 
     expect(hiddenUntilFocused(next)).toBe(true)
     expect(hiddenUntilFocused(previous)).toBe(true)
-    expect(hiddenUntilFocused(await buttonByLabel('כל התרגילים'))).toBe(false)
+    expect(hiddenUntilFocused(screen.getByRole('button', { name: 'כל התרגילים' }))).toBe(false)
 
     await user.click(next)
     expect(await heading('לחיצת חזה')).toBeInTheDocument()

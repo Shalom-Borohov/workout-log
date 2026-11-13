@@ -1,10 +1,11 @@
-.item-notes {
-  margin-block-start: 4px;
+ion-list.list-plates.item-notes {
+  margin-block: var(--app-gap) 0;
+  margin-inline: var(--app-gutter);
 }
 
 .item-notes ion-item {
-  --padding-start: 16px;
-  --inner-padding-end: 16px;
+  --padding-start: 14px;
+  --inner-padding-end: 14px;
   --min-height: 48px;
   --detail-icon-color: var(--app-label-secondary);
   --detail-icon-opacity: 1;
@@ -26,28 +27,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
   gap: 4px;
-  padding-block: 4px 12px;
-  padding-inline: 4px;
+  margin-block-start: 4px;
+  padding-inline: 12px;
 }
 
 .item-actions ion-button {
   --color: var(--ion-color-primary);
-  --padding-start: 12px;
-  --padding-end: 12px;
+  --padding-start: 4px;
+  --padding-end: 4px;
   min-block-size: 48px;
   margin: 0;
-  font-size: var(--app-type-body);
-  font-weight: var(--app-weight-regular);
+  font-size: var(--app-type-note);
+  font-weight: var(--app-weight-strong);
   letter-spacing: 0;
 }
 
 .item-actions ion-icon[slot='start'] {
   margin-inline-end: 6px;
   font-size: 18px;
-}
-
-.item-actions .item-note {
-  font-size: var(--app-type-body);
 }

@@ -5,7 +5,7 @@ import { saveRoutine } from '../../src/data/repo'
 import type { Routine } from '../../src/domain/types'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
-import { expectInOrder } from '../helpers/ionic'
+import { expectInOrder, visibleAll } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { oct, reps, routine, routineExercise } from '../helpers/workouts'
 
@@ -37,6 +37,14 @@ const twoSections: Routine = {
   ],
 }
 
+const threeSections: Routine = {
+  ...twoSections,
+  sections: [
+    ...twoSections.sections,
+    { id: 's3', name: 'סיום', sets: 1, items: [{ id: 'i3', sets: null, exercises: [routineExercise({ name: 'מתיחות', target: reps(1) })] }] },
+  ],
+}
+
 describe('routines list', () => {
   beforeEach(resetDb)
   freezeDate(oct(29, 12))
@@ -51,6 +59,21 @@ describe('routines list', () => {
     expect(screen.getByText('נוצר 20.10')).toBeInTheDocument()
     expect(screen.getByText('נוצר 29.10.25')).toBeInTheDocument()
     expect(screen.queryByText(/\d+ תרגילים|תרגיל אחד|חלקים|חלק אחד/)).not.toBeInTheDocument()
+  })
+
+  it('lists every part on its own table row with its exercise count', async () => {
+    await saveRoutine(threeSections)
+    renderAt('/tabs/routines')
+
+    await screen.findByText('חימום 1 · עיקרי 2 · סיום 1')
+
+    const rows = visibleAll('.routine-part').map((row) => Array.from(row.children, (cell) => cell.textContent))
+
+    expect(rows).toEqual([
+      ['חימום', '1'],
+      ['עיקרי', '2'],
+      ['סיום', '1'],
+    ])
   })
 
   it('lists the newest routine first', async () => {

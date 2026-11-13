@@ -1,9 +1,34 @@
 import { IonItem, IonLabel, IonList } from '@ionic/react'
+import { Fragment } from 'react'
 import { ChangeBadge } from '../../components/ChangeBadge'
-import { exerciseResult, formatChange, formatSets } from '../../domain/format'
+import { exerciseResult, formatChange, formatSet, LIST_MARK, LIST_SEPARATOR } from '../../domain/format'
 import { type Change, exercisesOf } from '../../domain/progress'
 import { changeHolders } from '../../domain/timeline'
-import type { WorkoutExercise, WorkoutSection } from '../../domain/types'
+import type { SetLog, Target, WorkoutExercise, WorkoutSection } from '../../domain/types'
+
+const spelledOut = (sets: SetLog[], target: Target) => sets.map((set) => formatSet(set, target)).join(LIST_SEPARATOR)
+
+function SetList({ exercise }: { exercise: WorkoutExercise }) {
+  const parts = exerciseResult(exercise, spelledOut).split(LIST_SEPARATOR)
+
+  return (
+    <p className="workout-exercise-sets">
+      {parts.map((part, index) => {
+        const isLast = index === parts.length - 1
+
+        return (
+          <Fragment key={index}>
+            <span className="workout-set">
+              {part}
+              {!isLast && <span className="workout-set-separator">{` ${LIST_MARK}`}</span>}
+            </span>
+            {!isLast && ' '}
+          </Fragment>
+        )
+      })}
+    </p>
+  )
+}
 
 function ExerciseRow({ exercise, change }: { exercise: WorkoutExercise; change: Change | undefined }) {
   return (
@@ -13,7 +38,7 @@ function ExerciseRow({ exercise, change }: { exercise: WorkoutExercise; change: 
           <h3 className="workout-exercise-name">{exercise.name}</h3>
           {change && <ChangeBadge kind={change.kind} label={formatChange(change)} />}
         </div>
-        <p className="workout-exercise-sets">{exerciseResult(exercise, formatSets)}</p>
+        <SetList exercise={exercise} />
       </IonLabel>
     </IonItem>
   )
@@ -23,7 +48,7 @@ export function WorkoutSections({ sections, changes }: { sections: WorkoutSectio
   const holders = changeHolders(exercisesOf({ sections }), changes)
 
   return sections.map((section, index) => (
-    <section key={index}>
+    <section key={index} className="workout-part">
       <h2 className="workout-part-title">{section.name}</h2>
       <IonList inset>
         {section.items.flatMap((item) =>
