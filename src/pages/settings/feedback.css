@@ -1,8 +1,0 @@
-.feedback-kind {
-  --background: var(--app-plate);
-}
-
-ion-button.bar-button.feedback-send {
-  height: 56px;
-  margin: 8px var(--app-gutter) var(--app-gutter);
-}

@@ -6,7 +6,7 @@ import { ItemLabel } from './ItemLabel'
 export function NotePreview({ sections }: { sections: RoutineSection[] }) {
   return sections.map((section) => (
     <section key={section.id}>
-      <IonListHeader className="part-heading">
+      <IonListHeader>
         <IonLabel>{section.name}</IonLabel>
       </IonListHeader>
       <IonList inset>

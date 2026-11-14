@@ -21,8 +21,8 @@ describe('applying the accent colour', () => {
 })
 
 describe('accent colour', () => {
-  it('is teal until one is chosen', () => {
-    expect(readAccentColor()).toBe('teal')
+  it('is orange until one is chosen', () => {
+    expect(readAccentColor()).toBe('orange')
   })
 
   it('reads back the chosen colour', () => {
@@ -37,14 +37,8 @@ describe('accent colour', () => {
     expect(localStorage.getItem('workout-log:accent')).toBe('purple')
   })
 
-  it('falls back to teal when the stored value is not a colour it offers', () => {
+  it('falls back to orange when the stored value is not a colour it offers', () => {
     localStorage.setItem('workout-log:accent', 'red')
-
-    expect(readAccentColor()).toBe('teal')
-  })
-
-  it('keeps orange for a phone that chose it before teal became the default', () => {
-    localStorage.setItem('workout-log:accent', 'orange')
 
     expect(readAccentColor()).toBe('orange')
   })

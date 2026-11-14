@@ -26,7 +26,7 @@ describe('icons for screen readers', () => {
 
   it.each([
     ['the timeline', '/tabs/timeline', 'התחל אימון'],
-    ['the routines list', '/tabs/routines', 'אימון גוף מלא'],
+    ['the routines list', '/tabs/routines', 'התחל'],
     ['the daily tab', '/tabs/daily', 'חטיפי תנועה'],
     ['the exercises tab', '/tabs/exercises', 'תרגילים'],
     ['settings', '/tabs/timeline/settings', 'ייצוא היסטוריה'],

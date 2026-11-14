@@ -4,14 +4,13 @@ import { ElapsedClock } from '../../components/ElapsedClock'
 import { TIMELINE_COPY } from './copy'
 import type { Workout } from '../../domain/types'
 import { TIMELINE_PATH, workoutPath } from '../../navigation/paths'
-import './startBar.css'
 
 export function ActiveWorkoutBanner({ workout }: { workout: Workout }) {
   return (
     <IonButton
       expand="block"
       color="primary"
-      className="start-workout bar-button active-workout"
+      className="start-workout active-workout"
       routerLink={workoutPath(TIMELINE_PATH, workout.id)}
     >
       <span className="active-workout-text">

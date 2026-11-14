@@ -23,9 +23,8 @@ import { useItemSwipe } from './useSwipe'
 import { ItemEditorSheets } from '../../components/itemEditor/ItemEditorSheets'
 import { useSave } from '../../hooks/useSave'
 import { useWakeLock } from '../../hooks/useWakeLock'
-import './chrome.css'
+import './live.css'
 import './photo.css'
-import './sheets.css'
 
 export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHostPath }) {
   const router = useIonRouter()
@@ -38,7 +37,6 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
     total,
     ref,
     item,
-    next,
     active,
     previous,
     restTimer,
@@ -113,6 +111,7 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
       <LiveHeader
         title={active ? workout.routineName : LIVE_COPY.editWorkout}
         startedAt={active ? workout.startedAt : null}
+        progress={workoutProgress(workout)}
         restTimer={restTimer}
         onMenu={openMenu}
         onFinish={leave}
@@ -129,22 +128,18 @@ export function LiveWorkout({ initial, tab }: { initial: Workout; tab: WorkoutHo
           sectionName={workout.sections[ref.section].name}
           position={index + 1}
           total={total}
-          progress={workoutProgress(workout)}
           selection={selection}
-          rest={restTimer.rest}
           onNote={openNote}
         >
           <ItemActions
             item={item}
             onToggleSkip={toggleItemSkip}
             onAddSet={() => apply((current) => addSet(current, ref))}
-            onNote={openNote}
           />
         </ItemCard>
-      </IonContent>
-      <LiveFooter index={index} total={total} next={next} onMove={move} onList={() => setListing('progress')}>
         {active && backTo !== null && backTo !== index && <BackToCurrent onBack={() => move(backTo)} />}
-      </LiveFooter>
+      </IonContent>
+      <LiveFooter index={index} total={total} onMove={move} onList={() => setListing('progress')} />
       <ItemListModal
         mode={listing}
         workout={workout}

@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 אימונים: a Hebrew (RTL) iPhone PWA for running workout routines live and logging them. No backend. Data lives in IndexedDB on the phone, and the user moves it with a JSON backup file. Live at https://shalom-borohov.github.io/workout-log/.
 
 - `docs/specs/2026-10-26-workout-log-design.md` is the source of truth for behaviour. Read it before changing a flow. Record new product decisions there as numbered items marked "(added YYYY-MM-DD)".
-- `PRODUCT.md` holds the product context: users, principles, Hebrew terms, and the design commitments (iPhone behaviour, the app's own look). Where Apple HIG and the Impeccable design guidance conflict on behaviour, HIG wins.
+- `PRODUCT.md` holds the product context: users, principles, Hebrew terms, and the iOS-native design commitments. Where Apple HIG and the Impeccable design guidance conflict, HIG wins.
 ## Commands
 
 ```bash
@@ -33,11 +33,11 @@ Code is in three layers, and dependencies point downward only:
   - `workoutStructure.ts`: adding, inserting, moving, editing and removing exercises in a workout, without touching its routine.
   - `routineEdit.ts`: routine editor operations.
   - `routineFromWorkout.ts`: an edited workout → routine (for "עדכון"/"שמירה כאימון חדש" at סיום), and `matchesRoutine` for whether to offer it.
-  - `sessionBars.ts`: bar lengths for an exercise's sessions (spec item 104).
   - `timeline.ts`: week grouping.
   - `format.ts`: display formatting.
 - `src/data/`:
-  - `db.ts`: the Dexie database (`routines`, `workouts`, `dailyLogs`, `exerciseAreas`, and `settings` for the background photo and backup status).
+  - `db.ts`: the Dexie database (`routines`, `workouts`, `dailyLogs`, `exerciseAreas`, `activityDetails`, and `settings` for the background photo and backup status).
+  - `activityDetails.ts`: notes and locations per activity. No screen uses it since the rollback to the 1.17.0 app (spec item 106); backups and restore still carry the table, and issue #99 brings the screen back.
   - `migrate.ts`: `Legacy*` types and `upgrade*` functions, shared by the Dexie upgrade and backup import.
   - `repo.ts`: thin write and query functions.
   - `hooks.ts`: `useLiveQuery` hooks the pages read from.
@@ -106,10 +106,10 @@ Schema changes:
 
 - All UI copy is Hebrew and lives in constants, never inline in components. A screen's own text is in its feature folder (`src/pages/<feature>/copy.ts`, one `<FEATURE>_COPY` object). Text used by more than one feature is in `src/copy/` (`COMMON_COPY`, `FORMAT_COPY`, `APP_COPY`). Tests keep Hebrew literals, as an independent check. Use the terms in `PRODUCT.md` (אימון, חלק, סט, חזרות, סיכום, …).
 - Name values that encode a decision (limits, defaults, durations, MIME types, keys) as consts in the module that owns them. Discriminated-union tags (`'reps'`, `'duration'`) and framework API values (`'cancel'`, `'root'`) stay inline; the types check them.
-- Ionic is forced to iOS mode, so behaviour follows native iOS; the look is the app's own, "Road Signs" (spec item 95). The app is always dark. Design tokens (colours, radii, type scale, weights) are in `src/theme.css`, Ionic restyling in `src/ionicOverrides.css` (bars and lists), `src/ionicControls.css` and `src/ionicOverlays.css`, shared classes (`.plate`, `.plate-strong`, `.plate-outline`, `.plate-accent`, `.bar-button`, `.step-button`, `.pill`, `.row-button`, `.plain-button`, `.visually-hidden`, `.visually-hidden-focusable`) in `src/utilities.css`. A list is `ion-list.list-plates` (each row its own plate) or `ion-list.list-inset` (one plate, rows split by a 1px rule). Use the tokens, never hex or a numeric `font-weight`, in feature CSS (`test/unit/designTokens.test.ts` checks it). One accent fill per plate, with near-black text; ✓ stays iOS green; weights are 500, 700 and 900 only, 900 from 17px up. The font is Heebo, bundled from `@fontsource-variable/heebo`.
+- Ionic is forced to iOS mode, and the look follows native iOS. Colour tokens are in `src/theme.css`: orange tint (darker than system orange in light mode, for contrast), ✓ in iOS green, light/dark follow the phone.
 - Screens are designed and checked at 375×647 first, the owner's iPhone SE as a Home Screen app (spec item 105). Don't add `max-height` special cases for short screens.
 - No `as` casts (`as const` is fine) and no `?? ''`/`?? 0` fallbacks to satisfy types. Narrow parsed JSON with type guards.
 - Durations are stored in seconds. Minutes are a display unit only.
-- Every PR with a change the user can notice raises `version` in `package.json`: the minor number for features, the patch number for fixes, and the major number only when the whole app changes how it looks or works (2.0.0 was the "Type tiles" redesign, 3.0.0 "Road Signs"). Dependency, CI and docs-only PRs don't (spec item 35). Settings shows it with the build time.
+- Every PR with a change the user can notice raises `version` in `package.json`: the minor number for features, the patch number for fixes, and the major number only when the whole app changes how it looks or works (2.0.0 and 3.0.0 were dark redesigns, 4.0.0 went back to the 1.17.0 app, spec item 106). Dependency, CI and docs-only PRs don't (spec item 35). Settings shows it with the build time.
 - The same PR adds a release to `src/appUpdate/changelog.ts`: short Hebrew lines for what the user will notice, under `features` and `fixes`. The phone shows them once after updating.
 - Keep files under about 250 lines, split by responsibility.

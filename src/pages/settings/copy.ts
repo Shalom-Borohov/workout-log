@@ -28,7 +28,7 @@ export const SETTINGS_COPY = {
   history: 'היסטוריה',
   exportHistory: 'ייצוא היסטוריה',
   historyFooter: 'קובץ טקסט עם כל האימונים, לקריאה או לשמירה בפתקים.',
-  accentFooter: 'הצבע של הסט הנוכחי, הכפתורים והסמלים.',
+  accentFooter: 'הצבע של הכפתורים והסמלים.',
   background: 'רקע',
   backgroundPhoto: 'תמונת רקע',
   removeBackgroundPhoto: 'הסרת תמונת הרקע',

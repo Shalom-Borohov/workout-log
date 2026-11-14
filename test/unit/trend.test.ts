@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { previousExerciseLookup, startWorkout } from '../../src/domain/progress'
+import { exerciseHistory, previousExerciseLookup, startWorkout, weightTrend } from '../../src/domain/progress'
 import { counter } from '../helpers/ids'
 import { done, exercise, oct, open, reps, routine, seconds, workout } from '../helpers/workouts'
 
@@ -42,5 +42,20 @@ describe('previous sets', () => {
 
     expect(previous({ name: 'פלאנק', target: seconds(60) }).sets).toEqual([done(5, 45)])
     expect(previous({ name: 'פלאנק', target: reps(12) }).sets).toEqual([open(null, 12)])
+  })
+})
+
+describe('weightTrend', () => {
+  it('lists the heaviest weight per session, oldest first, skipping bodyweight sessions', () => {
+    const history = [
+      workout({ id: 'c', startedAt: oct(26), exercises: [exercise('סקוואט', [done(45, 10), done(50, 8)])] }),
+      workout({ id: 'b', startedAt: oct(19), exercises: [exercise('סקוואט', [done(null, 15)])] }),
+      workout({ id: 'a', startedAt: oct(12), exercises: [exercise('סקוואט', [done(40, 12)])] }),
+    ]
+
+    expect(weightTrend(exerciseHistory(history, 'סקוואט'))).toEqual([
+      { startedAt: oct(12), weight: 40 },
+      { startedAt: oct(26), weight: 50 },
+    ])
   })
 })

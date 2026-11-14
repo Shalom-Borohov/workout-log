@@ -1,108 +1,115 @@
-:root,
-:root.ios {
-  --ion-font-family: 'Heebo Variable', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Arial Hebrew', sans-serif;
-  --app-system-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Arial Hebrew', sans-serif;
+:root {
+  --ion-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Arial Hebrew', sans-serif;
 
-  --app-accent-orange: #ff9f0a;
-  --app-accent-orange-rgb: 255, 159, 10;
-  --app-accent-teal: #00aba9;
-  --app-accent-teal-rgb: 0, 171, 169;
-  --app-accent-blue: #409cff;
-  --app-accent-blue-rgb: 64, 156, 255;
-  --app-accent-indigo: #8a88ff;
-  --app-accent-indigo-rgb: 138, 136, 255;
-  --app-accent-purple: #da8fff;
-  --app-accent-purple-rgb: 218, 143, 255;
-  --app-accent-pink: #ff73c0;
-  --app-accent-pink-rgb: 255, 115, 192;
+  --app-accent-orange: #b34e00;
+  --app-accent-orange-rgb: 179, 78, 0;
+  --app-accent-teal: #007585;
+  --app-accent-teal-rgb: 0, 117, 133;
+  --app-accent-blue: #0040dd;
+  --app-accent-blue-rgb: 0, 64, 221;
+  --app-accent-indigo: #3634a3;
+  --app-accent-indigo-rgb: 54, 52, 163;
+  --app-accent-purple: #8944ab;
+  --app-accent-purple-rgb: 137, 68, 171;
+  --app-accent-pink: #c0157a;
+  --app-accent-pink-rgb: 192, 21, 122;
 
-  --app-accent: var(--app-accent-teal);
-  --app-accent-rgb: var(--app-accent-teal-rgb);
+  --app-accent: var(--app-accent-orange);
+  --app-accent-rgb: var(--app-accent-orange-rgb);
 
   --ion-color-primary: var(--app-accent);
   --ion-color-primary-rgb: var(--app-accent-rgb);
-  --ion-color-primary-contrast: #0b0d0e;
-  --ion-color-primary-contrast-rgb: 11, 13, 14;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
   --ion-color-primary-shade: color-mix(in srgb, var(--app-accent) 88%, #000000);
   --ion-color-primary-tint: color-mix(in srgb, var(--app-accent) 90%, #ffffff);
 
-  --ion-color-success: #30d158;
-  --ion-color-success-rgb: 48, 209, 88;
-  --ion-color-success-contrast: #000000;
-  --ion-color-success-contrast-rgb: 0, 0, 0;
-  --ion-color-success-shade: #2ab84d;
-  --ion-color-success-tint: #45d669;
+  --ion-color-success: #248a3d;
+  --ion-color-success-rgb: 36, 138, 61;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #207936;
+  --ion-color-success-tint: #3a9650;
 
-  --ion-color-danger: #ff6961;
-  --ion-color-danger-rgb: 255, 105, 97;
-  --ion-color-danger-contrast: #000000;
-  --ion-color-danger-contrast-rgb: 0, 0, 0;
-  --ion-color-danger-shade: #e05c55;
-  --ion-color-danger-tint: #ff7871;
+  --ion-background-color: #f2f2f7;
+  --ion-background-color-rgb: 242, 242, 247;
+  --ion-item-background: #ffffff;
 
-  --ion-background-color: #14171a;
-  --ion-background-color-rgb: 20, 23, 26;
-  --ion-text-color: #f4f5f5;
-  --ion-text-color-rgb: 244, 245, 245;
-  --ion-item-background: transparent;
-  --ion-toolbar-background: #14171a;
-  --ion-toolbar-border-color: transparent;
-  --ion-tab-bar-background: #1f2428;
-  --ion-tab-bar-border-color: transparent;
-
-  --app-ground: #14171a;
-  --app-plate: #1f2428;
-  --app-keyline: #3a4147;
-  --app-keyline-strong: #f4f5f5;
-  --app-stroke: 2px;
-  --app-rule: 1px;
-  --app-label: #f4f5f5;
-  --app-label-secondary: #a9b1b7;
-  --app-label-tertiary: #6b747b;
-  --app-on-accent: #0b0d0e;
-  --app-up: #30d158;
-  --app-skipped: var(--ion-color-warning-shade);
+  --app-label: #000000;
+  --app-label-secondary: rgba(60, 60, 67, 0.75);
+  --app-label-tertiary: rgba(60, 60, 67, 0.3);
+  --app-fill: rgba(118, 118, 128, 0.12);
+  --app-up: #1e7b34;
+  --app-skipped: #8a6100;
   --app-record: var(--ion-color-primary);
-
-  --app-drill-red: #ff453a;
-  --app-drill-orange: #ff9f0a;
-  --app-drill-yellow: #ffd60a;
-  --app-drill-green: #30d158;
-  --app-drill-teal: #40c8e0;
-  --app-drill-blue: #0a84ff;
-  --app-drill-purple: #bf5af2;
-  --app-drill-pink: #ff375f;
-
-  --app-radius-plate: 14px;
-  --app-radius-control: 12px;
-
-  --app-gap: 12px;
-  --app-gutter: 16px;
-
-  --app-type-numeral: 64px;
-  --app-type-display: 36px;
-  --app-type-title: 34px;
-  --app-type-figure: 30px;
-  --app-type-name: 24px;
-  --app-type-heading: 22px;
-  --app-type-row: 18px;
-  --app-type-body: 17px;
-  --app-type-note: 15px;
-  --app-type-meta: 14px;
-  --app-type-caption: 13px;
-  --app-weight-text: 500;
-  --app-weight-strong: 700;
-  --app-weight-heavy: 900;
+  --app-drill-red: #ff3b30;
+  --app-drill-orange: #ff9500;
+  --app-drill-yellow: #ffcc00;
+  --app-drill-green: #34c759;
+  --app-drill-teal: #30b0c7;
+  --app-drill-blue: #007aff;
+  --app-drill-purple: #af52de;
+  --app-drill-pink: #ff2d55;
 }
 
-html {
-  color-scheme: dark;
+@media (prefers-color-scheme: dark) {
+  :root,
+  :root.ios {
+    --app-accent-orange: #ff9f0a;
+    --app-accent-orange-rgb: 255, 159, 10;
+    --app-accent-teal: #40c8e0;
+    --app-accent-teal-rgb: 64, 200, 224;
+    --app-accent-blue: #409cff;
+    --app-accent-blue-rgb: 64, 156, 255;
+    --app-accent-indigo: #8a88ff;
+    --app-accent-indigo-rgb: 138, 136, 255;
+    --app-accent-purple: #da8fff;
+    --app-accent-purple-rgb: 218, 143, 255;
+    --app-accent-pink: #ff73c0;
+    --app-accent-pink-rgb: 255, 115, 192;
+
+    --ion-color-primary: var(--app-accent);
+    --ion-color-primary-rgb: var(--app-accent-rgb);
+    --ion-color-primary-contrast: #000000;
+    --ion-color-primary-contrast-rgb: 0, 0, 0;
+
+    --ion-color-success: #30d158;
+    --ion-color-success-rgb: 48, 209, 88;
+    --ion-color-success-contrast: #000000;
+    --ion-color-success-contrast-rgb: 0, 0, 0;
+    --ion-color-success-shade: #2ab84d;
+    --ion-color-success-tint: #45d669;
+
+    --ion-background-color: #000000;
+    --ion-background-color-rgb: 0, 0, 0;
+    --ion-item-background: #1c1c1e;
+
+    --app-label: #ffffff;
+    --app-label-secondary: rgba(235, 235, 245, 0.6);
+    --app-label-tertiary: rgba(235, 235, 245, 0.3);
+    --app-fill: rgba(118, 118, 128, 0.24);
+    --app-up: #30d158;
+    --app-skipped: var(--ion-color-warning-shade);
+    --app-drill-red: #ff453a;
+    --app-drill-orange: #ff9f0a;
+    --app-drill-yellow: #ffd60a;
+    --app-drill-green: #30d158;
+    --app-drill-teal: #40c8e0;
+    --app-drill-blue: #0a84ff;
+    --app-drill-purple: #bf5af2;
+    --app-drill-pink: #ff375f;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  ion-modal {
+    --ion-background-color: #1c1c1e;
+    --ion-background-color-rgb: 28, 28, 30;
+    --ion-item-background: #2c2c2e;
+  }
 }
 
 body {
-  background: var(--app-ground);
-  color: var(--app-label);
-  font-weight: var(--app-weight-text);
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -113,18 +120,104 @@ input,
 textarea {
   -webkit-user-select: text;
   user-select: text;
-  caret-color: var(--ion-color-primary);
 }
 
 ::selection {
-  background: rgba(var(--ion-color-primary-rgb), 0.35);
+  background: rgba(var(--ion-color-primary-rgb), 0.3);
 }
 
-:focus-visible {
-  outline: var(--app-stroke) solid var(--app-keyline-strong);
-  outline-offset: 2px;
+ion-header[collapse='condense'] ion-toolbar {
+  --background: var(--ion-background-color);
 }
 
-[tabindex='-1']:focus-visible {
-  outline: none;
+ion-content::part(scroll) {
+  scrollbar-width: none;
+}
+
+ion-list-header {
+  --color: var(--app-label-secondary);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  min-height: 2rem;
+  padding-block-start: 1rem;
+  padding-inline-start: 32px;
+}
+
+ion-list-header ion-label {
+  margin-block: 0.25rem;
+}
+
+ion-list-header + ion-list.list-ios.list-inset {
+  margin-block-start: 6px;
+}
+
+ion-tab-button {
+  --padding-top: 2px;
+}
+
+ion-tab-button ion-label {
+  font-size: 0.6875rem;
+}
+
+ion-note {
+  --color: var(--app-label-secondary);
+}
+
+ion-label p {
+  --ion-color-step-400: var(--app-label-secondary);
+}
+
+.list-footer {
+  display: block;
+  margin-block: -8px 16px;
+  padding-inline: 32px;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.list-footer:not(.ion-color) {
+  color: var(--app-label-secondary);
+}
+
+.list-footer-line {
+  display: block;
+  margin-block-start: 4px;
+}
+
+.empty-state {
+  max-width: 22rem;
+  margin: 3rem auto 0.5rem;
+  padding-inline: 2rem;
+  text-align: center;
+}
+
+.empty-state h2 {
+  margin: 0 0 0.375rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--app-label);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--app-label-secondary);
+  text-wrap: balance;
+}
+
+ion-toolbar ion-button {
+  --opacity: 1;
+}
+
+.plain-button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
 }

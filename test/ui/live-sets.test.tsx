@@ -9,9 +9,6 @@ import { done, exercise, oct, open, seconds, workout } from '../helpers/workouts
 
 const firstSets = async () => (await savedWorkout('w1'))?.sections[0].items[0].exercises[0].sets
 
-const setValue = (text: string) => (_: string, element: Element | null) =>
-  element?.classList.contains('set-value') === true && element.textContent === text
-
 beforeEach(async () => {
   await resetDb()
 })
@@ -83,26 +80,12 @@ describe('live current set', () => {
 
     expect(await screen.findByLabelText('סקוואט סט 2 משקל')).toHaveValue('62.5')
     expect(screen.queryByLabelText('סקוואט סט 1 משקל')).not.toBeInTheDocument()
-    expect(screen.getByText(setValue('60 × 10'))).toBeInTheDocument()
+    expect(screen.getByText('60 × 10')).toBeInTheDocument()
 
     await user.click(screen.getByText('סט 1'))
 
     expect(await screen.findByLabelText('סקוואט סט 1 משקל')).toHaveValue('60')
     expect(screen.queryByLabelText('סקוואט סט 2 משקל')).not.toBeInTheDocument()
-  })
-
-  it('done and upcoming sets are plates of their own, not rows in one panel', async () => {
-    await saveWorkout(
-      workout({
-        id: 'w1',
-        startedAt: oct(26),
-        finishedAt: null,
-        exercises: [exercise('סקוואט', [done(60, 10), open(62.5, 8), open(62.5, 8)])],
-      }),
-    )
-    renderAt('/tabs/timeline/workout/w1')
-
-    expect((await screen.findByText(setValue('60 × 10'))).closest('ion-list')).not.toHaveClass('list-inset')
   })
 
   it('ticking the current set moves focus to the next undone set', async () => {

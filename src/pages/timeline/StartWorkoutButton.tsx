@@ -6,7 +6,6 @@ import { useRoutines } from '../../data/hooks'
 import { isStartable } from '../../domain/progress'
 import { useStartWorkout } from '../../hooks/useStartWorkout'
 import { IMPORT_PATH, TIMELINE_PATH } from '../../navigation/paths'
-import './startBar.css'
 
 export function StartWorkoutButton() {
   const routines = useRoutines()
@@ -40,7 +39,7 @@ export function StartWorkoutButton() {
   }
 
   return (
-    <IonButton expand="block" color="primary" className="start-workout bar-button" onClick={handleClick}>
+    <IonButton expand="block" color="primary" className="start-workout" onClick={handleClick}>
       <IonIcon slot="start" icon={play} aria-hidden="true" />
       {TIMELINE_COPY.startWorkout}
     </IonButton>

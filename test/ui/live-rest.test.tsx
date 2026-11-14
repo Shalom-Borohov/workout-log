@@ -30,7 +30,7 @@ afterEach(() => {
 describe('live rest timer', () => {
   freezeDate(oct(26, 9, 30))
 
-  it('starts when a set is ticked with the time left on the current set, and −/+ only on tap', async () => {
+  it('starts out of sight when a set is ticked, and shows the time left on tap', async () => {
     await saveWorkout(squats(null))
     const user = userEvent.setup()
     renderAt('/tabs/timeline/workout/w1')
@@ -40,7 +40,6 @@ describe('live rest timer', () => {
 
     await tick(user, 1)
 
-    expect(await screen.findByText('מנוחה 1:00', { selector: '.rest-pill' })).toBeInTheDocument()
     expect(screen.queryByRole('timer')).not.toBeInTheDocument()
     await openRest(user)
 

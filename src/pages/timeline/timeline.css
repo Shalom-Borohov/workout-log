@@ -1,126 +1,149 @@
-.week {
-  margin-block-start: 18px;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 260px;
+.timeline-footer ion-toolbar {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
 }
 
-.week + .week {
-  margin-block-start: 28px;
+ion-tabs:has(.ion-page:not(.ion-page-hidden) > .timeline-footer) ion-tab-bar {
+  --border: 0;
+}
+
+.start-workout {
+  margin: 0;
+}
+
+.start-workout ion-icon[slot='start'] {
+  font-size: 1rem;
+}
+
+.active-workout-text {
+  display: flex;
+  flex: 1;
+  gap: 0.5rem;
+  min-width: 0;
+  text-align: start;
+}
+
+.active-workout-text strong {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.active-workout-routine {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.active-workout-clock {
+  margin-inline-start: 0.75rem;
+}
+
+.active-workout ion-icon[slot='end'] {
+  font-size: 1.125rem;
+  opacity: 0.8;
 }
 
 .week-header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
-  padding-inline: var(--app-gutter);
+  gap: 0.75rem;
+  margin-inline-end: 32px;
 }
 
 .week-title {
-  margin: 0;
-  font-size: var(--app-type-heading);
-  font-weight: var(--app-weight-heavy);
-  line-height: 28px;
+  font-size: 0.9375rem;
+  font-weight: 600;
   color: var(--app-label);
 }
 
-.week-summary {
-  margin: 0;
-  font-size: var(--app-type-meta);
-  line-height: 20px;
+.date-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 2rem;
+  line-height: 1.15;
+}
+
+.date-column-weekday {
+  font-size: 0.8125rem;
   color: var(--app-label-secondary);
+}
+
+.date-column-day {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}
+
+.date-column-activity .date-column-day {
+  color: var(--app-label-secondary);
+}
+
+.date-column-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
   white-space: nowrap;
-}
-
-ion-list.list-plates.week-records {
-  margin: 0 var(--app-gutter);
-}
-
-.workout-card-item {
-  --padding-start: 14px;
-  --inner-padding-end: 14px;
-  --min-height: 64px;
 }
 
 ion-item .workout-card {
   display: flex;
   flex-direction: column;
-  margin-block: 8px;
-}
-
-.workout-card-heading {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  min-width: 0;
-}
-
-.day-mark {
-  display: inline-flex;
-  flex: none;
-  align-items: baseline;
-  gap: 4px;
-  font-size: var(--app-type-note);
-  line-height: 24px;
-  color: var(--app-label-secondary);
-}
-
-.day-mark-day {
-  font-weight: var(--app-weight-strong);
-}
-
-.day-mark-routine .day-mark-day {
-  color: var(--ion-color-primary);
+  gap: 0.125rem;
+  margin-block: 0.625rem;
 }
 
 .workout-card .workout-card-title {
-  min-width: 0;
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: var(--app-type-row);
-  font-weight: var(--app-weight-strong);
-  line-height: 24px;
-  color: var(--app-label);
+  font-size: 1.0625rem;
+  font-weight: 600;
 }
 
 .workout-card .workout-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
   margin: 0;
+  font-size: 0.9375rem;
+}
+
+.workout-card-stats {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: var(--app-type-meta);
-  line-height: 19px;
+}
+
+.workout-exercise-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.workout-overview {
+  margin-block: 0 0.5rem;
+  margin-inline: 20px;
+  font-size: 0.9375rem;
   color: var(--app-label-secondary);
 }
 
-.workout-card-changes {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-inline-start: 12px;
+.workout-exercise .workout-exercise-name {
+  margin-block: 0 0.125rem;
+  font-size: 1.0625rem;
 }
 
-.workout-card-changes .change-badge {
-  font-size: var(--app-type-row);
+.workout-exercise .workout-exercise-sets {
+  margin: 0;
+  font-size: 0.9375rem;
 }
 
-.backup-reminder {
-  margin: 4px var(--app-gutter) var(--app-gutter);
-  overflow: hidden;
-}
-
-.backup-reminder ion-item {
-  --background: transparent;
-  --padding-start: 4px;
-  --inner-padding-end: 12px;
-  --min-height: 60px;
-  font-size: var(--app-type-note);
-}
-
-.backup-reminder ion-button[fill='outline'] {
-  min-height: 44px;
-  font-size: var(--app-type-note);
-  font-weight: var(--app-weight-strong);
+.workout-delete {
+  margin-block-start: 2rem;
 }

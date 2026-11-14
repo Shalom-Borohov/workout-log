@@ -1,4 +1,4 @@
-import { IonButton, IonIcon, IonItem, IonLabel } from '@ionic/react'
+import { IonButton, IonIcon, IonItem, IonLabel, IonList } from '@ionic/react'
 import { close } from 'ionicons/icons'
 import { COMMON_COPY } from '../../copy/common'
 import { dismissBackupReminder } from '../../data/backupStatus'
@@ -19,7 +19,7 @@ export function BackupReminder({ records, now }: { records: number | undefined; 
   }
 
   return (
-    <div className="plate backup-reminder">
+    <IonList inset>
       <IonItem lines="none">
         <IonButton
           slot="start"
@@ -35,10 +35,10 @@ export function BackupReminder({ records, now }: { records: number | undefined; 
             ? TIMELINE_COPY.neverBackedUp
             : TIMELINE_COPY.lastBackup(daysSince(status.backedUpAt, now))}
         </IonLabel>
-        <IonButton slot="end" fill="outline" onClick={() => void backUp()}>
+        <IonButton slot="end" size="small" shape="round" onClick={() => void backUp()}>
           {COMMON_COPY.backup}
         </IonButton>
       </IonItem>
-    </div>
+    </IonList>
   )
 }

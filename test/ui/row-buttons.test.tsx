@@ -28,27 +28,20 @@ describe('rows with a control inside', () => {
     await saveRoutine(drills)
   })
 
-  it('a routine row is not one big button, and its own button opens the routine', async () => {
-    renderAt('/tabs/routines')
-    const row = await rowOf('אימון רגליים')
+  it.each([
+    ['routine row', '/tabs/routines', 'אימון רגליים', '/tabs/routines/r1'],
+    ['daily card', '/tabs/daily', 'חטיפי תנועה', '/tabs/daily/d1'],
+  ])('a %s is not one big button, and its own button opens the routine', async (_, path, name, opened) => {
+    renderAt(path)
+    const row = await rowOf(name)
 
     expect(row.button).toBeFalsy()
-    fireEvent.click(within(row).getByRole('button', { name: 'אימון רגליים' }))
+    fireEvent.click(within(row).getByRole('button', { name }))
 
-    await waitFor(() => expect(currentPath()).toBe('/tabs/routines/r1'))
+    await waitFor(() => expect(currentPath()).toBe(opened))
   })
 
-  it('a daily row is not one big button, and its own button opens the routine', async () => {
-    renderAt('/tabs/daily')
-    const row = await rowOf('חטיפי תנועה')
-
-    expect(row.button).toBeFalsy()
-    fireEvent.click(within(row).getByRole('button', { name: 'חטיפי תנועה' }))
-
-    await waitFor(() => expect(currentPath()).toBe('/tabs/daily/d1'))
-  })
-
-  it('✓ on a daily row logs today without opening the routine', async () => {
+  it('✓ on a daily card logs today without opening the routine', async () => {
     renderAt('/tabs/daily')
     const row = await rowOf('חטיפי תנועה')
 
