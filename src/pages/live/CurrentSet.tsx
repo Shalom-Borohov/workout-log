@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react'
 import { COMMON_COPY } from '../../copy/common'
 import { LIVE_COPY } from './copy'
 import { amountUnit, toDisplayAmount } from '../../domain/format'
@@ -6,34 +5,25 @@ import { MAX_WEIGHT, maxAmount } from '../../domain/limits'
 import { amountPatch, weightPatch, weightText } from '../../domain/numberInput'
 import type { SetLog, Target } from '../../domain/types'
 import { WEIGHT_STEP, amountStep, stepValue } from '../../domain/workoutEdits'
-import type { Rest } from '../../rest/restClock'
 import { SetCheck } from '../../components/SetCheck'
-import { RestPill } from './RestPill'
 import { Stepper } from './Stepper'
-import './plate.css'
 
 interface CurrentSetProps {
   title: string
-  heading?: ReactNode
   label: string
   target: Target
   set: SetLog
-  rest: Rest | null
   onChange: (patch: Partial<SetLog>) => void
 }
 
-export function CurrentSet({ title, heading, label, target, set, rest, onChange }: CurrentSetProps) {
+export function CurrentSet({ title, label, target, set, onChange }: CurrentSetProps) {
   const unit = amountUnit(target)
   const max = maxAmount(target)
 
   return (
-    <section className="current-set plate-accent">
-      {heading}
-      <div className="current-top">
-        <span className="current-title">{title}</span>
-        {rest && <RestPill rest={rest} />}
-      </div>
-      <div className="current-fields">
+    <div className="current-set">
+      <span className="current-title">{title}</span>
+      <div className="current-steppers">
         {target.kind === 'reps' && (
           <Stepper
             field={LIVE_COPY.weight}
@@ -60,6 +50,6 @@ export function CurrentSet({ title, heading, label, target, set, rest, onChange 
         />
       </div>
       <SetCheck label={label} done={set.done} size="large" onToggle={() => onChange({ done: !set.done })} />
-    </section>
+    </div>
   )
 }

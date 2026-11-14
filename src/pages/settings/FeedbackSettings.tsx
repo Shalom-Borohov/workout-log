@@ -24,7 +24,6 @@ import { ignoreTapsFor } from '../../navigation/tapGuard'
 import { SETTINGS_COPY } from './copy'
 import { type FeedbackKind, feedbackUrl, fitsInLink } from './feedbackUrl'
 import { usePhoneStorage } from './usePhoneStorage'
-import './feedback.css'
 
 const REPEAT_TAPS_IGNORED_MS = 300
 
@@ -63,11 +62,7 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
           <IonTitle>{SETTINGS_COPY.report}</IonTitle>
         </IonToolbar>
         <IonToolbar>
-          <IonSegment
-            className="feedback-kind"
-            value={kind}
-            onIonChange={(event) => isKind(event.detail.value) && setKind(event.detail.value)}
-          >
+          <IonSegment value={kind} onIonChange={(event) => isKind(event.detail.value) && setKind(event.detail.value)}>
             <IonSegmentButton value="bug">
               <IonLabel>{SETTINGS_COPY.bug}</IonLabel>
             </IonSegmentButton>
@@ -77,7 +72,7 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
           </IonSegment>
         </IonToolbar>
       </IonHeader>
-      <IonContent>
+      <IonContent color="light">
         <IonList inset>
           <IonItem>
             <IonTextarea
@@ -94,7 +89,7 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
         <IonNote role="status" className="list-footer" color={tooLong ? 'danger' : undefined}>
           {tooLong ? SETTINGS_COPY.feedbackTooLong : SETTINGS_COPY.feedbackFooter}
         </IonNote>
-        <IonButton expand="block" className="feedback-send bar-button" disabled={text.trim() === '' || tooLong} onClick={send}>
+        <IonButton expand="block" className="ion-margin" disabled={text.trim() === '' || tooLong} onClick={send}>
           {SETTINGS_COPY.openInGitHub}
         </IonButton>
       </IonContent>

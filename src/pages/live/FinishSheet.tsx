@@ -8,7 +8,7 @@ import { MINUTE_MS } from '../../domain/time'
 import { LIVE_COPY } from './copy'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import { useNow } from '../../hooks/useNow'
-import { SheetHeader } from '../../components/SheetHeader'
+import { SheetHeader } from './SheetHeader'
 
 export type SheetMode = 'finish' | 'summary'
 

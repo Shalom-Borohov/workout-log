@@ -8,7 +8,7 @@ import { renderAt } from '../helpers/renderAt'
 describe('accent colour in Settings', () => {
   beforeEach(resetDb)
 
-  it('offers six colours above the background photo, with teal chosen', async () => {
+  it('offers six colours above the background photo, with orange chosen', async () => {
     renderAt('/tabs/routines/settings')
 
     const group = await screen.findByRole('group', { name: 'צבע' })
@@ -18,7 +18,7 @@ describe('accent colour in Settings', () => {
       .map((radio) => radio.getAttribute('aria-label'))
 
     expect(names).toEqual(['כתום', 'טורקיז', 'כחול', 'אינדיגו', 'סגול', 'ורוד'])
-    expect(await radioByLabel('טורקיז')).toBeChecked()
+    expect(await radioByLabel('כתום')).toBeChecked()
     await expectInOrder(['צבע', 'רקע'])
   })
 

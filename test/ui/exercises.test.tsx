@@ -1,11 +1,11 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { setExerciseArea } from '../../src/data/exerciseAreas'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
 import { areaIconOf } from '../helpers/areas'
-import { expectInOrder, ionElement, ionInput } from '../helpers/ionic'
+import { expectInOrder, ionElement, ionInput, OPEN_MODAL, radioByLabel } from '../helpers/ionic'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, reps, routine, workout } from '../helpers/workouts'
 
@@ -13,22 +13,6 @@ const fullBody = routine('r1', 'אימון גוף מלא', [
   [{ name: 'סקוואט', target: reps(10) }],
   [{ name: 'לחיצת חזה', target: reps(8) }],
 ])
-
-async function saveTaggedExercises() {
-  await saveRoutine(routine('r1', 'אימון גוף מלא', [
-    [{ name: 'סקוואט', target: reps(10) }],
-    [{ name: 'לחיצת חזה', target: reps(8) }],
-    [{ name: 'הכנסת סנטר', target: reps(10) }],
-    [{ name: 'לאנג׳', target: reps(10) }],
-  ]))
-  await setExerciseArea('סקוואט', 'legs')
-  await setExerciseArea('לאנג׳', 'legs')
-  await setExerciseArea('לחיצת חזה', 'chest')
-}
-
-const AREA_RAIL = { name: 'אזור בגוף' }
-
-const areaCells = async () => within(await screen.findByRole('group', AREA_RAIL)).getAllByRole('button')
 
 describe('exercises', () => {
   beforeEach(resetDb)
@@ -41,7 +25,7 @@ describe('exercises', () => {
 
     expect(await screen.findByText('סקוואט')).toBeInTheDocument()
     expect(screen.getByText('לחיצת חזה')).toBeInTheDocument()
-    expect(screen.getByText('סקוואט').closest('ion-item')).toHaveTextContent('22 ק״ג × 8')
+    expect(screen.getByText('22 ק״ג × 8').closest('ion-item')).toHaveTextContent('סקוואט')
     expect(screen.getByText('יום ב׳ 26.10').closest('ion-item')).toHaveTextContent('סקוואט')
 
     ionInput(await ionElement('ion-searchbar'), 'לחי')
@@ -50,96 +34,55 @@ describe('exercises', () => {
     expect(screen.getByText('לחיצת חזה')).toBeInTheDocument()
   })
 
-  it('exercise list has a cell for each body area with exercises, untagged last, and lists the first area', async () => {
-    await saveTaggedExercises()
+  it('exercise list groups exercises by body area with their icons, untagged last', async () => {
+    await saveRoutine(routine('r1', 'אימון גוף מלא', [
+      [{ name: 'סקוואט', target: reps(10) }],
+      [{ name: 'לחיצת חזה', target: reps(8) }],
+      [{ name: 'הכנסת סנטר', target: reps(10) }],
+      [{ name: 'לאנג׳', target: reps(10) }],
+    ]))
+    await setExerciseArea('סקוואט', 'legs')
+    await setExerciseArea('לאנג׳', 'legs')
+    await setExerciseArea('לחיצת חזה', 'chest')
     renderAt('/tabs/exercises')
 
-    const cells = await areaCells()
-
-    expect(cells).toHaveLength(3)
-    expect(cells[0]).toHaveAccessibleName('חזה, תרגיל אחד')
-    expect(cells[1]).toHaveAccessibleName('רגליים, 2 תרגילים')
-    expect(cells[2]).toHaveAccessibleName('ללא, תרגיל אחד')
-    expect(cells.map((cell) => cell.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'false'])
-    expect(screen.getByText('לחיצת חזה')).toBeInTheDocument()
-    expect(screen.queryByText('סקוואט')).not.toBeInTheDocument()
-    expect(screen.queryByText('הכנסת סנטר')).not.toBeInTheDocument()
-  })
-
-  it('tapping an area cell lists only that area, without repeating its icon on the rows', async () => {
-    await saveTaggedExercises()
-    renderAt('/tabs/exercises')
-
-    fireEvent.click(await screen.findByRole('button', { name: 'רגליים, 2 תרגילים' }))
-
-    await expectInOrder(['לאנג׳', 'סקוואט'])
-    expect(screen.queryByText('לחיצת חזה')).not.toBeInTheDocument()
-    expect((await areaCells()).map((cell) => cell.getAttribute('aria-pressed'))).toEqual(['false', 'true', 'false'])
-    expect(areaIconOf(screen.getByText('סקוואט'))).toBeUndefined()
-  })
-
-  it('lists an area’s exercises in one panel', async () => {
-    await saveTaggedExercises()
-    renderAt('/tabs/exercises')
-
-    expect((await screen.findByText('לחיצת חזה')).closest('ion-list')).toHaveClass('list-inset')
-  })
-
-  it('lists each area’s search matches in its own panel', async () => {
-    await saveTaggedExercises()
-    renderAt('/tabs/exercises')
-    await areaCells()
-
-    ionInput(await ionElement('ion-searchbar'), 'ס')
-
-    const squat = (await screen.findByText('סקוואט')).closest('ion-list')
-    const chinTuck = screen.getByText('הכנסת סנטר').closest('ion-list')
-
-    expect(squat).toHaveClass('list-inset')
-    expect(chinTuck).toHaveClass('list-inset')
-    expect(chinTuck).not.toBe(squat)
-  })
-
-  it('searching hides the area cells and lists matches from every area under their area names, with icons', async () => {
-    await saveTaggedExercises()
-    renderAt('/tabs/exercises')
-    await areaCells()
-
-    ionInput(await ionElement('ion-searchbar'), 'ס')
-
-    await expectInOrder(['רגליים', 'סקוואט', 'ללא', 'הכנסת סנטר'])
-    expect(screen.queryByRole('group', AREA_RAIL)).not.toBeInTheDocument()
-    expect(screen.queryByText('חזה')).not.toBeInTheDocument()
-    expect(screen.queryByText('לאנג׳')).not.toBeInTheDocument()
-    expect(areaIconOf(screen.getByText('סקוואט'))).toBe('legs')
+    await expectInOrder(['חזה', 'לחיצת חזה', 'רגליים', 'לאנג׳', 'סקוואט', 'ללא', 'הכנסת סנטר'])
+    expect(areaIconOf(await screen.findByText('סקוואט'))).toBe('legs')
     expect(areaIconOf(screen.getByText('הכנסת סנטר'))).toBe('none')
+
+    ionInput(await ionElement('ion-searchbar'), 'לחי')
+
+    await waitFor(() => expect(screen.queryByText('רגליים')).not.toBeInTheDocument())
+    expect(screen.queryByText('ללא')).not.toBeInTheDocument()
+    expect(screen.getByText('חזה')).toBeInTheDocument()
   })
 
-  it('keeps the chosen area after a search is cleared', async () => {
-    await saveTaggedExercises()
-    renderAt('/tabs/exercises')
-    fireEvent.click(await screen.findByRole('button', { name: 'רגליים, 2 תרגילים' }))
-    const searchbar = await ionElement('ion-searchbar')
+  it('exercise page sets the body area from a sheet', async () => {
+    await saveRoutine(fullBody)
+    renderAt(`/tabs/exercises/${encodeURIComponent('סקוואט')}`)
 
-    ionInput(searchbar, 'ס')
-    await waitFor(() => expect(screen.queryByRole('group', AREA_RAIL)).not.toBeInTheDocument())
-    ionInput(searchbar, '')
+    const label = await screen.findByText('אזור בגוף', { selector: 'ion-label' })
+    const row = label.closest('ion-item')
 
-    expect(await screen.findByRole('button', { name: 'רגליים, 2 תרגילים' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByText('לאנג׳')).toBeInTheDocument()
+    expect(row).toHaveTextContent('ללא')
+    fireEvent.click(label)
+    fireEvent.click(await radioByLabel('רגליים'))
+
+    await waitFor(() => expect(row).toHaveTextContent('רגליים'))
+    await waitFor(() => expect(document.querySelector(OPEN_MODAL)).toBeNull())
+    expect(areaIconOf(label)).toBe('legs')
   })
 
-  it('selects the first area again when the chosen area loses its last exercise', async () => {
-    await saveTaggedExercises()
-    renderAt('/tabs/exercises')
-    fireEvent.click(await screen.findByRole('button', { name: 'רגליים, 2 תרגילים' }))
-    await screen.findByText('לאנג׳')
+  it('exercise page closes the area sheet when the current area is tapped again', async () => {
+    await saveRoutine(fullBody)
+    await setExerciseArea('סקוואט', 'legs')
+    renderAt(`/tabs/exercises/${encodeURIComponent('סקוואט')}`)
 
-    await setExerciseArea('סקוואט', 'chest')
-    await setExerciseArea('לאנג׳', 'chest')
+    fireEvent.click(await screen.findByText('אזור בגוף', { selector: 'ion-label' }))
+    await waitFor(() => expect(document.querySelector(OPEN_MODAL)).not.toBeNull())
+    fireEvent.click(await radioByLabel('רגליים'))
 
-    expect(await screen.findByRole('button', { name: 'חזה, 3 תרגילים' })).toHaveAttribute('aria-pressed', 'true')
-    await expectInOrder(['לאנג׳', 'לחיצת חזה', 'סקוואט'])
+    await waitFor(() => expect(document.querySelector(OPEN_MODAL)).toBeNull())
   })
 
   it('exercise list leaves out the drills of a daily routine', async () => {
@@ -156,7 +99,6 @@ describe('exercises', () => {
 
     expect(await screen.findByText('עוד אין תרגילים')).toBeInTheDocument()
     expect(screen.getByText('תרגילים יופיעו כאן אחרי שתוסיפו אימון בלשונית אימונים או תסיימו אימון.')).toBeInTheDocument()
-    expect(screen.queryByRole('group', AREA_RAIL)).not.toBeInTheDocument()
   })
 
   it('exercise list says when a search matches nothing', async () => {
@@ -168,6 +110,39 @@ describe('exercises', () => {
 
     expect(await screen.findByText('אין תוצאות עבור ״חתירה״')).toBeInTheDocument()
     expect(screen.queryByText('עוד אין תרגילים')).not.toBeInTheDocument()
+  })
+
+  it('exercise history newest first', async () => {
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(12), exercises: [exercise('סקוואט', [done(20, 10)])] }))
+    await saveWorkout(workout({ id: 'w2', startedAt: oct(19), exercises: [exercise('סקוואט', [done(25, 8), done(25, 6)])] }))
+    await saveWorkout(workout({ id: 'w3', startedAt: oct(26, 8), exercises: [exercise('סקוואט', [done(22, 10)])] }))
+    renderAt(`/tabs/exercises/${encodeURIComponent('סקוואט')}`)
+
+    await expectInOrder(['יום ב׳ 26.10', 'יום ב׳ 19.10', 'יום ב׳ 12.10'])
+    expect(screen.getByText('25 ק״ג × 8, 6')).toBeInTheDocument()
+    expect(screen.getByText('20 ק״ג × 10')).toBeInTheDocument()
+    expect(screen.getByLabelText('שיא חדש').closest('ion-item')).toHaveTextContent('יום ב׳ 19.10')
+    expect(screen.getAllByLabelText('שיא חדש')).toHaveLength(1)
+    expect(screen.queryByText('★')).not.toBeInTheDocument()
+  })
+
+  it('exercise history charts the heaviest weight once there are two weighted sessions', async () => {
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(12), exercises: [exercise('סקוואט', [done(20, 10)])] }))
+    await saveWorkout(workout({ id: 'w2', startedAt: oct(19), exercises: [exercise('סקוואט', [done(null, 12)])] }))
+    await saveWorkout(workout({ id: 'w3', startedAt: oct(26, 8), exercises: [exercise('סקוואט', [done(20, 8), done(22.5, 6)])] }))
+    renderAt(`/tabs/exercises/${encodeURIComponent('סקוואט')}`)
+
+    expect(await screen.findByRole('img', { name: 'משקל מרבי: מ־20 ק״ג ב־12.10 ל־22.5 ק״ג ב־26.10' })).toBeInTheDocument()
+    expect(screen.getByText('22.5 ק״ג')).toBeInTheDocument()
+  })
+
+  it('exercise history has no chart with fewer than two weighted sessions', async () => {
+    await saveWorkout(workout({ id: 'w1', startedAt: oct(12), exercises: [exercise('סקוואט', [done(null, 12)])] }))
+    await saveWorkout(workout({ id: 'w2', startedAt: oct(19), exercises: [exercise('סקוואט', [done(20, 10)])] }))
+    renderAt(`/tabs/exercises/${encodeURIComponent('סקוואט')}`)
+
+    await screen.findByText('יום ב׳ 19.10')
+    expect(screen.queryByRole('img', { name: /משקל מרבי/ })).not.toBeInTheDocument()
   })
 
   it('tapping an exercise opens its history', async () => {

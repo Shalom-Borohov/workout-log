@@ -2,60 +2,47 @@
   position: fixed;
   inset: 0;
   overflow-y: auto;
-  padding: calc(env(safe-area-inset-top) + 48px) var(--app-gutter) calc(env(safe-area-inset-bottom) + 24px);
-  background: var(--app-ground);
+  padding: calc(env(safe-area-inset-top) + 48px) 24px calc(env(safe-area-inset-bottom) + 24px);
+  background: var(--ion-background-color);
   color: var(--app-label);
-  font-family: var(--app-system-font);
-  font-weight: var(--app-weight-text);
+  font-family: var(--ion-font-family);
 }
 
 .recovery h1 {
-  margin: 0 0 12px;
-  font-size: var(--app-type-title);
-  font-weight: var(--app-weight-heavy);
-  line-height: 1.15;
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
 }
 
 .recovery p {
   margin: 0 0 16px;
-  font-size: var(--app-type-body);
+  font-size: 17px;
   line-height: 1.4;
 }
 
-.recovery .recovery-explanation {
-  margin-block-end: 32px;
-  color: var(--app-label-secondary);
-}
-
 .recovery button {
-  min-height: 56px;
-  margin-bottom: var(--app-gap);
-  padding: 8px 16px;
-}
-
-.recovery button:not(.bar-button) {
   display: block;
   width: 100%;
-  border: var(--app-stroke) solid var(--app-keyline);
-  border-radius: var(--app-radius-plate);
-  background: var(--app-plate);
-  color: var(--app-label);
+  min-height: 44px;
+  margin-bottom: 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--app-fill);
+  color: var(--ion-color-primary);
   font: inherit;
-  font-size: var(--app-type-row);
-  font-weight: var(--app-weight-strong);
-  cursor: pointer;
-  touch-action: manipulation;
+  font-size: 17px;
 }
 
-.recovery button.recovery-secondary {
+.recovery .recovery-primary {
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+  font-weight: 600;
+}
+
+.recovery .recovery-secondary {
   background: transparent;
-}
-
-.recovery button:active:not(:disabled) {
-  opacity: 0.6;
 }
 
 .recovery button:disabled {
   opacity: 0.4;
-  cursor: default;
 }

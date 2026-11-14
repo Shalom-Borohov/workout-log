@@ -68,7 +68,7 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent>
+      <IonContent color="light">
         <IonList inset>
           <IonItem>
             <IonSelect

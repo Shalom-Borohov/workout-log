@@ -232,6 +232,18 @@ export function recordSessionId(sessions: ExerciseSession[]): string | null {
   return holders[holders.length - 1].workoutId
 }
 
+export type TrendPoint = { startedAt: number; weight: number }
+
+export function weightTrend(sessions: ExerciseSession[]): TrendPoint[] {
+  return [...sessions]
+    .sort((first, second) => first.startedAt - second.startedAt)
+    .flatMap((session) => {
+      const weights = weightsOf(session.sets)
+
+      return weights.length > 0 ? [{ startedAt: session.startedAt, weight: Math.max(...weights) }] : []
+    })
+}
+
 export function latestSessions(history: Workout[]): Map<string, ExerciseSession> {
   const latest = new Map<string, ExerciseSession>()
 

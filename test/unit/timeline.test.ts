@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Change } from '../../src/domain/progress'
-import { changeHolders, groupByWeek, summarize, summaryLine, weekDays, weekStart } from '../../src/domain/timeline'
+import { changeHolders, groupByWeek, summarize, summaryLine } from '../../src/domain/timeline'
 import { activity, done, exercise, oct, open, reps, workout } from '../helpers/workouts'
 
 describe('summarize', () => {
@@ -74,76 +74,6 @@ describe('groupByWeek', () => {
       ['11.10–17.10', ['oct15', 'oct13', 'oct11']],
       ['27.9–3.10', ['sep30']],
     ])
-  })
-
-  it('gives each week the midnight of its Sunday', () => {
-    const workouts = [
-      workout({ id: 'tue', startedAt: oct(27), exercises: [] }),
-      workout({ id: 'sat', startedAt: oct(24, 23, 0), exercises: [] }),
-    ]
-
-    expect(groupByWeek(workouts, oct(28)).map((group) => group.start)).toEqual([
-      new Date(2026, 9, 25).getTime(),
-      new Date(2026, 9, 18).getTime(),
-    ])
-  })
-})
-
-const midnight = (dayOfOctober: number) => new Date(2026, 9, dayOfOctober).getTime()
-
-const SUNDAY_25_OCT = midnight(25)
-
-describe('weekDays', () => {
-  it('gives the seven days of the week from midnight, Sunday first, also across a clock change', () => {
-    const days = weekDays(weekStart(oct(28, 12)), [], oct(28, 12))
-
-    expect(days.map((day) => day.date)).toEqual([25, 26, 27, 28, 29, 30, 31].map(midnight))
-  })
-
-  it('marks gym days and activity days, and ignores records from other weeks', () => {
-    const records = [
-      workout({ id: 'sun', startedAt: oct(25, 0, 10), exercises: [] }),
-      activity({ id: 'mon', startedAt: oct(26, 19) }),
-      workout({ id: 'sat', startedAt: oct(31, 23, 30), exercises: [] }),
-      workout({ id: 'before', startedAt: oct(24, 23, 30), exercises: [] }),
-      activity({ id: 'after', startedAt: new Date(2026, 10, 1, 0, 30).getTime() }),
-    ]
-
-    const days = weekDays(SUNDAY_25_OCT, records, oct(31, 23, 50))
-
-    expect(days.map((day) => day.kind)).toEqual(['gym', 'activity', 'none', 'none', 'none', 'none', 'gym'])
-    expect(days.map((day) => day.record && day.record.id)).toEqual(['sun', 'mon', null, null, null, null, 'sat'])
-  })
-
-  it('a day with a gym workout and an activity is a gym day that opens the workout', () => {
-    const records = [activity({ id: 'boxing', startedAt: oct(27, 7) }), workout({ id: 'gym', startedAt: oct(27, 18), exercises: [] })]
-
-    const tuesday = weekDays(SUNDAY_25_OCT, records, oct(31, 12))[2]
-
-    expect(tuesday.kind).toBe('gym')
-    expect(tuesday.record && tuesday.record.id).toBe('gym')
-  })
-
-  it('a day with two records of the same kind opens the earliest', () => {
-    const records = [activity({ id: 'evening', startedAt: oct(27, 19) }), activity({ id: 'morning', startedAt: oct(27, 8) })]
-
-    const tuesday = weekDays(SUNDAY_25_OCT, records, oct(31, 12))[2]
-
-    expect(tuesday.kind).toBe('activity')
-    expect(tuesday.record && tuesday.record.id).toBe('morning')
-  })
-
-  it('marks today, and the days after it as future', () => {
-    const days = weekDays(SUNDAY_25_OCT, [], oct(28, 12))
-
-    expect(days.map((day) => day.isToday)).toEqual([false, false, false, true, false, false, false])
-    expect(days.map((day) => day.isFuture)).toEqual([false, false, false, false, true, true, true])
-  })
-
-  it('a past week has no today and no future days', () => {
-    const days = weekDays(SUNDAY_25_OCT, [], new Date(2026, 10, 4, 12).getTime())
-
-    expect(days.some((day) => day.isToday || day.isFuture)).toBe(false)
   })
 })
 

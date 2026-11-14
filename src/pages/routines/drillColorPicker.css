@@ -4,6 +4,6 @@
 
 .drill-color-picker legend {
   padding: 0 0 4px;
-  font-size: var(--app-type-caption);
+  font-size: 0.75rem;
   color: var(--app-label-secondary);
 }

@@ -36,10 +36,10 @@
 }
 
 .swatch-option input:checked + span {
-  outline: var(--app-stroke) solid var(--app-keyline-strong);
+  outline: 3px solid currentColor;
   outline-offset: 3px;
 }
 
 .swatch-option:has(input:focus-visible) {
-  outline: var(--app-stroke) solid var(--app-keyline-strong);
+  outline: 2px solid var(--ion-color-primary);
 }

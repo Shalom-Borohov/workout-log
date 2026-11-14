@@ -3,15 +3,14 @@ import {
   IonButtons,
   IonContent,
   IonHeader,
-  IonIcon,
   IonItem,
   IonLabel,
   IonList,
   IonModal,
+  IonNote,
   IonTitle,
   IonToolbar,
 } from '@ionic/react'
-import { chevronForward } from 'ionicons/icons'
 import { useState } from 'react'
 import { BodyAreaIcon } from '../../components/bodyArea/BodyAreaIcon'
 import { BodyAreaPicker } from '../../components/bodyArea/BodyAreaPicker'
@@ -41,14 +40,15 @@ export function BodyAreaRow({ name }: { name: string }) {
 
   return (
     <>
-      <IonItem button detail={false} lines="none" className="field-row plate" onClick={() => setIsOpen(true)}>
-        <IonLabel className="field-row-label">{BODY_AREA_COPY.label}</IonLabel>
-        <span className="field-row-value">
-          <BodyAreaIcon area={area} />
-          {BODY_AREA_COPY.name(area)}
-          <IonIcon icon={chevronForward} flipRtl aria-hidden="true" />
-        </span>
-      </IonItem>
+      <IonList inset>
+        <IonItem button detail onClick={() => setIsOpen(true)}>
+          <IonLabel>{BODY_AREA_COPY.label}</IonLabel>
+          <IonNote slot="end" className="body-area-value">
+            <BodyAreaIcon area={area} />
+            {BODY_AREA_COPY.name(area)}
+          </IonNote>
+        </IonItem>
+      </IonList>
       <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)} {...HALF_SHEET}>
         <IonHeader>
           <IonToolbar>

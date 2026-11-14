@@ -21,7 +21,6 @@ export const COMMON_COPY = {
   done: 'סיום',
   close: 'סגירה',
   search: 'חיפוש',
-  location: 'מיקום',
   back: 'חזרה',
   timeline: 'ציר זמן',
   routines: 'אימונים',

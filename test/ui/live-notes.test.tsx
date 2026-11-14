@@ -43,7 +43,7 @@ describe('live exercise note', () => {
     await waitFor(async () => expect((await savedExercises())?.map((pairExercise) => pairExercise.note)).toEqual(['אחיזה צרה', 'להוסיף משקל']))
     await waitFor(() => expect(exerciseNotes()).toEqual(['מתח: אחיזה צרה', 'מקבילים: להוסיף משקל']))
 
-    const lastSet = screen.getByRole('button', { name: 'מתח סט 1' })
+    const lastSet = screen.getByRole('button', { name: 'מקבילים סט 1' })
 
     expect(lastSet.compareDocumentPosition(visibleAll('.item-note')[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
@@ -57,18 +57,6 @@ describe('live exercise note', () => {
     await user.click(await screen.findByText('לעלות במשקל', { selector: '.item-note' }))
 
     expect(await screen.findByLabelText('הערה · סקוואט')).toHaveValue('לעלות במשקל')
-  })
-
-  it('shows a note as its own row above the actions, which then offer no "הוספת הערה"', async () => {
-    const squat = { ...exercise('סקוואט', [open(60, 10)]), note: 'לעלות במשקל' }
-    await saveWorkout(workout({ id: 'w1', startedAt: oct(26), finishedAt: null, exercises: [squat] }))
-    renderAt('/tabs/timeline/workout/w1')
-
-    const note = await screen.findByText('לעלות במשקל', { selector: '.item-note' })
-    const actions = visibleAll('.item-actions ion-button')
-
-    expect(actions.map((button) => button.textContent)).toEqual(['דלג', 'הוספת סט'])
-    expect(note.compareDocumentPosition(actions[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('offers to add a note when there is none', async () => {

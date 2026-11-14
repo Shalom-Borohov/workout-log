@@ -1,10 +1,12 @@
 import { IonButton, IonIcon, IonToolbar } from '@ionic/react'
 import { add, remove, timerOutline, volumeHighOutline, volumeMuteOutline } from 'ionicons/icons'
+import { formatClock } from '../../domain/format'
 import { MIN_REST_SECONDS } from '../../domain/rest'
+import { SECOND_MS } from '../../domain/time'
+import { useNow } from '../../hooks/useNow'
 import { LIVE_COPY } from './copy'
 import type { Rest } from '../../rest/restClock'
-import { useRestClock } from './useRestClock'
-import './chrome.css'
+import './controls.css'
 
 export function RestButton({ rest, onToggle }: { rest: Rest; onToggle: () => void }) {
   return (
@@ -27,24 +29,25 @@ interface RestRowProps {
 }
 
 export function RestRow({ rest, seconds, sound, onAdjust, onToggleSound }: RestRowProps) {
-  const restClock = useRestClock(rest)
+  const now = useNow(SECOND_MS)
+  const secondsLeft = Math.ceil(Math.max(rest.endsAt - now, 0) / SECOND_MS)
 
   return (
     <IonToolbar className="rest-row">
-      <div className="rest-controls plate">
+      <div className="rest-controls">
         <button
           type="button"
-          className="step-button"
+          className="stepper-button"
           aria-label={LIVE_COPY.restSound}
           aria-pressed={sound}
           onClick={onToggleSound}
         >
           <IonIcon icon={sound ? volumeHighOutline : volumeMuteOutline} aria-hidden="true" />
         </button>
-        <div className="rest-stepper">
+        <div className="stepper rest-stepper">
           <button
             type="button"
-            className="step-button"
+            className="stepper-button"
             aria-label={LIVE_COPY.decrease(LIVE_COPY.rest)}
             disabled={seconds <= MIN_REST_SECONDS}
             onClick={() => onAdjust(-1)}
@@ -52,11 +55,11 @@ export function RestRow({ rest, seconds, sound, onAdjust, onToggleSound }: RestR
             <IonIcon icon={remove} aria-hidden="true" />
           </button>
           <span role="timer" className="rest-left">
-            {restClock}
+            {formatClock(secondsLeft * SECOND_MS)}
           </span>
           <button
             type="button"
-            className="step-button"
+            className="stepper-button"
             aria-label={LIVE_COPY.increase(LIVE_COPY.rest)}
             onClick={() => onAdjust(1)}
           >

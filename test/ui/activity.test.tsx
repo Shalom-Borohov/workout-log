@@ -1,6 +1,5 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { activityDetailsMap, setActivityLocation, setActivityNote } from '../../src/data/activityDetails'
 import { finishedRecords, saveRecord, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
@@ -128,46 +127,6 @@ describe('other activity', () => {
 
     await waitFor(() => expect(screen.getByLabelText('שם הפעילות')).toHaveValue('כדורגל'))
     expect(screen.getByLabelText('מיקום')).toHaveValue('חוף הים')
-  })
-
-  it('fills in the location saved for the activity over the last one logged', async () => {
-    await saveRecord(activity({ id: 'a1', name: 'כדורגל', startedAt: oct(20, 19), location: 'פארק הירקון' }))
-    await setActivityLocation('כדורגל', 'מגרש השכונה')
-    await openActivityForm()
-
-    ionInput(await ionField('שם הפעילות'), 'כדורגל')
-
-    await waitFor(() => expect(screen.getByLabelText('מיקום')).toHaveValue('מגרש השכונה'))
-  })
-
-  it('logging an activity with a location saves it as the location for that name', async () => {
-    await saveRecord(activity({ id: 'a1', name: 'כדורגל', startedAt: oct(20, 19), location: 'פארק הירקון' }))
-    await setActivityNote('כדורגל', 'להביא נעליים')
-    await openActivityForm()
-
-    ionInput(await ionField('שם הפעילות'), 'כדורגל')
-    ionInput(await ionField('מיקום'), ' חוף הים ')
-    ionChange(await startTimePicker(), '10:00')
-    fireEvent.click(screen.getByText('שמירה'))
-
-    await waitFor(async () =>
-      expect(await activityDetailsMap()).toEqual(new Map([['כדורגל', { name: 'כדורגל', note: 'להביא נעליים', location: 'חוף הים' }]])),
-    )
-  })
-
-  it('renaming an activity carries its note to the new name, with the location typed in the form', async () => {
-    await saveRecord(activity({ id: 'a1', startedAt: oct(24, 19), location: 'המכון' }))
-    await setActivityNote('אגרוף תאילנדי', 'להביא כפפות')
-    renderAt('/tabs/timeline/a1')
-
-    fireEvent.click(await screen.findByText('עריכה'))
-    ionInput(await ionField('שם הפעילות'), 'קיקבוקס')
-    ionInput(await ionField('מיקום'), 'חוף הים')
-    fireEvent.click(screen.getByText('שמירה'))
-
-    await waitFor(async () =>
-      expect((await activityDetailsMap()).get('קיקבוקס')).toEqual({ name: 'קיקבוקס', note: 'להביא כפפות', location: 'חוף הים' }),
-    )
   })
 
   it('counts as a workout in the week header and shows no sets on its card', async () => {

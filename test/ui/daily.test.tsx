@@ -96,7 +96,7 @@ describe('daily tab', () => {
     expect(document.querySelector('ion-alert')).toBeNull()
   })
 
-  describe('removing today from a row when its numbers were edited', () => {
+  describe('removing today from a card when its numbers were edited', () => {
     const editedLog = dailyLog('d1', '2026-10-26', [{ ...plannedDrills[0], sets: 5 }, plannedDrills[1]])
 
     async function tapCheckUntilAsked() {
@@ -166,7 +166,7 @@ describe('daily tab', () => {
     })
   })
 
-  it('a row opens the routine in the editor', async () => {
+  it('the today card opens the routine in the editor', async () => {
     await saveRoutine(drills)
     renderAt('/tabs/daily')
 
@@ -243,30 +243,35 @@ describe('daily tab', () => {
     expect(await screen.findByText('אוקטובר 2026')).toBeInTheDocument()
   })
 
-  it('the editor archives a routine too, and its days stay in the calendar', async () => {
+  it('archiving a card from its swipe hides it, and its days stay in the calendar', async () => {
     await saveRoutine(drills)
     await db.dailyLogs.put(dailyLog('d1', '2026-10-25'))
     renderAt('/tabs/daily')
 
-    fireEvent.click(await screen.findByRole('button', { name: 'חטיפי תנועה' }))
-    await waitFor(() => expect(currentPath()).toBe('/tabs/daily/d1'))
+    fireEvent.click(await screen.findByText('ארכיון', { selector: 'ion-item-option' }))
 
-    fireEvent.click(await screen.findByText('העברה לארכיון'))
     await waitFor(async () => expect((await db.routines.get('d1'))?.archived).toBe(true))
-    fireEvent.click(await ionElement('ion-back-button'))
-
-    await waitFor(() => expect(currentPath()).toBe('/tabs/daily'))
     await waitFor(() => expect(screen.queryByText('חטיפי תנועה', { selector: 'h2' })).not.toBeInTheDocument())
     expect(await dayButton('יום א׳ 25.10, חטיפי תנועה')).toBeInTheDocument()
-    expect(await screen.findByText('בארכיון')).toBeInTheDocument()
     expect(screen.queryByText('עוד אין אימון יומי')).not.toBeInTheDocument()
   })
 
-  it('the "בארכיון" row opens the archive, where "החזרה" brings a drill back', async () => {
+  it('a full swipe on a card archives it', async () => {
+    await saveRoutine(drills)
+    renderAt('/tabs/daily')
+
+    expect(await screen.findByText('ארכיון', { selector: 'ion-item-option' })).toBeInTheDocument()
+    fireEvent(await ionElement('ion-item-options'), new CustomEvent('ionSwipe', { detail: { side: 'end' }, bubbles: true }))
+
+    await waitFor(async () => expect((await db.routines.get('d1'))?.archived).toBe(true))
+  })
+
+  it('a "בארכיון" row opens the archive, where "החזרה" brings a drill back', async () => {
     await saveRoutine({ ...drills, archived: true })
     await saveRoutine(stretches)
     renderAt('/tabs/daily')
 
+    expect(await screen.findByText('מתיחות', { selector: 'h2' })).toBeInTheDocument()
     fireEvent.click(await screen.findByText('בארכיון'))
 
     await waitFor(() => expect(currentPath()).toBe('/tabs/daily/archive'))

@@ -6,6 +6,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonListHeader,
   IonModal,
   IonTitle,
   IonToolbar,
@@ -29,7 +30,7 @@ function ChangeList({ title, changes }: { title: string; changes: string[] }) {
 
   return (
     <IonItem>
-      <IonLabel className="ion-text-wrap release-label">
+      <IonLabel className="ion-text-wrap">
         <h3>{title}</h3>
         <ul className="release-changes">
           {changes.map((change) => (
@@ -54,13 +55,13 @@ export function WhatsNewSheet({ isOpen, releases, onClose }: WhatsNewSheetProps)
       </IonHeader>
       <IonContent>
         {releases.map((release) => (
-          <section key={release.version}>
-            <h2 className="release-title">{APP_UPDATE_COPY.releaseTitle(release.version)}</h2>
-            <IonList inset>
-              <ChangeList title={APP_UPDATE_COPY.features} changes={release.features} />
-              <ChangeList title={APP_UPDATE_COPY.fixes} changes={release.fixes} />
-            </IonList>
-          </section>
+          <IonList inset key={release.version}>
+            <IonListHeader>
+              <IonLabel>{APP_UPDATE_COPY.releaseTitle(release.version)}</IonLabel>
+            </IonListHeader>
+            <ChangeList title={APP_UPDATE_COPY.features} changes={release.features} />
+            <ChangeList title={APP_UPDATE_COPY.fixes} changes={release.fixes} />
+          </IonList>
         ))}
       </IonContent>
     </IonModal>

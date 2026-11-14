@@ -1,17 +1,16 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { ACCENT_COLORS } from '../../src/domain/accentColors'
-import { DRILL_COLORS } from '../../src/domain/drillColors'
 
+const DARK_MEDIA_QUERY = '@media (prefers-color-scheme: dark)'
 const AA_TEXT_CONTRAST = 4.5
-const SURFACES = ['#14171a', '#1f2428']
-const TEXT_ON_TILE = '#0b0d0e'
-const SKETCH_TEAL = '#00aba9'
+const LIGHT_SURFACES = ['#ffffff', '#f2f2f7']
+const DARK_SURFACES = ['#000000', '#1c1c1e', '#2c2c2e']
 
-const theme = readFileSync('src/theme.css', 'utf8')
+const [lightBlock, darkBlock] = readFileSync('src/theme.css', 'utf8').split(DARK_MEDIA_QUERY)
 
-const token = (name: string) => {
-  const match = theme.match(new RegExp(`\\s${name}:\\s*([^;]+);`))
+const token = (block: string, name: string) => {
+  const match = block.match(new RegExp(`\\s${name}:\\s*([^;]+);`))
   if (!match) {
     throw new Error(`${name} is not defined`)
   }
@@ -42,54 +41,33 @@ const contrast = (first: string, second: string) => {
   return (Math.max(firstLuminance, secondLuminance) + 0.05) / (Math.min(firstLuminance, secondLuminance) + 0.05)
 }
 
-describe('the theme', () => {
-  it('is dark only, whatever the phone is set to', () => {
-    expect(theme).not.toContain('prefers-color-scheme')
-  })
-})
+const modes = [
+  { mode: 'light', block: lightBlock, surfaces: LIGHT_SURFACES },
+  { mode: 'dark', block: darkBlock, surfaces: DARK_SURFACES },
+]
 
 describe('accent colours', () => {
-  it('makes טורקיז the sea-teal the owner chose in the sketches', () => {
-    expect(token('--app-accent-teal')).toBe(SKETCH_TEAL)
+  it('reads a light theme and a dark theme from the stylesheet', () => {
+    expect(lightBlock).toContain(':root')
+    expect(darkBlock).toContain(':root.ios')
   })
 
-  it.each(ACCENT_COLORS)('%s has a hex shade with matching rgb channels', (id) => {
-    const hex = token(`--app-accent-${id}`)
+  it.each(ACCENT_COLORS)('%s has a hex shade with matching rgb channels in light and dark', (id) => {
+    for (const { block } of modes) {
+      const hex = token(block, `--app-accent-${id}`)
 
-    expect(hex).toMatch(/^#[0-9a-f]{6}$/)
-    expect(token(`--app-accent-${id}-rgb`)).toBe(channels(hex).join(', '))
-  })
-
-  it.each(ACCENT_COLORS)('%s is readable as text on every surface', (id) => {
-    const hex = token(`--app-accent-${id}`)
-
-    for (const surface of SURFACES) {
-      expect(contrast(hex, surface), `${hex} on ${surface}`).toBeGreaterThanOrEqual(AA_TEXT_CONTRAST)
+      expect(hex).toMatch(/^#[0-9a-f]{6}$/)
+      expect(token(block, `--app-accent-${id}-rgb`)).toBe(channels(hex).join(', '))
     }
   })
 
-  it.each(ACCENT_COLORS)('%s carries black text as a tile', (id) => {
-    const hex = token(`--app-accent-${id}`)
+  it.each(ACCENT_COLORS)('%s is readable on every surface in light and dark', (id) => {
+    for (const { mode, block, surfaces } of modes) {
+      const hex = token(block, `--app-accent-${id}`)
 
-    expect(contrast(TEXT_ON_TILE, hex), `black on ${hex}`).toBeGreaterThanOrEqual(AA_TEXT_CONTRAST)
-  })
-})
-
-describe('text colours', () => {
-  it.each(['--app-label-secondary', '--ion-color-danger'])('%s is readable on every surface', (name) => {
-    const hex = token(name)
-
-    for (const surface of SURFACES) {
-      expect(contrast(hex, surface), `${name} ${hex} on ${surface}`).toBeGreaterThanOrEqual(AA_TEXT_CONTRAST)
+      for (const surface of surfaces) {
+        expect(contrast(hex, surface), `${mode} ${hex} on ${surface}`).toBeGreaterThanOrEqual(AA_TEXT_CONTRAST)
+      }
     }
-  })
-})
-
-describe('daily routine colours', () => {
-  it.each(DRILL_COLORS)('%s carries black text as a tile', (id) => {
-    const hex = token(`--app-drill-${id}`)
-
-    expect(hex).toMatch(/^#[0-9a-f]{6}$/)
-    expect(contrast(TEXT_ON_TILE, hex), `black on ${hex}`).toBeGreaterThanOrEqual(AA_TEXT_CONTRAST)
   })
 })

@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { saveRecord, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { BackGesture } from '../helpers/BackGesture'
 import { resetDb } from '../helpers/db'
-import { buttonByLabel } from '../helpers/ionic'
 import { renderAt } from '../helpers/renderAt'
 import { activity, done, exercise, oct, open, reps, routine, workout } from '../helpers/workouts'
 
@@ -87,7 +86,7 @@ describe('navigation round trips', () => {
     await saveRoutine(routine('r1', 'אימון רגליים', [[{ name: 'סקוואט', target: reps(10) }]]))
     renderApp('/tabs/routines')
 
-    fireEvent.click(await buttonByLabel('התחל'))
+    fireEvent.click(await screen.findByText('התחל', { selector: `${VISIBLE} ion-button` }))
     await waitFor(() => expect(path()).toMatch(/^\/tabs\/routines\/workout\//))
     fireEvent.click(await screen.findByText('סיום', { selector: `${VISIBLE} ion-button` }))
     fireEvent.click(await screen.findByText('שמירה', { selector: 'ion-modal ion-button' }))
@@ -97,14 +96,14 @@ describe('navigation round trips', () => {
     fireEvent.click(tabButton('routines'))
 
     await waitFor(() => expect(path()).toBe('/tabs/routines'))
-    await buttonByLabel('התחל')
+    await expectVisible('התחל')
   })
 
   it('the routines tab shows its list again after deleting a workout started from it', async () => {
     await saveRoutine(routine('r1', 'אימון רגליים', [[{ name: 'סקוואט', target: reps(10) }]]))
     renderApp('/tabs/routines')
 
-    fireEvent.click(await buttonByLabel('התחל'))
+    fireEvent.click(await screen.findByText('התחל', { selector: `${VISIBLE} ion-button` }))
     await waitFor(() => expect(path()).toMatch(/^\/tabs\/routines\/workout\//))
     fireEvent.click(await screen.findByText('סיום', { selector: `${VISIBLE} ion-button` }))
     fireEvent.click(await screen.findByText('מחיקת האימון'))
@@ -115,7 +114,7 @@ describe('navigation round trips', () => {
     fireEvent.click(tabButton('routines'))
 
     await waitFor(() => expect(path()).toBe('/tabs/routines'))
-    await buttonByLabel('התחל')
+    await expectVisible('התחל')
   })
 
   it('an active workout shows its exercise every time it is re-entered', async () => {

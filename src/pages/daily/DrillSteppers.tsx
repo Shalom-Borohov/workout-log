@@ -30,7 +30,7 @@ export function DrillSteppers({ exercise, named, onChange }: DrillSteppersProps)
           <IonLabel>{name}</IonLabel>
         </IonItem>
       )}
-      <IonItem lines="none" className="daily-stepper">
+      <IonItem>
         <IonLabel>{COMMON_COPY.sets}</IonLabel>
         <Stepper
           value={sets}
@@ -41,7 +41,7 @@ export function DrillSteppers({ exercise, named, onChange }: DrillSteppersProps)
           onChange={(value) => onChange({ sets: value })}
         />
       </IonItem>
-      <IonItem className="daily-stepper">
+      <IonItem>
         <IonLabel>{field.label}</IonLabel>
         <Stepper
           value={amount}

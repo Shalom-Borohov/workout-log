@@ -21,7 +21,7 @@ export const isBodyArea = (value: unknown): value is BodyArea => BODY_AREAS.some
 
 export const areaKey = (area: BodyArea | null) => (area === null ? NO_AREA_KEY : area)
 
-export interface AreaGroup {
+interface AreaGroup {
   area: BodyArea | null
   names: string[]
 }

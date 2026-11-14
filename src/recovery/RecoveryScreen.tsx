@@ -14,8 +14,8 @@ export function RecoveryScreen() {
   return (
     <main className="recovery">
       <h1>{RECOVERY_COPY.title}</h1>
-      <p className="recovery-explanation">{RECOVERY_COPY.explanation}</p>
-      <button type="button" className="bar-button" onClick={() => void backUpStoredData().then(setResult)}>
+      <p>{RECOVERY_COPY.explanation}</p>
+      <button type="button" className="recovery-primary" onClick={() => void backUpStoredData().then(setResult)}>
         {COMMON_COPY.exportBackup}
       </button>
       <div role="status">

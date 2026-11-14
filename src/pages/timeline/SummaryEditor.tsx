@@ -1,4 +1,4 @@
-import { IonTextarea, type TextareaCustomEvent } from '@ionic/react'
+import { IonItem, IonLabel, IonList, IonListHeader, IonTextarea, type TextareaCustomEvent } from '@ionic/react'
 import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
 import { saveRecord } from '../../data/repo'
@@ -17,14 +17,21 @@ export function SummaryEditor({ workout }: { workout: WorkoutRecord }) {
   }
 
   return (
-    <section className="workout-summary">
-      <IonTextarea
-        aria-label={COMMON_COPY.summary}
-        autoGrow
-        placeholder={TIMELINE_COPY.addSummaryPlaceholder}
-        value={workout.summary}
-        onIonChange={handleChange}
-      />
+    <section>
+      <IonListHeader>
+        <IonLabel>{COMMON_COPY.summary}</IonLabel>
+      </IonListHeader>
+      <IonList inset>
+        <IonItem>
+          <IonTextarea
+            aria-label={COMMON_COPY.summary}
+            autoGrow
+            placeholder={TIMELINE_COPY.addSummaryPlaceholder}
+            value={workout.summary}
+            onIonChange={handleChange}
+          />
+        </IonItem>
+      </IonList>
     </section>
   )
 }
