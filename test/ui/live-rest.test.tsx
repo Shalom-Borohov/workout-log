@@ -143,6 +143,21 @@ describe('live rest timer', () => {
     expect(play).not.toHaveBeenCalled()
   })
 
+  it('says the sound needs the screen on, until the sound is turned off', async () => {
+    await saveWorkout(squats(null))
+    const user = userEvent.setup()
+    renderAt('/tabs/timeline/workout/w1')
+
+    await tick(user, 1)
+    await openRest(user)
+
+    expect(screen.getByText('הצליל נשמע רק כשהמסך דולק והאפליקציה פתוחה')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'צליל בסוף המנוחה', pressed: true }))
+
+    expect(screen.queryByText('הצליל נשמע רק כשהמסך דולק והאפליקציה פתוחה')).not.toBeInTheDocument()
+  })
+
   it('asks iOS to play the sound over other audio', async () => {
     const audioSession = { type: 'auto' }
 

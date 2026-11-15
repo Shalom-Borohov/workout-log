@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '4.0.1',
+    features: [],
+    fixes: ['בשורת המנוחה כתוב עכשיו שהצליל נשמע רק כשהמסך דולק והאפליקציה פתוחה'],
+  },
+  {
     version: '4.0.0',
     features: [
       'האפליקציה חזרה למראה שהיה לה לפני העיצובים הכהים',
