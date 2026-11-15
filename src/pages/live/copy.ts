@@ -11,6 +11,7 @@ export const LIVE_COPY = {
   rest: 'מנוחה',
   restOver: 'המנוחה נגמרה',
   restSound: 'צליל בסוף המנוחה',
+  restSoundNeedsScreen: 'הצליל נשמע רק כשהמסך דולק והאפליקציה פתוחה',
   unskip: 'בטל דילוג',
   skip: 'דלג',
   addNote: 'הוספת הערה',

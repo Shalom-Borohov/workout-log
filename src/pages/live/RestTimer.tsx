@@ -67,6 +67,7 @@ export function RestRow({ rest, seconds, sound, onAdjust, onToggleSound }: RestR
           </button>
         </div>
       </div>
+      {sound && <p className="rest-note">{LIVE_COPY.restSoundNeedsScreen}</p>}
     </IonToolbar>
   )
 }
