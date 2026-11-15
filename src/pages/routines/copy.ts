@@ -19,7 +19,6 @@ export const ROUTINES_COPY = {
   newSection: 'חלק חדש',
   addSection: 'הוספת חלק',
   sectionName: 'שם החלק',
-  deleteSection: 'מחיקת החלק',
   deleteSectionQuestion: 'למחוק את החלק?',
   note: 'פתק',
   notePlaceholder: `הדביקו כאן את הפתק, למשל:

@@ -1,3 +1,5 @@
+import { COMMON_COPY } from '../../copy/common'
+
 export const LIVE_COPY = {
   editWorkout: 'עריכת אימון',
   exerciseActions: 'פעולות לתרגיל',
@@ -38,6 +40,8 @@ export const LIVE_COPY = {
   completed: 'הושלם',
   removeExerciseQuestion: 'למחוק את התרגיל?',
   removeExerciseMessage: 'הסטים שרשמת בתרגיל יימחקו.',
+  deleteSectionLabel: (sectionName: string) =>
+    sectionName.trim() === '' ? COMMON_COPY.deleteSection : `${COMMON_COPY.deleteSection} · ${sectionName}`,
   routineUpdated: 'האימון עודכן',
   savedNewRoutine: 'נשמר אימון חדש',
   updateRoutine: (routineName: string) => `עדכון ${routineName}`,
