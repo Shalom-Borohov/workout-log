@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '4.1.0',
+    features: ['בעריכת אימון אפשר למחוק חלק ריק, כמו חימום או סיום'],
+    fixes: [],
+  },
+  {
     version: '4.0.0',
     features: [
       'האפליקציה חזרה למראה שהיה לה לפני העיצובים הכהים',

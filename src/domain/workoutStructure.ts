@@ -70,6 +70,18 @@ export function removeItem(workout: Workout, ref: ItemRef): Workout {
   return mapItems(workout, ref.section, (items) => items.filter((_, itemIndex) => itemIndex !== ref.item))
 }
 
+export function canRemoveSection(section: WorkoutSection): boolean {
+  return section.items.length === 0
+}
+
+export function removeSection(workout: Workout, sectionIndex: number): Workout {
+  if (!canRemoveSection(workout.sections[sectionIndex])) {
+    return workout
+  }
+
+  return { ...workout, sections: workout.sections.filter((_, index) => index !== sectionIndex) }
+}
+
 const itemIds = (workout: Workout) => workout.sections.flatMap((section) => section.items.map((item) => item.id))
 
 export function followIndex(before: Workout, after: Workout, index: number): number {

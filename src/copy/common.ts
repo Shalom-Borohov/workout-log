@@ -40,6 +40,7 @@ export const COMMON_COPY = {
   emptyRoutine: 'אימון ריק',
   pasteNote: 'הדבקת פתק',
   addExercise: 'הוספת תרגיל',
+  deleteSection: 'מחיקת החלק',
   addSet: 'הוספת סט',
   removeSet: 'הורדת סט',
   saveAsNewRoutine: 'שמירה כאימון חדש',

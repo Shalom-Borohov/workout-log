@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { HALF_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
 import type { Workout } from '../../domain/types'
-import { canRemoveItem, moveItem } from '../../domain/workoutStructure'
+import { canRemoveItem, moveItem, removeSection } from '../../domain/workoutStructure'
 import { OverviewSection } from './OverviewSection'
 import { RoutineActions } from './RoutineActions'
 import type { OverviewEditor, WorkoutEdit } from './useOverviewEditor'
@@ -63,6 +63,7 @@ export function ItemListModal({ mode, workout, current, editor, onSelect, onEdit
             onDeleteItem={editor.remove}
             onReorder={(from, to) => onEdit((current) => moveItem(current, sectionIndex, from, to))}
             onAdd={() => editor.flow.addTo(sectionIndex)}
+            onDeleteSection={() => onEdit((current) => removeSection(current, sectionIndex))}
           />
         ))}
         {editing && <RoutineActions workout={workout} onEdit={onEdit} />}
