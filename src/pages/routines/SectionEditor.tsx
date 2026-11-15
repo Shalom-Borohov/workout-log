@@ -86,7 +86,7 @@ export function SectionEditor({ section, onChange, onEditItem, onDeleteItem, onA
       </IonList>
       <IonList inset>
         <IonItem button detail={false} onClick={onDelete}>
-          <IonLabel color="danger">{ROUTINES_COPY.deleteSection}</IonLabel>
+          <IonLabel color="danger">{COMMON_COPY.deleteSection}</IonLabel>
         </IonItem>
       </IonList>
     </section>

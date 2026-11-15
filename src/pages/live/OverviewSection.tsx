@@ -13,6 +13,7 @@ import { COMMON_COPY } from '../../copy/common'
 import { LIVE_COPY } from './copy'
 import type { WorkoutSection } from '../../domain/types'
 import { isDone, isSkipped, itemTitle } from '../../domain/workoutEdits'
+import { canRemoveSection } from '../../domain/workoutStructure'
 import { EditableItemRow } from '../../components/itemEditor/EditableItemRow'
 
 interface Props {
@@ -26,9 +27,10 @@ interface Props {
   onDeleteItem: (id: string) => void
   onReorder: (from: number, to: number) => void
   onAdd: () => void
+  onDeleteSection: () => void
 }
 
-function EditableItems({ section, canDelete, onEditItem, onDeleteItem, onReorder, onAdd }: Props) {
+function EditableItems({ section, canDelete, onEditItem, onDeleteItem, onReorder, onAdd, onDeleteSection }: Props) {
   function reorder(event: ReorderEndCustomEvent) {
     const { from, to } = event.detail
 
@@ -59,6 +61,16 @@ function EditableItems({ section, canDelete, onEditItem, onDeleteItem, onReorder
         <IonIcon slot="start" color="primary" icon={addCircle} aria-hidden="true" />
         <IonLabel color="primary">{COMMON_COPY.addExercise}</IonLabel>
       </IonItem>
+      {canRemoveSection(section) && (
+        <IonItem
+          button
+          detail={false}
+          onClick={onDeleteSection}
+          aria-label={LIVE_COPY.deleteSectionLabel(section.name)}
+        >
+          <IonLabel color="danger">{COMMON_COPY.deleteSection}</IonLabel>
+        </IonItem>
+      )}
     </>
   )
 }
