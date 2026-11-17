@@ -18,7 +18,6 @@ const CONTROL_SELECTOR = [
   'ion-toggle',
   'ion-select',
   'ion-checkbox',
-  'ion-backdrop',
 ].join(', ')
 
 export const startsAtEdge = (clientX: number, width: number) => clientX <= EDGE_PX || clientX >= width - EDGE_PX
@@ -28,9 +27,9 @@ const startsOnControl = (event: TouchEvent) =>
 
 export function blockSystemEdgeSwipe(root: Document): () => void {
   function blockAtEdge(event: TouchEvent) {
-    const [touch] = event.touches
+    const landedAtEdge = Array.from(event.changedTouches).some((touch) => startsAtEdge(touch.clientX, window.innerWidth))
 
-    if (touch && startsAtEdge(touch.clientX, window.innerWidth) && !startsOnControl(event)) {
+    if (landedAtEdge && !startsOnControl(event)) {
       event.preventDefault()
     }
   }

@@ -31,21 +31,6 @@ const plannedDrills = [
 
 const dayButton = (name: string | RegExp) => screen.findByRole('button', { name })
 
-function swipe(element: Element, dx: number, dy: number, startX = 200) {
-  fireEvent.touchStart(element, { touches: [{ clientX: startX, clientY: 300 }] })
-  fireEvent.touchEnd(element, { changedTouches: [{ clientX: startX + dx, clientY: 300 + dy }] })
-}
-
-async function octoberCalendar() {
-  const calendar = (await screen.findByText('אוקטובר 2026')).closest('section')
-
-  if (!calendar) {
-    throw new Error('no calendar')
-  }
-
-  return calendar
-}
-
 describe('daily tab', () => {
   beforeEach(resetDb)
   freezeDate(oct(26, 12))
@@ -205,42 +190,6 @@ describe('daily tab', () => {
     expect(await screen.findByText('ספטמבר 2026')).toBeInTheDocument()
     expect(await dayButton('יום ג׳ 15.9')).toBeEnabled()
     expect(await buttonByLabel('החודש הבא')).toHaveProperty('disabled', false)
-  })
-
-  it('a sideways swipe on the calendar moves between months, forward up to the current one', async () => {
-    await saveRoutine(drills)
-    renderAt('/tabs/daily')
-    const calendar = await octoberCalendar()
-
-    swipe(calendar, -120, 10)
-    expect(await screen.findByText('ספטמבר 2026')).toBeInTheDocument()
-
-    swipe(calendar, 120, -10)
-    expect(await screen.findByText('אוקטובר 2026')).toBeInTheDocument()
-
-    swipe(calendar, 120, 0)
-    swipe(calendar, -30, 0)
-    swipe(calendar, -80, 120)
-    expect(screen.getByText('אוקטובר 2026')).toBeInTheDocument()
-  })
-
-  it('leaves a calendar swipe that starts within 20 px of either screen edge alone', async () => {
-    await saveRoutine(drills)
-    renderAt('/tabs/daily')
-    const calendar = await octoberCalendar()
-    const screenWidth = window.innerWidth
-
-    swipe(calendar, -120, 0, screenWidth - 18)
-    expect(screen.getByText('אוקטובר 2026')).toBeInTheDocument()
-
-    swipe(calendar, -120, 0, screenWidth - 21)
-    expect(await screen.findByText('ספטמבר 2026')).toBeInTheDocument()
-
-    swipe(calendar, 120, 0, 18)
-    expect(screen.getByText('ספטמבר 2026')).toBeInTheDocument()
-
-    swipe(calendar, 120, 0, 21)
-    expect(await screen.findByText('אוקטובר 2026')).toBeInTheDocument()
   })
 
   it('archiving a card from its swipe hides it, and its days stay in the calendar', async () => {

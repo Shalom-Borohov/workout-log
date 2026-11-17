@@ -6,27 +6,29 @@ const MIN_SWIPE = 50
 const SIDEWAYS_RATIO = 1.5
 
 export function useMonthSwipe(onMonthsBack: (change: number) => void) {
-  const start = useRef<{ x: number; y: number } | null>(null)
+  const start = useRef<{ finger: number; x: number; y: number } | null>(null)
 
   function onTouchStart(event: TouchEvent) {
-    const touch = event.touches[0]
+    const touch = event.changedTouches[0]
 
-    start.current = startsAtEdge(touch.clientX, window.innerWidth) ? null : { x: touch.clientX, y: touch.clientY }
+    start.current = startsAtEdge(touch.clientX, window.innerWidth)
+      ? null
+      : { finger: touch.identifier, x: touch.clientX, y: touch.clientY }
   }
 
   function onTouchEnd(event: TouchEvent) {
     const from = start.current
-    const touch = event.changedTouches[0]
+    const touch = Array.from(event.changedTouches).find((ended) => ended.identifier === from?.finger)
 
-    start.current = null
-    if (!from) {
+    if (!from || !touch) {
       return
     }
-    const dx = touch.clientX - from.x
-    const dy = touch.clientY - from.y
+    start.current = null
+    const deltaX = touch.clientX - from.x
+    const deltaY = touch.clientY - from.y
 
-    if (Math.abs(dx) >= MIN_SWIPE && Math.abs(dx) >= Math.abs(dy) * SIDEWAYS_RATIO) {
-      onMonthsBack(dx < 0 ? 1 : -1)
+    if (Math.abs(deltaX) >= MIN_SWIPE && Math.abs(deltaX) >= Math.abs(deltaY) * SIDEWAYS_RATIO) {
+      onMonthsBack(deltaX < 0 ? 1 : -1)
     }
   }
 

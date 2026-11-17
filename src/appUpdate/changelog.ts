@@ -2,6 +2,14 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '4.1.2',
+    features: [],
+    fixes: [
+      'החלקה מקצה המסך כבר לא מזיזה את הדף שמתחת לחלון פתוח',
+      'החלקה מקצה המסך ובלוח החודש עובדת נכון גם כשאצבע אחרת כבר על המסך',
+    ],
+  },
+  {
     version: '4.1.1',
     features: [],
     fixes: ['בשורת המנוחה כתוב עכשיו שהצליל נשמע רק כשהמסך דולק והאפליקציה פתוחה'],
