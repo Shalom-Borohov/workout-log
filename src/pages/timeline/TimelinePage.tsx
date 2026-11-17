@@ -56,7 +56,7 @@ export function TimelinePage() {
           <IonTitle>{COMMON_COPY.timeline}</IonTitle>
           <IonButtons slot="end">
             <SettingsButton tab={TIMELINE_PATH} />
-            <IonButton aria-label={TIMELINE_COPY.add} onClick={chooseAddition}>
+            <IonButton aria-label={COMMON_COPY.add} onClick={chooseAddition}>
               <IonIcon slot="icon-only" icon={add} aria-hidden="true" />
             </IonButton>
           </IonButtons>

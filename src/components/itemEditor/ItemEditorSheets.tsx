@@ -21,9 +21,17 @@ export function ItemEditorSheets({ flow, editing, showStartWeight, onChange, onD
         onChange={onChange}
         onDelete={onDelete}
         onAddAfter={flow.addAfter}
+        onReplace={flow.replace}
         onClose={flow.sheetClosed}
       />
-      <ExercisePicker isOpen={flow.picking} onPick={flow.pick} onCreate={flow.create} onClose={flow.cancelAdding} />
+      <ExercisePicker
+        isOpen={flow.picking}
+        mode={flow.pickerMode}
+        onAdd={flow.addPicked}
+        onCreate={flow.create}
+        onReplace={flow.replaceWith}
+        onClose={flow.pickerClosed}
+      />
     </>
   )
 }

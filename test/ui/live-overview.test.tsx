@@ -1,12 +1,12 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb, savedWorkout } from '../helpers/db'
 import { alertPresented, ionChange, ionElement, ionEvent, ionField, ionInput, OPEN_MODAL, toasts } from '../helpers/ionic'
-import { exercisePicker, pickerRows, pickerSearch } from '../helpers/picker'
+import { openOverviewEditing } from '../helpers/live'
+import { addPicked, exercisePicker, pickerRows, pickerSearch } from '../helpers/picker'
 import { renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, open, reps, routine, seconds, workout } from '../helpers/workouts'
 
@@ -25,16 +25,6 @@ const savedNames = async () =>
   (await savedWorkout('w1'))?.sections.map((section) => section.items.map((item) => item.exercises.map((itemExercise) => itemExercise.name).join(' + ')))
 
 const modalElement = (selector: string) => ionElement(selector, OPEN_MODAL)
-
-async function openOverviewEditing() {
-  const user = userEvent.setup()
-
-  renderAt('/tabs/timeline/workout/w1')
-  await user.click(await screen.findByLabelText('כל התרגילים'))
-  await user.click(await screen.findByText('עריכה', { selector: 'ion-modal ion-button' }))
-
-  return user
-}
 
 describe('overview editing', () => {
   beforeEach(async () => {
@@ -175,7 +165,7 @@ describe('adding an existing exercise', () => {
     await openOverviewEditing()
 
     fireEvent.click(await screen.findByText('הוספת תרגיל', { selector: 'ion-label' }))
-    fireEvent.click(await (await exercisePicker()).findByText('דדליפט'))
+    await addPicked('דדליפט')
 
     await waitFor(async () => expect(await savedNames()).toEqual([['סקוואט', 'לחיצת חזה', 'חתירה', 'דדליפט']]))
     expect((await savedWorkout('w1'))?.sections[0].items[3].exercises[0]).toEqual({

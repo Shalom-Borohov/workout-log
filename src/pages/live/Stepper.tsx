@@ -1,6 +1,6 @@
 import { IonIcon, IonInput } from '@ionic/react'
 import { add, remove } from 'ionicons/icons'
-import { LIVE_COPY } from './copy'
+import { COMMON_COPY } from '../../copy/common'
 
 interface StepperProps {
   field: string
@@ -20,7 +20,7 @@ export function Stepper({ field, label, value, unit, inputMode, canDecrease, can
       <button
         type="button"
         className="stepper-button"
-        aria-label={LIVE_COPY.decrease(field)}
+        aria-label={COMMON_COPY.decrease(field)}
         disabled={!canDecrease}
         onClick={() => onStep(-1)}
       >
@@ -41,7 +41,7 @@ export function Stepper({ field, label, value, unit, inputMode, canDecrease, can
       <button
         type="button"
         className="stepper-button"
-        aria-label={LIVE_COPY.increase(field)}
+        aria-label={COMMON_COPY.increase(field)}
         disabled={!canIncrease}
         onClick={() => onStep(1)}
       >

@@ -1,4 +1,4 @@
-import { useItemEditorFlow } from '../../components/itemEditor/useItemEditorFlow'
+import { type AddTarget, useItemEditorFlow } from '../../components/itemEditor/useItemEditorFlow'
 import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import { LIVE_COPY } from './copy'
 import { NO_HISTORY, type PreviousExerciseLookup } from '../../domain/progress'
@@ -6,11 +6,11 @@ import type { Change } from '../../domain/routineEdit'
 import type { RoutineItem, Workout } from '../../domain/types'
 import { hasTickedSet } from '../../domain/workoutEdits'
 import {
-  addItem,
+  addItems,
   asRoutineItem,
   canRemoveItem,
   editItem,
-  insertItemAfter,
+  insertItemsAfter,
   locateItem,
   removeItem,
 } from '../../domain/workoutStructure'
@@ -21,13 +21,15 @@ export function useOverviewEditor(workout: Workout, previous: PreviousExerciseLo
   const confirmDelete = useConfirmDelete()
   const previousExercises = previous ?? NO_HISTORY
 
-  const flow = useItemEditorFlow<number>((target, item) =>
+  function insert(target: AddTarget<number>, items: RoutineItem[]) {
     onEdit((current) =>
       'section' in target
-        ? addItem(current, target.section, item, previousExercises)
-        : insertItemAfter(current, target.after, item, previousExercises),
-    ),
-  )
+        ? addItems(current, target.section, items, previousExercises)
+        : insertItemsAfter(current, target.after, items, previousExercises),
+    )
+  }
+
+  const flow = useItemEditorFlow<number>(insert, change)
 
   const located = flow.editingId === null ? undefined : locateItem(workout, flow.editingId)
 

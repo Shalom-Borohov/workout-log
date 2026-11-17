@@ -35,8 +35,6 @@ export const LIVE_COPY = {
   weight: 'משקל',
   kg: 'ק״ג',
   time: 'זמן',
-  decrease: (field: string) => `הקטנת ${field}`,
-  increase: (field: string) => `הגדלת ${field}`,
   completed: 'הושלם',
   removeExerciseQuestion: 'למחוק את התרגיל?',
   removeExerciseMessage: 'הסטים שרשמת בתרגיל יימחקו.',

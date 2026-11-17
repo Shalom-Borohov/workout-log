@@ -20,13 +20,6 @@
   --inner-border-width: 0 0 0.55px 0;
 }
 
-.preview-sets {
-  min-inline-size: 2ch;
-  font-size: 1.0625rem;
-  text-align: center;
-  color: var(--app-label-secondary);
-}
-
 .start-button {
   margin-inline-start: 12px;
   font-weight: 600;

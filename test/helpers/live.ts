@@ -1,7 +1,8 @@
 import { act, fireEvent, screen } from '@testing-library/react'
-import type { userEvent } from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { vi } from 'vitest'
 import { actionSheetPresented, ionElement } from './ionic'
+import { renderAt } from './renderAt'
 
 type User = ReturnType<typeof userEvent.setup>
 
@@ -22,6 +23,16 @@ export async function openMenu() {
   await presented
 
   return Array.from(document.querySelectorAll('.action-sheet-button'), (button) => button.textContent)
+}
+
+export async function openOverviewEditing() {
+  const user = userEvent.setup()
+
+  renderAt('/tabs/timeline/workout/w1')
+  await user.click(await screen.findByLabelText('כל התרגילים'))
+  await user.click(await screen.findByText('עריכה', { selector: 'ion-modal ion-button' }))
+
+  return user
 }
 
 export async function chooseFromMenu(text: string) {

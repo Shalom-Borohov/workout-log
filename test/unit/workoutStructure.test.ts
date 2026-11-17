@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { NO_HISTORY, previousExerciseLookup, type PreviousExerciseLookup } from '../../src/domain/progress'
 import type { RoutineItem, Workout, WorkoutItem } from '../../src/domain/types'
 import {
-  addItem,
+  addItems,
   applyItemEdit,
   asRoutineItem,
   canRemoveItem,
@@ -35,9 +35,18 @@ const squatItem: RoutineItem = {
   exercises: [routineExercise({ name: 'סקוואט', target: reps(10), tip: 'גב ישר' })],
 }
 
-describe('addItem', () => {
+describe('addItems', () => {
+  it('appends the items in order', () => {
+    const second = { ...squatItem, id: 'second' }
+
+    expect(addItems(sized([2]), 0, [squatItem, second], NO_HISTORY).sections[0].items.map((item) => item.id).slice(1)).toEqual([
+      'new',
+      'second',
+    ])
+  })
+
   it('appends the item with its own set count, prefilled from history', () => {
-    const added = addItem(sized([2]), 0, squatItem, squatHistory).sections[0].items
+    const added = addItems(sized([2]), 0, [squatItem], squatHistory).sections[0].items
 
     expect(added).toHaveLength(2)
     expect(added[1]).toEqual({
@@ -53,7 +62,7 @@ describe('addItem', () => {
     const previous = previousExerciseLookup([timedSquat], oct(26))
     const item = { ...squatItem, sets: 1, exercises: [routineExercise({ name: 'סקוואט', target: reps(10), weight: 20 })] }
 
-    const added = addItem(sized([2]), 0, item, previous).sections[0].items[1]
+    const added = addItems(sized([2]), 0, [item], previous).sections[0].items[1]
 
     expect(added.exercises[0].sets).toEqual([open(null, 10)])
   })
@@ -62,7 +71,7 @@ describe('addItem', () => {
     const item = { ...squatItem, sets: null }
 
     const counts = (base: Workout) =>
-      addItem(base, 0, item, NO_HISTORY).sections[0].items.at(-1)?.exercises[0].sets.length
+      addItems(base, 0, [item], NO_HISTORY).sections[0].items.at(-1)?.exercises[0].sets.length
 
     expect(counts(sized([4, 2, 4]))).toBe(4)
     expect(counts(sized([2, 5]))).toBe(2)

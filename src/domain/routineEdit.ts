@@ -43,10 +43,6 @@ export function itemSets(item: Pick<RoutineItem, 'sets'>, sectionSets: number): 
   return item.sets === null ? sectionSets : item.sets
 }
 
-export function setSectionSets(section: RoutineSection, sets: number): RoutineSection {
-  return { ...section, sets }
-}
-
 export function updateItem(routine: Routine, id: string, change: Change<RoutineItem>): Routine {
   return {
     ...routine,
@@ -57,16 +53,39 @@ export function updateItem(routine: Routine, id: string, change: Change<RoutineI
   }
 }
 
-export function insertAfter<T extends { id: string }>(list: T[], afterId: string, added: T): T[] {
+export function insertAfter<T extends { id: string }>(list: T[], afterId: string, added: T[]): T[] {
   const index = list.findIndex((entry) => entry.id === afterId)
 
-  return index === -1 ? list : [...list.slice(0, index + 1), added, ...list.slice(index + 1)]
+  return index === -1 ? list : [...list.slice(0, index + 1), ...added, ...list.slice(index + 1)]
 }
 
-export function addItemAfter(routine: Routine, afterId: string, item: RoutineItem): Routine {
+function withSetsOf(neighbour: RoutineItem | undefined, items: RoutineItem[]): RoutineItem[] {
+  const sets = neighbour === undefined ? null : neighbour.sets
+
+  return items.map((item) => ({ ...item, sets }))
+}
+
+export function appendItems(section: RoutineSection, items: RoutineItem[]): RoutineSection {
+  return { ...section, items: [...section.items, ...withSetsOf(section.items.at(-1), items)] }
+}
+
+export function addItemsAfter(routine: Routine, afterId: string, items: RoutineItem[]): Routine {
   return {
     ...routine,
-    sections: routine.sections.map((section) => ({ ...section, items: insertAfter(section.items, afterId, item) })),
+    sections: routine.sections.map((section) => {
+      const neighbour = section.items.find((item) => item.id === afterId)
+
+      return neighbour === undefined
+        ? section
+        : { ...section, items: insertAfter(section.items, afterId, withSetsOf(neighbour, items)) }
+    }),
+  }
+}
+
+export function replaceExercise(item: RoutineItem, exerciseIndex: number, exercise: RoutineExercise): RoutineItem {
+  return {
+    ...item,
+    exercises: item.exercises.map((current, index) => (index === exerciseIndex ? exercise : current)),
   }
 }
 

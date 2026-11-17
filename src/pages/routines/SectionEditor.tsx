@@ -12,10 +12,9 @@ import { addCircle } from 'ionicons/icons'
 import { COMMON_COPY } from '../../copy/common'
 import { ROUTINES_COPY } from './copy'
 import type { RoutineSection } from '../../domain/types'
-import { type Change, MAX_SETS, MIN_SETS, moveItem, setSectionSets } from '../../domain/routineEdit'
+import { type Change, moveItem } from '../../domain/routineEdit'
 import { itemTitle } from '../../domain/workoutEdits'
 import { ItemLabel } from './ItemLabel'
-import { Stepper } from '../../components/Stepper'
 import { EditableItemRow } from '../../components/itemEditor/EditableItemRow'
 
 interface Props {
@@ -39,10 +38,6 @@ export function SectionEditor({ section, onChange, onEditItem, onDeleteItem, onA
     onChange((current) => ({ ...current, name }))
   }
 
-  function setSets(sets: number) {
-    onChange((current) => setSectionSets(current, sets))
-  }
-
   return (
     <section>
       <IonListHeader className="section-header">
@@ -55,17 +50,6 @@ export function SectionEditor({ section, onChange, onEditItem, onDeleteItem, onA
         />
       </IonListHeader>
       <IonList inset className="section-group">
-        <IonItem>
-          <IonLabel>{COMMON_COPY.sets}</IonLabel>
-          <Stepper
-            value={section.sets}
-            min={MIN_SETS}
-            max={MAX_SETS}
-            decreaseLabel={COMMON_COPY.removeSet}
-            increaseLabel={COMMON_COPY.addSet}
-            onChange={setSets}
-          />
-        </IonItem>
         <IonReorderGroup disabled={false} onIonReorderEnd={reorder}>
           {section.items.map((item) => (
             <EditableItemRow
