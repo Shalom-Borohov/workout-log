@@ -26,29 +26,33 @@ export function commonSets(section: WorkoutSection): number {
   )
 }
 
-function workoutItem(routineItem: RoutineItem, section: WorkoutSection, previous: PreviousExerciseLookup): WorkoutItem {
-  const count = itemSets(routineItem, commonSets(section))
+function workoutItems(routineItems: RoutineItem[], section: WorkoutSection, previous: PreviousExerciseLookup): WorkoutItem[] {
+  const sectionSets = commonSets(section)
 
-  return {
-    id: routineItem.id,
-    exercises: routineItem.exercises.map((exercise) => toWorkoutExercise(exercise, count, previous)),
-  }
+  return routineItems.map((routineItem) => {
+    const count = itemSets(routineItem, sectionSets)
+
+    return {
+      id: routineItem.id,
+      exercises: routineItem.exercises.map((exercise) => toWorkoutExercise(exercise, count, previous)),
+    }
+  })
 }
 
-export function addItem(workout: Workout, sectionIndex: number, routineItem: RoutineItem, previous: PreviousExerciseLookup): Workout {
-  const item = workoutItem(routineItem, workout.sections[sectionIndex], previous)
+export function addItems(workout: Workout, sectionIndex: number, routineItems: RoutineItem[], previous: PreviousExerciseLookup): Workout {
+  const added = workoutItems(routineItems, workout.sections[sectionIndex], previous)
 
-  return mapItems(workout, sectionIndex, (items) => [...items, item])
+  return mapItems(workout, sectionIndex, (items) => [...items, ...added])
 }
 
-export function insertItemAfter(workout: Workout, afterId: string, routineItem: RoutineItem, previous: PreviousExerciseLookup): Workout {
+export function insertItemsAfter(workout: Workout, afterId: string, routineItems: RoutineItem[], previous: PreviousExerciseLookup): Workout {
   const located = locateItem(workout, afterId)
   if (!located) {
     return workout
   }
-  const item = workoutItem(routineItem, workout.sections[located.ref.section], previous)
+  const added = workoutItems(routineItems, workout.sections[located.ref.section], previous)
 
-  return mapItems(workout, located.ref.section, (items) => insertAfter(items, afterId, item))
+  return mapItems(workout, located.ref.section, (items) => insertAfter(items, afterId, added))
 }
 
 function mapItems(workout: Workout, sectionIndex: number, change: (items: WorkoutItem[]) => WorkoutItem[]): Workout {

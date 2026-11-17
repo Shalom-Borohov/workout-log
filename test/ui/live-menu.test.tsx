@@ -4,7 +4,7 @@ import { saveWorkout } from '../../src/data/repo'
 import { firstSectionNames, resetDb, savedWorkout } from '../helpers/db'
 import { alertPresented } from '../helpers/ionic'
 import { chooseFromMenu, openMenu } from '../helpers/live'
-import { exercisePicker } from '../helpers/picker'
+import { addPicked, exercisePicker } from '../helpers/picker'
 import { renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, open, workout } from '../helpers/workouts'
 
@@ -130,7 +130,7 @@ describe('adding an exercise after the current one', () => {
     renderAt('/tabs/timeline/workout/w1')
 
     await chooseFromMenu('הוספת תרגיל אחרי')
-    fireEvent.click(await (await exercisePicker()).findByText('דדליפט'))
+    await addPicked('דדליפט')
 
     await waitFor(async () => expect(await firstSectionNames('w1')).toEqual(['סקוואט', 'דדליפט', 'לחיצת חזה']))
     expect((await savedWorkout('w1'))?.sections[0].items[1].exercises[0].sets).toEqual([open(80, 8), open(80, 6)])

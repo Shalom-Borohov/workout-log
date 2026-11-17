@@ -1,14 +1,20 @@
 import { useItemEditorFlow } from '../../components/itemEditor/useItemEditorFlow'
-import { addItemAfter, type Change, findItem, removeItem, updateItem, updateSection } from '../../domain/routineEdit'
+import { addItemsAfter, appendItems, type Change, findItem, removeItem, updateItem, updateSection } from '../../domain/routineEdit'
 import type { Routine, RoutineItem } from '../../domain/types'
 
 export function useRoutineItemEditor(routine: Routine, edit: (change: Change<Routine>) => void) {
-  const flow = useItemEditorFlow<string>((target, item) =>
-    edit((current) =>
-      'after' in target
-        ? addItemAfter(current, target.after, item)
-        : updateSection(current, target.section, (section) => ({ ...section, items: [...section.items, item] })),
-    ),
+  function change(id: string, itemChange: Change<RoutineItem>) {
+    edit((current) => updateItem(current, id, itemChange))
+  }
+
+  const flow = useItemEditorFlow<string>(
+    (target, items) =>
+      edit((current) =>
+        'after' in target
+          ? addItemsAfter(current, target.after, items)
+          : updateSection(current, target.section, (section) => appendItems(section, items)),
+      ),
+    change,
   )
 
   function remove(id: string) {
@@ -19,7 +25,7 @@ export function useRoutineItemEditor(routine: Routine, edit: (change: Change<Rou
   return {
     flow,
     editing: flow.editingId === null ? undefined : findItem(routine, flow.editingId),
-    change: (id: string, change: Change<RoutineItem>) => edit((current) => updateItem(current, id, change)),
+    change,
     remove,
   }
 }

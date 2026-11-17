@@ -4,7 +4,7 @@ import { db } from '../../src/data/db'
 import { activeWorkout, saveRoutine, saveWorkout } from '../../src/data/repo'
 import { resetDb } from '../helpers/db'
 import { actionSheetPresented, buttonByLabel, ionChange, ionElement, ionEvent, ionField, ionInput } from '../helpers/ionic'
-import { exercisePicker, pickerSearch } from '../helpers/picker'
+import { addPicked, exercisePicker, pickerSearch } from '../helpers/picker'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
 
@@ -137,7 +137,7 @@ describe('routines', () => {
 
     ionInput(await ionField('פתק'), 'אימון\nריצה 5000')
 
-    expect(await screen.findByText('100 חזרות', { selector: 'p' })).toBeInTheDocument()
+    expect(await screen.findByText('סט אחד · 100 חזרות', { selector: 'p' })).toBeInTheDocument()
     expect(screen.queryByText(/5000 חזרות/)).not.toBeInTheDocument()
   })
 
@@ -150,9 +150,10 @@ describe('routines', () => {
 
     expect(await screen.findByText('חימום', { selector: 'ion-list-header ion-label' })).toBeInTheDocument()
     expect(screen.getByText('אופניים', { selector: 'h2' })).toBeInTheDocument()
-    expect(screen.getByText('5 דק׳', { selector: 'p' })).toBeInTheDocument()
+    expect(screen.getByText('2 סטים · 5 דק׳', { selector: 'p' })).toBeInTheDocument()
     expect(screen.getByText('סקוואט + לחיצת כתפיים', { selector: 'h2' })).toBeInTheDocument()
-    expect(screen.getByText('12 חזרות + 10 חזרות', { selector: 'p' })).toBeInTheDocument()
+    expect(screen.getByText('3 סטים · 12 חזרות + 10 חזרות', { selector: 'p' })).toBeInTheDocument()
+    expect(screen.queryByText('סטים', { selector: 'ion-label' })).not.toBeInTheDocument()
     expect(screen.getByText('?', { selector: 'ion-text[color="danger"]' })).toBeInTheDocument()
     expect(screen.getByText('תרגיל עם ? חסר בו מספר חזרות. אפשר לתקן אחרי השמירה.')).toBeInTheDocument()
 
@@ -184,24 +185,26 @@ describe('routines', () => {
     await waitFor(() => expect(currentPath()).toBe(`/tabs/routines/${saved.id}`))
   })
 
-  it('editor renames and changes sets', async () => {
+  it('editor renames and changes an exercise’s sets', async () => {
     await saveRoutine(fullBody)
 
     renderAt('/tabs/routines/r1')
 
-    await screen.findByText('3', { selector: '.count-stepper-value' })
+    await screen.findByText('3 סטים · 12 חזרות', { selector: 'p' })
     ionChange(await ionField('שם האימון'), 'גוף מלא A')
     await waitFor(async () => expect((await db.routines.get('r1'))?.name).toBe('גוף מלא A'))
 
     ionChange(await ionField('שם החלק'), 'עיקרי כבד')
     await waitFor(async () => expect((await db.routines.get('r1'))?.sections[0].name).toBe('עיקרי כבד'))
 
-    fireEvent.click(screen.getByRole('button', { name: 'הוספת סט' }))
-    expect(await screen.findByText('4', { selector: '.count-stepper-value' })).toBeInTheDocument()
+    fireEvent.click(screen.getByText('סקוואט', { selector: 'h2' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'הוספת סט' }))
+    expect(await screen.findByText('4 סטים · 12 חזרות', { selector: 'p' })).toBeInTheDocument()
 
     const saved = await db.routines.get('r1')
 
-    expect(saved?.sections[0].sets).toBe(4)
+    expect(saved?.sections[0].sets).toBe(3)
+    expect(saved?.sections[0].items[0].sets).toBe(4)
     expect(saved?.updatedAt).toBeGreaterThan(0)
   })
 
@@ -229,7 +232,7 @@ describe('routines', () => {
     await waitFor(async () => expect((await db.routines.get('r1'))?.sections[0].items[0].exercises).toHaveLength(2))
 
     expect(await screen.findByText('סקוואט גביע + תרגיל חדש', { selector: 'h2' })).toBeInTheDocument()
-    expect(screen.getByText('45 שנ׳ + 10 חזרות', { selector: 'p' })).toBeInTheDocument()
+    expect(screen.getByText('3 סטים · 45 שנ׳ + 10 חזרות', { selector: 'p' })).toBeInTheDocument()
   })
 
   it('editor reorders, adds and deletes items and sections', async () => {
@@ -263,7 +266,7 @@ describe('routines', () => {
     renderAt('/tabs/routines/r1')
 
     fireEvent.click(await screen.findByText('הוספת תרגיל', { selector: 'ion-label' }))
-    fireEvent.click(await (await exercisePicker()).findByText('דדליפט'))
+    await addPicked('דדליפט')
 
     await waitFor(async () =>
       expect((await db.routines.get('r1'))?.sections[0].items[2]).toMatchObject({

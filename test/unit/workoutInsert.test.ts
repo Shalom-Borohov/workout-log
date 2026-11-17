@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { NO_HISTORY, type PreviousExerciseLookup } from '../../src/domain/progress'
 import type { RoutineItem, Workout } from '../../src/domain/types'
-import { insertItemAfter } from '../../src/domain/workoutStructure'
+import { insertItemsAfter } from '../../src/domain/workoutStructure'
 import { done, exercise, oct, open, reps, routineExercise } from '../helpers/workouts'
 
 const squatHistory: PreviousExerciseLookup = ({ name }) => ({
@@ -33,22 +33,28 @@ const squat: RoutineItem = { id: 'new', sets: null, exercises: [routineExercise(
 
 const ids = (workout: Workout) => workout.sections.map((section) => section.items.map((item) => item.id))
 
-describe('insertItemAfter', () => {
+describe('insertItemsAfter', () => {
   it('puts the item right after the given one, in its section', () => {
-    expect(ids(insertItemAfter(session, 'b', squat, NO_HISTORY))).toEqual([['a'], ['b', 'new', 'c']])
+    expect(ids(insertItemsAfter(session, 'b', [squat], NO_HISTORY))).toEqual([['a'], ['b', 'new', 'c']])
+  })
+
+  it('puts several items right after the given one, in order', () => {
+    const second = { ...squat, id: 'second' }
+
+    expect(ids(insertItemsAfter(session, 'b', [squat, second], NO_HISTORY))).toEqual([['a'], ['b', 'new', 'second', 'c']])
   })
 
   it('after the last item of a section, ends that section', () => {
-    expect(ids(insertItemAfter(session, 'a', squat, NO_HISTORY))).toEqual([['a', 'new'], ['b', 'c']])
+    expect(ids(insertItemsAfter(session, 'a', [squat], NO_HISTORY))).toEqual([['a', 'new'], ['b', 'c']])
   })
 
   it("takes the most common set count of the item's section, prefilled from history", () => {
-    const added = insertItemAfter(session, 'b', squat, squatHistory).sections[1].items[1]
+    const added = insertItemsAfter(session, 'b', [squat], squatHistory).sections[1].items[1]
 
     expect(added.exercises[0].sets).toEqual([open(60, 8), open(60, 8)])
   })
 
   it('leaves the workout as it is when the item is gone', () => {
-    expect(insertItemAfter(session, 'gone', squat, NO_HISTORY)).toBe(session)
+    expect(insertItemsAfter(session, 'gone', [squat], NO_HISTORY)).toBe(session)
   })
 })

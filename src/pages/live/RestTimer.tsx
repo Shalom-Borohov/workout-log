@@ -1,5 +1,6 @@
 import { IonButton, IonIcon, IonToolbar } from '@ionic/react'
 import { add, remove, timerOutline, volumeHighOutline, volumeMuteOutline } from 'ionicons/icons'
+import { COMMON_COPY } from '../../copy/common'
 import { formatClock } from '../../domain/format'
 import { MIN_REST_SECONDS } from '../../domain/rest'
 import { SECOND_MS } from '../../domain/time'
@@ -48,7 +49,7 @@ export function RestRow({ rest, seconds, sound, onAdjust, onToggleSound }: RestR
           <button
             type="button"
             className="stepper-button"
-            aria-label={LIVE_COPY.decrease(LIVE_COPY.rest)}
+            aria-label={COMMON_COPY.decrease(LIVE_COPY.rest)}
             disabled={seconds <= MIN_REST_SECONDS}
             onClick={() => onAdjust(-1)}
           >
@@ -60,7 +61,7 @@ export function RestRow({ rest, seconds, sound, onAdjust, onToggleSound }: RestR
           <button
             type="button"
             className="stepper-button"
-            aria-label={LIVE_COPY.increase(LIVE_COPY.rest)}
+            aria-label={COMMON_COPY.increase(LIVE_COPY.rest)}
             onClick={() => onAdjust(1)}
           >
             <IonIcon icon={add} aria-hidden="true" />

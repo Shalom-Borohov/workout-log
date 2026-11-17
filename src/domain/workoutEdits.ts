@@ -124,14 +124,20 @@ export function stepValue(current: number | null, delta: number, max: number): n
 
 export const WEIGHT_STEP = 1
 
-const SECONDS_STEP = 15
+export type AmountUnit = 'reps' | ReturnType<typeof durationUnit>
+
+const AMOUNT_STEPS: Record<AmountUnit, number> = { reps: 1, minutes: SECONDS_PER_MINUTE, seconds: 15 }
+
+export function targetUnit(target: Target): AmountUnit {
+  return target.kind === 'reps' ? 'reps' : durationUnit(target)
+}
+
+export function unitStep(unit: AmountUnit): number {
+  return AMOUNT_STEPS[unit]
+}
 
 export function amountStep(target: Target): number {
-  if (target.kind === 'reps') {
-    return 1
-  }
-
-  return durationUnit(target) === 'minutes' ? SECONDS_PER_MINUTE : SECONDS_STEP
+  return unitStep(targetUnit(target))
 }
 
 export function toggleSkip(workout: Workout, ref: ItemRef): Workout {

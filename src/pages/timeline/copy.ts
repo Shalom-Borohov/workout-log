@@ -4,7 +4,6 @@ export const TIMELINE_COPY = {
   activeWorkout: 'אימון בתהליך',
   whichRoutineQuestion: 'באיזה אימון?',
   startWorkout: 'התחל אימון',
-  add: 'הוספה',
   emptyTitle: 'עוד אין אימונים',
   emptyBody: 'לוחצים על „התחל אימון” למטה. כל אימון שמסיימים יופיע כאן, עם השיפורים והשיאים.',
   pastWorkout: 'אימון קודם',

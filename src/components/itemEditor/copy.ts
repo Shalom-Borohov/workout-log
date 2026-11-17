@@ -10,4 +10,8 @@ export const ITEM_EDITOR_COPY = {
   tips: 'דגשים',
   newExercise: 'תרגיל חדש',
   newExerciseNamed: (name: string) => `תרגיל חדש: ${name}`,
+  replaceExercise: 'החלפת תרגיל',
+  nameSuffix: (name: string) => ` · ${name}`,
+  addCount: (count: number) => `הוספה (${count})`,
+  ticked: 'נבחר',
 } as const

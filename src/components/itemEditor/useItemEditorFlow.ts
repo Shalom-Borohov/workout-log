@@ -1,16 +1,25 @@
 import { useState } from 'react'
-import { namedOrDefault, newExercise, newItem } from '../../domain/routineEdit'
+import { type Change, namedOrDefault, newExercise, newItem, replaceExercise } from '../../domain/routineEdit'
 import type { RoutineExercise, RoutineItem } from '../../domain/types'
 
 export type AddTarget<Section> = { section: Section } | { after: string }
 
+type PickerRequest<Section> =
+  | { mode: 'add'; target: AddTarget<Section> }
+  | { mode: 'replace'; id: string; exerciseIndex: number }
+
+export type PickerMode = 'add' | 'replace'
+
 export interface ItemSheetsFlow {
   picking: boolean
+  pickerMode: PickerMode
   addAfter: (id: string) => void
+  replace: (id: string, exerciseIndex: number) => void
   sheetClosed: () => void
-  pick: (exercise: RoutineExercise) => void
-  create: (name: string) => void
-  cancelAdding: () => void
+  addPicked: (exercises: RoutineExercise[]) => void
+  create: (ticked: RoutineExercise[], name: string) => void
+  replaceWith: (exercise: RoutineExercise) => void
+  pickerClosed: () => void
 }
 
 export interface ItemEditorFlow<Section> extends ItemSheetsFlow {
@@ -21,55 +30,85 @@ export interface ItemEditorFlow<Section> extends ItemSheetsFlow {
 }
 
 export function useItemEditorFlow<Section>(
-  insert: (target: AddTarget<Section>, item: RoutineItem) => void,
+  insert: (target: AddTarget<Section>, items: RoutineItem[]) => void,
+  change: (id: string, change: Change<RoutineItem>) => void,
 ): ItemEditorFlow<Section> {
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [adding, setAdding] = useState<AddTarget<Section> | null>(null)
-  const [addingOnceClosed, setAddingOnceClosed] = useState<AddTarget<Section> | null>(null)
+  const [request, setRequest] = useState<PickerRequest<Section> | null>(null)
+  const [picking, setPicking] = useState(false)
+  const [requestOnceClosed, setRequestOnceClosed] = useState<PickerRequest<Section> | null>(null)
 
-  function add(exercise: RoutineExercise, edit: boolean) {
-    if (adding === null) {
-      return
-    }
-    const id = crypto.randomUUID()
-
-    insert(adding, newItem(id, [exercise]))
-    setAdding(null)
-
-    if (edit) {
-      setEditingId(id)
-    }
+  function showPicker(next: PickerRequest<Section>) {
+    setRequest(next)
+    setPicking(true)
   }
 
-  function addAfter(id: string) {
+  function requestFromSheet(next: PickerRequest<Section>) {
     if (editingId === null) {
-      setAdding({ after: id })
+      showPicker(next)
 
       return
     }
     setEditingId(null)
-    setAddingOnceClosed({ after: id })
+    setRequestOnceClosed(next)
+  }
+
+  function add(exercises: RoutineExercise[], editLast: boolean) {
+    if (!picking || request?.mode !== 'add') {
+      return
+    }
+    const items = exercises.map((exercise) => newItem(crypto.randomUUID(), [exercise]))
+    const last = items.at(-1)
+
+    insert(request.target, items)
+    setPicking(false)
+
+    if (editLast && last) {
+      setEditingId(last.id)
+    }
+  }
+
+  function replaceWith(exercise: RoutineExercise) {
+    if (!picking || request?.mode !== 'replace') {
+      return
+    }
+    const { exerciseIndex } = request
+
+    change(request.id, (item) => replaceExercise(item, exerciseIndex, exercise))
+    setPicking(false)
   }
 
   function sheetClosed() {
     setEditingId(null)
 
-    if (addingOnceClosed !== null) {
-      setAdding(addingOnceClosed)
-      setAddingOnceClosed(null)
+    if (requestOnceClosed !== null) {
+      showPicker(requestOnceClosed)
+      setRequestOnceClosed(null)
     }
+  }
+
+  function pickerClosed() {
+    setPicking(false)
+
+    if (request?.mode === 'replace') {
+      setEditingId(request.id)
+    }
+    setRequest(null)
   }
 
   return {
     editingId,
     open: setEditingId,
     close: () => setEditingId(null),
-    picking: adding !== null,
-    addTo: (section) => setAdding({ section }),
-    addAfter,
+    picking,
+    pickerMode: request === null ? 'add' : request.mode,
+    addTo: (section) => showPicker({ mode: 'add', target: { section } }),
+    addAfter: (id) => requestFromSheet({ mode: 'add', target: { after: id } }),
+    replace: (id, exerciseIndex) => requestFromSheet({ mode: 'replace', id, exerciseIndex }),
     sheetClosed,
-    pick: (exercise) => add(exercise, false),
-    create: (name) => add(newExercise(namedOrDefault(name)), true),
-    cancelAdding: () => setAdding(null),
+    addPicked: (exercises) => add(exercises, false),
+    create: (ticked, name) => add([...ticked, newExercise(namedOrDefault(name))], true),
+    replaceWith,
+    pickerClosed,
   }
 }

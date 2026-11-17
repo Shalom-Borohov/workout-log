@@ -2,9 +2,9 @@ import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../src/data/db'
 import { saveRoutine, saveWorkout } from '../../src/data/repo'
-import { resetDb } from '../helpers/db'
+import { firstSectionRoutineNames, resetDb } from '../helpers/db'
 import { buttonByLabel, ionElement, nativeButton, queryButtonByLabel } from '../helpers/ionic'
-import { exercisePicker } from '../helpers/picker'
+import { addPicked, exercisePicker } from '../helpers/picker'
 import { currentPath, renderAt } from '../helpers/renderAt'
 import { dailyRoutine, done, exercise, oct, reps, routine, seconds, workout } from '../helpers/workouts'
 
@@ -17,8 +17,7 @@ const fullBody = routine('r1', 'אימון גוף מלא', [
   [{ name: 'מתח', target: reps(8) }],
 ])
 
-const names = async () =>
-  (await db.routines.get('r1'))?.sections[0].items.map((item) => item.exercises.map((entry) => entry.name).join(' + '))
+const names = () => firstSectionRoutineNames('r1')
 
 const deadlifts = workout({ id: 'prev', startedAt: oct(22), exercises: [exercise('דדליפט', [done(80, 8)], reps(8))] })
 
@@ -123,7 +122,7 @@ describe('routine editor actions', () => {
 
     fireEvent.click(await screen.findByText('סקוואט', { selector: 'h2' }))
     fireEvent.click(await screen.findByText('הוספת תרגיל אחרי'))
-    fireEvent.click(await (await exercisePicker()).findByText('דדליפט'))
+    await addPicked('דדליפט')
 
     await waitFor(async () => expect(await names()).toEqual(['סקוואט', 'דדליפט', 'לחיצת חזה + פלאנק', 'מתח']))
     await waitFor(() => expect(document.querySelector('ion-modal ion-searchbar')).toBeNull())
@@ -137,7 +136,7 @@ describe('routine editor actions', () => {
 
     fireEvent.click(await screen.findByText('לחיצת חזה + פלאנק', { selector: 'h2' }))
     fireEvent.click(await screen.findByText('הוספת תרגיל אחרי'))
-    fireEvent.click(await (await exercisePicker()).findByText('דדליפט'))
+    await addPicked('דדליפט')
 
     await waitFor(async () => expect(await names()).toEqual(['סקוואט', 'לחיצת חזה + פלאנק', 'דדליפט', 'מתח']))
   })

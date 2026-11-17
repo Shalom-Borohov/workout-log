@@ -82,16 +82,6 @@ ion-tabs:has(.ion-page:not(.ion-page-hidden) > .timeline-footer) ion-tab-bar {
   color: var(--app-label-secondary);
 }
 
-.date-column-label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 ion-item .workout-card {
   display: flex;
   flex-direction: column;

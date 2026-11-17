@@ -1,4 +1,5 @@
 import {
+  IonIcon,
   IonInput,
   IonItem,
   IonLabel,
@@ -8,6 +9,7 @@ import {
   IonTextarea,
   type SegmentValue,
 } from '@ionic/react'
+import { swapHorizontal } from 'ionicons/icons'
 import { useState } from 'react'
 import { COMMON_COPY } from '../../copy/common'
 import { carryExerciseArea, claimExerciseArea, setExerciseArea } from '../../data/exerciseAreas'
@@ -16,43 +18,39 @@ import { areaOf, type BodyArea } from '../../domain/bodyAreas'
 import { BodyAreaPicker } from '../bodyArea/BodyAreaPicker'
 import { commitName } from '../commitName'
 import { ITEM_EDITOR_COPY } from './copy'
-import { durationUnit } from '../../domain/format'
-import { clampTarget } from '../../domain/limits'
+import { clampTarget, maxAmount } from '../../domain/limits'
 import { weightPatch } from '../../domain/numberInput'
-import { targetAmount } from '../../domain/progress'
+import { targetAmount, withTargetAmount } from '../../domain/progress'
 import { type Change, DEFAULT_EXERCISE_NAME } from '../../domain/routineEdit'
 import { SECONDS_PER_MINUTE } from '../../domain/time'
 import type { RoutineExercise, Target } from '../../domain/types'
+import { type AmountUnit, stepValue, targetUnit, unitStep } from '../../domain/workoutEdits'
 import { useSave } from '../../hooks/useSave'
+import { StepperButtons } from '../Stepper'
 import './itemEditor.css'
 
 interface Props {
   exercise: RoutineExercise
   showStartWeight: boolean
   onChange: (change: Change<RoutineExercise>) => void
+  onReplace: () => void
 }
 
-const UNITS = [
-  { value: 'reps', label: COMMON_COPY.reps },
-  { value: 'minutes', label: ITEM_EDITOR_COPY.minutes },
-  { value: 'seconds', label: COMMON_COPY.seconds },
-] as const
-
-type Unit = (typeof UNITS)[number]['value']
-
-function isUnit(unit: SegmentValue | undefined): unit is Unit {
-  return UNITS.some((option) => option.value === unit)
+const UNIT_LABELS: Record<AmountUnit, string> = {
+  reps: COMMON_COPY.reps,
+  minutes: ITEM_EDITOR_COPY.minutes,
+  seconds: COMMON_COPY.seconds,
 }
 
-function unitOf(target: Target): Unit {
-  return target.kind === 'reps' ? 'reps' : durationUnit(target)
+function isUnit(unit: SegmentValue | undefined): unit is AmountUnit {
+  return typeof unit === 'string' && Object.hasOwn(UNIT_LABELS, unit)
 }
 
-function shownAmount(target: Target, unit: Unit): number {
+function shownAmount(target: Target, unit: AmountUnit): number {
   return unit === 'minutes' ? targetAmount(target) / SECONDS_PER_MINUTE : targetAmount(target)
 }
 
-function toTarget(amount: number, unit: Unit): Target {
+function toTarget(amount: number, unit: AmountUnit): Target {
   if (unit === 'reps') {
     return clampTarget({ kind: 'reps', reps: amount })
   }
@@ -66,8 +64,12 @@ function parseAmount(text: string | null | undefined): number | null {
   return text && Number.isInteger(amount) && amount >= 0 ? amount : null
 }
 
-export function ExerciseFields({ exercise, showStartWeight, onChange }: Props) {
-  const [unit, setUnit] = useState(() => unitOf(exercise.target))
+export function ExerciseFields({ exercise, showStartWeight, onChange, onReplace }: Props) {
+  const [unit, setUnit] = useState(() => targetUnit(exercise.target))
+  const unitLabel = UNIT_LABELS[unit]
+  const step = unitStep(unit)
+  const currentAmount = targetAmount(exercise.target)
+  const nameSuffix = ITEM_EDITOR_COPY.nameSuffix(exercise.name)
   const areas = useExerciseAreas()
   const [unnamedArea, setUnnamedArea] = useState<BodyArea | null>(null)
   const isUnnamed = exercise.name === DEFAULT_EXERCISE_NAME
@@ -91,6 +93,14 @@ export function ExerciseFields({ exercise, showStartWeight, onChange }: Props) {
     if (amount !== null) {
       onChange((current) => ({ ...current, target: toTarget(amount, unit) }))
     }
+  }
+
+  function stepAmount(direction: 1 | -1) {
+    onChange((current) => {
+      const stepped = stepValue(targetAmount(current.target), direction * step, maxAmount(current.target))
+
+      return { ...current, target: withTargetAmount(current.target, Math.max(stepped, step)) }
+    })
   }
 
   function changeWeight(text: string | null | undefined) {
@@ -136,29 +146,41 @@ export function ExerciseFields({ exercise, showStartWeight, onChange }: Props) {
           onIonChange={(event) => commitName(event, exercise.name, rename)}
         />
       </IonItem>
-      {areas && (
-        <IonItem>
-          <BodyAreaPicker value={isUnnamed ? unnamedArea : areaOf(areas, exercise.name)} onChange={pickArea} />
-        </IonItem>
-      )}
+      <IonItem button detail={false} onClick={onReplace}>
+        <IonIcon slot="start" color="primary" icon={swapHorizontal} aria-hidden="true" />
+        <IonLabel color="primary">
+          {ITEM_EDITOR_COPY.replaceExercise}
+          <span className="visually-hidden">{nameSuffix}</span>
+        </IonLabel>
+      </IonItem>
       <IonItem>
         <IonSegment value={unit} onIonChange={(event) => changeUnit(event.detail.value)}>
-          {UNITS.map((option) => (
-            <IonSegmentButton key={option.value} value={option.value}>
-              <IonLabel>{option.label}</IonLabel>
+          {Object.entries(UNIT_LABELS).map(([option, label]) => (
+            <IonSegmentButton key={option} value={option}>
+              <IonLabel>{label}</IonLabel>
             </IonSegmentButton>
           ))}
         </IonSegment>
       </IonItem>
       <IonItem>
         <IonInput
-          label={UNITS.find((option) => option.value === unit)?.label}
+          label={unitLabel}
           type="number"
           inputmode="numeric"
           className="amount-input"
           value={shownAmount(exercise.target, unit)}
           onIonChange={(event) => changeAmount(event.detail.value)}
         />
+        <div slot="end">
+          <StepperButtons
+            canDecrease={currentAmount > step}
+            canIncrease={currentAmount < maxAmount(exercise.target)}
+            decreaseLabel={COMMON_COPY.decrease(unitLabel) + nameSuffix}
+            increaseLabel={COMMON_COPY.increase(unitLabel) + nameSuffix}
+            onDecrease={() => stepAmount(-1)}
+            onIncrease={() => stepAmount(1)}
+          />
+        </div>
       </IonItem>
       {showStartWeight && unit === 'reps' && (
         <IonItem>
@@ -170,6 +192,11 @@ export function ExerciseFields({ exercise, showStartWeight, onChange }: Props) {
             value={exercise.weight}
             onIonChange={(event) => changeWeight(event.detail.value)}
           />
+        </IonItem>
+      )}
+      {areas && (
+        <IonItem>
+          <BodyAreaPicker value={isUnnamed ? unnamedArea : areaOf(areas, exercise.name)} onChange={pickArea} />
         </IonItem>
       )}
       <IonItem>

@@ -21,12 +21,11 @@ function TargetText({ target }: { target: Target }) {
 }
 
 export function ItemLabel({ item, sectionSets }: { item: RoutineItem; sectionSets: number }) {
-  const ownSets = itemSets(item, sectionSets)
-
   return (
     <IonLabel>
       <h2>{itemTitle(item)}</h2>
       <p>
+        {`${setsLabel(itemSets(item, sectionSets))} · `}
         {item.exercises.map((exercise, index) => (
           <Fragment key={index}>
             {index > 0 && ' + '}
@@ -34,7 +33,6 @@ export function ItemLabel({ item, sectionSets }: { item: RoutineItem; sectionSet
             {exercise.weight !== null && ` · ${formatWeight(exercise.weight)}`}
           </Fragment>
         ))}
-        {ownSets !== sectionSets && ` · ${setsLabel(ownSets)}`}
       </p>
     </IonLabel>
   )

@@ -19,3 +19,6 @@ export async function savedWorkout(id: string): Promise<Workout | undefined> {
 
 export const firstSectionNames = async (id: string) =>
   (await savedWorkout(id))?.sections[0].items.map((item) => item.exercises[0].name)
+
+export const firstSectionRoutineNames = async (id: string) =>
+  (await db.routines.get(id))?.sections[0].items.map((item) => item.exercises.map((entry) => entry.name).join(' + '))

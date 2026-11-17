@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { WEIGHT_STEP, amountStep, stepValue, workoutProgress } from '../../src/domain/workoutEdits'
+import { WEIGHT_STEP, amountStep, stepValue, unitStep, workoutProgress } from '../../src/domain/workoutEdits'
 import { done, exercise, oct, open, reps, seconds, workout } from '../helpers/workouts'
 
 describe('workoutProgress', () => {
@@ -42,5 +42,11 @@ describe('step sizes', () => {
     expect(amountStep(reps(10))).toBe(1)
     expect(amountStep(seconds(900))).toBe(60)
     expect(amountStep(seconds(30))).toBe(15)
+  })
+
+  it('steps by the chosen unit, whatever the amount', () => {
+    expect(unitStep('reps')).toBe(1)
+    expect(unitStep('minutes')).toBe(60)
+    expect(unitStep('seconds')).toBe(15)
   })
 })

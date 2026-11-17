@@ -2,6 +2,15 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '4.2.0',
+    features: [
+      'לכל תרגיל מספר סטים משלו, ולחזרות ולזמן יש כפתורי פלוס ומינוס',
+      'בהוספת תרגיל אפשר לסמן כמה תרגילים ולהוסיף את כולם בבת אחת',
+      'אפשר להחליף תרגיל באחר בלי למחוק אותו',
+    ],
+    fixes: [],
+  },
+  {
     version: '4.1.2',
     features: [],
     fixes: [

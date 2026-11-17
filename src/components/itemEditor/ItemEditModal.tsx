@@ -35,12 +35,13 @@ interface Props {
   onChange: (id: string, change: Change<RoutineItem>) => void
   onDelete: (id: string) => void
   onAddAfter: (id: string) => void
+  onReplace: (id: string, exerciseIndex: number) => void
   onClose: () => void
 }
 
 type FormProps = Omit<Props, 'editing' | 'onClose'> & ItemInSection & { showStartWeight: boolean }
 
-function ItemForm({ item, sectionSets, showStartWeight, onChange, onDelete, onAddAfter }: FormProps) {
+function ItemForm({ item, sectionSets, showStartWeight, onChange, onDelete, onAddAfter, onReplace }: FormProps) {
   function changeExercise(index: number, change: Change<RoutineExercise>) {
     onChange(item.id, (current) => ({
       ...current,
@@ -52,14 +53,6 @@ function ItemForm({ item, sectionSets, showStartWeight, onChange, onDelete, onAd
 
   return (
     <>
-      {item.exercises.map((exercise, index) => (
-        <ExerciseFields
-          key={index}
-          exercise={exercise}
-          showStartWeight={showStartWeight}
-          onChange={(change) => changeExercise(index, change)}
-        />
-      ))}
       <IonList inset>
         <IonItem>
           <IonLabel>{COMMON_COPY.sets}</IonLabel>
@@ -72,6 +65,17 @@ function ItemForm({ item, sectionSets, showStartWeight, onChange, onDelete, onAd
             onChange={(sets) => onChange(item.id, (current) => withSets(current, sets, sectionSets))}
           />
         </IonItem>
+      </IonList>
+      {item.exercises.map((exercise, index) => (
+        <ExerciseFields
+          key={index}
+          exercise={exercise}
+          showStartWeight={showStartWeight}
+          onChange={(change) => changeExercise(index, change)}
+          onReplace={() => onReplace(item.id, index)}
+        />
+      ))}
+      <IonList inset>
         <IonItem>
           <IonToggle
             checked={item.exercises.length > 1}
