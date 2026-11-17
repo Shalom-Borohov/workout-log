@@ -21,9 +21,13 @@ function renderFixture() {
   return { text, button }
 }
 
-function touchAt(target: Element, clientX: number) {
+function touchAt(target: Element, clientX: number, heldClientX?: number) {
+  const landed = { clientX }
   const touch = new Event('touchstart', { bubbles: true, cancelable: true, composed: true })
-  Object.defineProperty(touch, 'touches', { value: [{ clientX }] })
+  const onScreen = heldClientX === undefined ? [landed] : [{ clientX: heldClientX }, landed]
+
+  Object.defineProperty(touch, 'touches', { value: onScreen })
+  Object.defineProperty(touch, 'changedTouches', { value: [landed] })
   target.dispatchEvent(touch)
 
   return touch
@@ -59,6 +63,33 @@ describe('blocking the iPhone’s own edge swipe', () => {
     expect(touchAt(text, SCREEN_WIDTH - OUTSIDE_EDGE).defaultPrevented).toBe(false)
   })
 
+  it('blocks a second finger that lands at the edge while the first is held mid-screen', () => {
+    const { text } = renderFixture()
+    release = blockSystemEdgeSwipe(document)
+
+    expect(touchAt(text, SCREEN_WIDTH - INSIDE_EDGE, SCREEN_WIDTH / 2).defaultPrevented).toBe(true)
+  })
+
+  it('blocks two fingers landing together when one of them is at the edge', () => {
+    const { text } = renderFixture()
+    release = blockSystemEdgeSwipe(document)
+    const fingers = [{ clientX: SCREEN_WIDTH / 2 }, { clientX: SCREEN_WIDTH - INSIDE_EDGE }]
+    const touch = new Event('touchstart', { bubbles: true, cancelable: true, composed: true })
+
+    Object.defineProperty(touch, 'touches', { value: fingers })
+    Object.defineProperty(touch, 'changedTouches', { value: fingers })
+    text.dispatchEvent(touch)
+
+    expect(touch.defaultPrevented).toBe(true)
+  })
+
+  it('leaves a second finger mid-screen alone while the first is held at the edge', () => {
+    const { text } = renderFixture()
+    release = blockSystemEdgeSwipe(document)
+
+    expect(touchAt(text, SCREEN_WIDTH / 2, SCREEN_WIDTH - INSIDE_EDGE).defaultPrevented).toBe(false)
+  })
+
   it('keeps taps on a button at the edge working', () => {
     const { button } = renderFixture()
     release = blockSystemEdgeSwipe(document)
@@ -66,7 +97,7 @@ describe('blocking the iPhone’s own edge swipe', () => {
     expect(touchAt(button, SCREEN_WIDTH - INSIDE_EDGE).defaultPrevented).toBe(false)
   })
 
-  it('keeps taps on a sheet’s backdrop at the edge working', () => {
+  it('blocks an edge touch on an overlay’s backdrop, so the page can’t move under it', () => {
     renderFixture()
     const sheet = document.createElement('div')
     const backdrop = document.createElement('ion-backdrop')
@@ -74,7 +105,7 @@ describe('blocking the iPhone’s own edge swipe', () => {
     document.body.append(sheet)
     release = blockSystemEdgeSwipe(document)
 
-    expect(touchAt(backdrop, INSIDE_EDGE).defaultPrevented).toBe(false)
+    expect(touchAt(backdrop, INSIDE_EDGE).defaultPrevented).toBe(true)
   })
 
   it('stops blocking once released', () => {
