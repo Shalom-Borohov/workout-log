@@ -7,3 +7,10 @@ export function mockShare() {
 
   return share
 }
+
+export async function sharedFileText(share: ReturnType<typeof mockShare>) {
+  const [data] = share.mock.calls[0]
+  const [file] = data.files ?? []
+
+  return file.text()
+}
