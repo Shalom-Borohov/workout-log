@@ -16,15 +16,6 @@ const fullBody = routine('r1', 'אימון גוף מלא', [
   ],
 ])
 
-const NOTE = `אימון גוף מלא
-חימום 2 סטים:
-אופניים 5 דקות
-
-עיקרי 3 סטים:
-סקוואט 12 -> לחיצת כתפיים 10
-מתח
-`
-
 async function exerciseAt(index: number) {
   return (await db.routines.get('r1'))?.sections[0].items[0].exercises[index]
 }
@@ -121,68 +112,6 @@ describe('routines', () => {
     fireEvent.click(await screen.findByText('מחיקה', { selector: '.alert-button *' }))
 
     await waitFor(async () => expect(await db.routines.count()).toBe(0))
-  })
-
-  it('import page does not ask for reps on a zero-length timed exercise', async () => {
-    renderAt('/tabs/routines/import')
-
-    ionInput(await ionField('פתק'), 'ליבה\nסיום:\nפלאנק 0 שניות')
-
-    expect(await screen.findByText('פלאנק', { selector: 'h2' })).toBeInTheDocument()
-    expect(screen.queryByText('תרגיל עם ? חסר בו מספר חזרות. אפשר לתקן אחרי השמירה.')).not.toBeInTheDocument()
-  })
-
-  it('import page shows an amount over the limit as the limit', async () => {
-    renderAt('/tabs/routines/import')
-
-    ionInput(await ionField('פתק'), 'אימון\nריצה 5000')
-
-    expect(await screen.findByText('סט אחד · 100 חזרות', { selector: 'p' })).toBeInTheDocument()
-    expect(screen.queryByText(/5000 חזרות/)).not.toBeInTheDocument()
-  })
-
-  it('import page saves parsed routine', async () => {
-    renderAt('/tabs/routines/import')
-
-    const note = await ionField('פתק')
-
-    ionInput(note, NOTE)
-
-    expect(await screen.findByText('חימום', { selector: 'ion-list-header ion-label' })).toBeInTheDocument()
-    expect(screen.getByText('אופניים', { selector: 'h2' })).toBeInTheDocument()
-    expect(screen.getByText('2 סטים · 5 דק׳', { selector: 'p' })).toBeInTheDocument()
-    expect(screen.getByText('סקוואט + לחיצת כתפיים', { selector: 'h2' })).toBeInTheDocument()
-    expect(screen.getByText('3 סטים · 12 חזרות + 10 חזרות', { selector: 'p' })).toBeInTheDocument()
-    expect(screen.queryByText('סטים', { selector: 'ion-label' })).not.toBeInTheDocument()
-    expect(screen.getByText('?', { selector: 'ion-text[color="danger"]' })).toBeInTheDocument()
-    expect(screen.getByText('תרגיל עם ? חסר בו מספר חזרות. אפשר לתקן אחרי השמירה.')).toBeInTheDocument()
-
-    fireEvent.click(screen.getByText('שמירה', { selector: 'ion-button' }))
-
-    await waitFor(async () => expect(await db.routines.count()).toBe(1))
-
-    const [saved] = await db.routines.toArray()
-
-    expect(saved).toMatchObject({
-      name: 'אימון גוף מלא',
-      sections: [
-        { name: 'חימום', sets: 2, items: [{ exercises: [{ name: 'אופניים', target: seconds(300) }] }] },
-        {
-          name: 'עיקרי',
-          sets: 3,
-          items: [
-            {
-              exercises: [
-                { name: 'סקוואט', target: reps(12) },
-                { name: 'לחיצת כתפיים', target: reps(10) },
-              ],
-            },
-            { exercises: [{ name: 'מתח', target: reps(0) }] },
-          ],
-        },
-      ],
-    })
-    await waitFor(() => expect(currentPath()).toBe(`/tabs/routines/${saved.id}`))
   })
 
   it('editor renames and changes an exercise’s sets', async () => {

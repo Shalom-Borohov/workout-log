@@ -2,6 +2,14 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '4.2.2',
+    features: [],
+    fixes: [
+      'בהדבקת פתק, ״1:30״, ״1.5 דקות״ ו־״3x12״ נקראים נכון',
+      'בהדבקת פתק, מספר לא ברור כמו ״8-10״ מסומן ב־? ולא נכנס לשם התרגיל',
+    ],
+  },
+  {
     version: '4.2.1',
     features: [],
     fixes: ['בעדכון האימון ובשמירה כאימון חדש, חלק שנשאר ריק שומר את מספר הסטים שלו'],
