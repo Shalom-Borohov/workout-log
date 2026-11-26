@@ -62,9 +62,15 @@ export interface WorkoutExercise {
   note: string
 }
 
+export interface ReplacedBy {
+  id: string
+  sets: number
+}
+
 export interface WorkoutItem {
   id: string
   exercises: WorkoutExercise[]
+  replacedBy?: ReplacedBy
 }
 
 export interface WorkoutSection {
