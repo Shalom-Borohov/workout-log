@@ -1,5 +1,6 @@
-import { type Backup, countBadRecords, exportBackup, parseBackup } from '../data/backup'
+import { type Backup, countBadRecords, exportBackup, exportRawBackup, parseBackup } from '../data/backup'
 import { markBackedUp } from '../data/backupStatus'
+import { db } from '../data/db'
 import { recordLastError } from '../data/lastError'
 import { isoDate } from '../domain/format'
 import { shareFailure, shareFile } from './shareFile'
@@ -28,24 +29,28 @@ export interface BackUpResult {
   badRecords: number
 }
 
+const saveBackupDate = (now: number) =>
+  markBackedUp(now).then(
+    () => false,
+    (error) => {
+      recordLastError(error)
+
+      return true
+    },
+  )
+
 export async function backUpStoredData(): Promise<BackUpResult> {
   const now = Date.now()
+  const databaseFailed = db.hasFailed()
   let badRecords = 0
 
   try {
-    const fileText = JSON.stringify(await exportBackup(now))
+    const fileText = JSON.stringify(databaseFailed ? await exportRawBackup(now) : await exportBackup(now))
 
     badRecords = countBadRecords(fileText)
     await shareFile(backupFileName(now), BACKUP_TYPE, fileText)
 
-    const dateNotSaved = await markBackedUp(now).then(
-      () => false,
-      (error) => {
-        recordLastError(error)
-
-        return true
-      },
-    )
+    const dateNotSaved = !databaseFailed && (await saveBackupDate(now))
 
     return { failure: null, dateNotSaved, badRecords }
   } catch (error) {
