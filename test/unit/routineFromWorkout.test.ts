@@ -95,6 +95,40 @@ describe('routineFromWorkout', () => {
     expect(routine.sections.map((section) => section.id)).toEqual(['n1', 'n2'])
     expect(routine.sections[1].items[0].exercises[0].weight).toBeNull()
   })
+
+  it('keeps the base routine’s set count for a section left empty', () => {
+    const emptied: Workout = { ...session, sections: [{ name: 'חימום', items: [] }, session.sections[1]] }
+
+    const twoSetWarmUp: Routine = { ...base, sections: [{ ...base.sections[0], sets: 2, items: [] }] }
+
+    expect(routineFromWorkout(emptied, twoSetWarmUp, counter(), 900).sections[0].sets).toBe(2)
+  })
+
+  it('falls back to 3 sets for an empty section with no counterpart in the base routine', () => {
+    const emptyCoolDown: Workout = { ...session, sections: [...session.sections, { name: 'סיום', items: [] }] }
+
+    expect(routineFromWorkout(emptyCoolDown, base, counter(), 900).sections[2].sets).toBe(3)
+  })
+
+  it('matches an empty section to its own routine section after an earlier section was deleted', () => {
+    const afterDeletedWarmUp: Workout = { ...session, sections: [session.sections[1], { name: 'סיום', items: [] }] }
+
+    const threeSections: Routine = {
+      ...base,
+      sections: [
+        base.sections[0],
+        { id: 's2', name: 'עיקרי', sets: 4, items: [] },
+        { id: 's3', name: 'סיום', sets: 2, items: [] },
+      ],
+    }
+
+    const sections = routineFromWorkout(afterDeletedWarmUp, threeSections, counter(), 900).sections
+
+    expect(sections.map(({ id, sets }) => [id, sets])).toEqual([
+      ['s2', 3],
+      ['s3', 2],
+    ])
+  })
 })
 
 describe('matchesRoutine', () => {
