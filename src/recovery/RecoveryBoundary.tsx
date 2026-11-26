@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from 'react'
+import { db } from '../data/db'
 import { recordLastError } from '../data/lastError'
 import { RecoveryScreen } from './RecoveryScreen'
 
@@ -11,6 +12,13 @@ export class RecoveryBoundary extends Component<RecoveryBoundaryProps, { failed:
 
   static getDerivedStateFromError() {
     return { failed: true }
+  }
+
+  componentDidMount() {
+    db.open().catch((error: unknown) => {
+      recordLastError(error)
+      this.setState({ failed: true })
+    })
   }
 
   componentDidCatch(error: unknown) {

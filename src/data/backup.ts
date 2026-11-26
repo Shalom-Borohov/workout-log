@@ -5,6 +5,7 @@ import { dailyLogId } from '../domain/daily'
 import { isDrillColor } from '../domain/drillColors'
 import type { ActivityDetails, DailyExercise, DataSnapshot, ExerciseArea, ReplacedBy, SetLog, Target } from '../domain/types'
 import { isNumber, isObject, isString } from './guards'
+import { readRawStoredData, type StoredLists } from './rawStoredData'
 import { readStoredData } from './storedData'
 import {
   carryNotesForward,
@@ -200,12 +201,16 @@ export async function exportBackup(now: number): Promise<Backup> {
   return { version: BACKUP_VERSION, exportedAt: now, ...(await readStoredData()) }
 }
 
+type RawBackup = Pick<Backup, 'version' | 'exportedAt'> & StoredLists
+
+export async function exportRawBackup(now: number): Promise<RawBackup> {
+  return { version: BACKUP_VERSION, exportedAt: now, ...(await readRawStoredData()) }
+}
+
 const countFailing = (guard: (value: unknown) => boolean, records: unknown[]) =>
   records.filter((record) => !guard(record)).length
 
-type ExportedLists = Record<'routines' | 'workouts' | 'dailyLogs' | 'exerciseAreas' | 'activityDetails', unknown[]>
-
-const isExportedLists = (json: unknown): json is ExportedLists =>
+const isExportedLists = (json: unknown): json is StoredLists =>
   isObject(json) &&
   [json.routines, json.workouts, json.dailyLogs, json.exerciseAreas, json.activityDetails].every((list) => Array.isArray(list))
 

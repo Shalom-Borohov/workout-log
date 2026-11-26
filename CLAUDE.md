@@ -31,7 +31,7 @@ Code is in three layers, and dependencies point downward only:
   - `progress.ts`: workout start/prefill, history, ↑/★ changes.
   - `workoutEdits.ts`: set and skip edits on a workout, plus navigation helpers.
   - `workoutStructure.ts`: adding, inserting, moving, editing and removing exercises in a workout, without touching its routine.
-  - `workoutReplace.ts`: "החלפת תרגיל" in a workout, which splits an exercise with ticked sets and marks the ticked part (`replacedBy`, spec item 116).
+  - `workoutReplace.ts`: "החלפת תרגיל" in a workout, which splits an exercise with ticked sets and marks the ticked part (`replacedBy`, spec item 117).
   - `routineEdit.ts`: routine editor operations.
   - `routineFromWorkout.ts`: an edited workout → routine (for "עדכון"/"שמירה כאימון חדש" at סיום), and `matchesRoutine` for whether to offer it.
   - `timeline.ts`: week grouping.
@@ -43,9 +43,10 @@ Code is in three layers, and dependencies point downward only:
   - `repo.ts`: thin write and query functions.
   - `hooks.ts`: `useLiveQuery` hooks the pages read from.
   - `backup.ts`: backup export/import, with hand-written type guards for the JSON.
+  - `rawStoredData.ts`: reads the stored tables with plain IndexedDB, around Dexie, for the export when the database failed to open (spec item 115).
 - `src/pages/<feature>/` (`live`, `routines`, `timeline`, `daily`, `exercises`, `settings`): grouped by feature. Each folder holds that screen's components, hooks, CSS and copy, and features don't import from each other.
 - Shared UI goes in `src/components/`, `src/hooks/`, `src/navigation/` and `src/copy/`. Move code there only once a second feature needs it.
-- `src/recovery/`: an error boundary above `IonApp`, and a plain screen with no Ionic and no router that can still export a backup (spec item 53).
+- `src/recovery/`: an error boundary above `IonApp`, and a plain screen with no Ionic and no router that can still export a backup (spec item 53). The boundary also shows it when the database fails to open, since live queries never report that (spec item 115).
 - `src/appUpdate/`: the update bar, the "מה חדש" sheet and `changelog.ts`, rendered by `Tabs.tsx` and Settings.
 - `src/rest/`: the rest timer's app-level clock and its sound. `Tabs.tsx` mounts it (`RestClock`), so a rest keeps running and rings on any tab. The running rest is saved in localStorage (`src/data/runningRest.ts`), and the clock re-syncs from it when the app returns from the background. It stops itself when the active workout is finished, deleted or done.
 
@@ -87,7 +88,8 @@ Schema changes:
 
 - The data lives only on the phone, so schema changes must be additive.
 - Add a new `this.version(n)` in `db.ts`, with an `.upgrade()` callback that fills defaults through `migrate.ts`.
-- Make the guards in `backup.ts` accept the legacy shape, so old backup files still import.
+- The upgrade leaves a record that fails the guards in `backup.ts` as stored and upgrades the rest (spec item 115). Test it with a seeded bad record.
+- Make the guards in `backup.ts` accept the legacy shape, so old backup files still import. If the backup version goes up, label `exportRawBackup`'s file with the version that matches the stored shape (spec item 115).
 - Upgrade the restore undo copy too (the `restoreCopy` row in `settings`, `src/data/restore.ts`). It holds whole tables, and an undo writes them back as they are.
 - Cover both with a test that opens a database in the previous version (see `test/unit/migrate.test.ts`).
 
