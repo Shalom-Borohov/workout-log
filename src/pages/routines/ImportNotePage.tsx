@@ -21,7 +21,7 @@ import { ROUTINES_COPY } from './copy'
 import { saveRoutine } from '../../data/repo'
 import { parseNote } from '../../domain/parseNote'
 import { createRoutine } from '../../domain/routineEdit'
-import { exercisesOf } from '../../domain/progress'
+import { exercisesOf, targetAmount } from '../../domain/progress'
 import { useSave } from '../../hooks/useSave'
 import { ROUTINES_PATH, routinePath } from '../../navigation/paths'
 import { NotePreview } from './NotePreview'
@@ -35,9 +35,7 @@ export function ImportNotePage() {
   const [text, setText] = useState('')
   const parsed = useMemo(() => parseNote(text, newId), [text])
 
-  const missingReps = exercisesOf(parsed).some(
-    (exercise) => exercise.target.kind === 'reps' && exercise.target.reps === 0,
-  )
+  const unclearAmount = exercisesOf(parsed).some((exercise) => targetAmount(exercise.target) === 0)
 
   async function saveParsed() {
     const id = newId()
@@ -87,7 +85,7 @@ export function ImportNotePage() {
               </IonItem>
             </IonList>
             <IonNote className="list-footer">
-              {missingReps ? ROUTINES_COPY.missingRepsHint : ROUTINES_COPY.checkResultHint}
+              {unclearAmount ? ROUTINES_COPY.unclearAmountHint : ROUTINES_COPY.checkResultHint}
             </IonNote>
             <NotePreview sections={parsed.sections} />
           </>
