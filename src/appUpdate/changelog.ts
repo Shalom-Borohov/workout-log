@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '4.2.1',
+    features: [],
+    fixes: ['בעדכון האימון ובשמירה כאימון חדש, חלק שנשאר ריק שומר את מספר הסטים שלו'],
+  },
+  {
     version: '4.2.0',
     features: [
       'לכל תרגיל מספר סטים משלו, ולחזרות ולזמן יש כפתורי פלוס ומינוס',

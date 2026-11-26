@@ -16,13 +16,13 @@ export function setCount(item: WorkoutItem): number {
   return Math.max(...item.exercises.map((exercise) => exercise.sets.length))
 }
 
-export function commonSets(section: WorkoutSection): number {
+export function commonSets(section: WorkoutSection, emptyCount = DEFAULT_SETS): number {
   const counts = section.items.map(setCount)
   const frequency = (count: number) => counts.filter((other) => other === count).length
 
   return counts.reduce<number>(
     (best, count) => (frequency(count) > frequency(best) ? count : best),
-    counts.length > 0 ? counts[0] : DEFAULT_SETS,
+    counts.length > 0 ? counts[0] : emptyCount,
   )
 }
 
