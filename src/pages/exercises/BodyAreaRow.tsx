@@ -6,7 +6,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonModal,
   IonNote,
   IonTitle,
   IonToolbar,
@@ -14,6 +13,7 @@ import {
 import { useState } from 'react'
 import { BodyAreaIcon } from '../../components/bodyArea/BodyAreaIcon'
 import { BodyAreaPicker } from '../../components/bodyArea/BodyAreaPicker'
+import { NamedModal } from '../../components/NamedModal'
 import { HALF_SHEET } from '../../components/sheet'
 import { BODY_AREA_COPY } from '../../copy/bodyAreas'
 import { COMMON_COPY } from '../../copy/common'
@@ -49,7 +49,7 @@ export function BodyAreaRow({ name }: { name: string }) {
           </IonNote>
         </IonItem>
       </IonList>
-      <IonModal isOpen={isOpen} onDidDismiss={() => setIsOpen(false)} {...HALF_SHEET}>
+      <NamedModal label={BODY_AREA_COPY.label} isOpen={isOpen} onDidDismiss={() => setIsOpen(false)} {...HALF_SHEET}>
         <IonHeader>
           <IonToolbar>
             <IonTitle>{BODY_AREA_COPY.label}</IonTitle>
@@ -65,7 +65,7 @@ export function BodyAreaRow({ name }: { name: string }) {
             </IonItem>
           </IonList>
         </IonContent>
-      </IonModal>
+      </NamedModal>
     </>
   )
 }

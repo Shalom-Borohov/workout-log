@@ -1,5 +1,6 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonList, IonModal, IonTitle, IonToolbar } from '@ionic/react'
+import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonList, IonTitle, IonToolbar } from '@ionic/react'
 import { useMemo, useState } from 'react'
+import { NamedModal } from '../../components/NamedModal'
 import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
 import { useFinishedRecords } from '../../data/hooks'
@@ -18,6 +19,8 @@ interface FormProps {
   activity: Activity | null
   onClose: () => void
 }
+
+const activityTitle = (activity: Activity | null) => (activity ? TIMELINE_COPY.editActivity : TIMELINE_COPY.otherActivity)
 
 function ActivityForm({ activity, onClose }: FormProps) {
   const now = useNow(MINUTE_MS)
@@ -51,7 +54,7 @@ function ActivityForm({ activity, onClose }: FormProps) {
           <IonButtons slot="start">
             <IonButton onClick={onClose}>{COMMON_COPY.cancel}</IonButton>
           </IonButtons>
-          <IonTitle>{activity ? TIMELINE_COPY.editActivity : TIMELINE_COPY.otherActivity}</IonTitle>
+          <IonTitle>{activityTitle(activity)}</IonTitle>
           <IonButtons slot="end">
             <IonButton strong disabled={!valid} onClick={() => void saveActivity()}>
               {COMMON_COPY.save}
@@ -90,8 +93,8 @@ function ActivityForm({ activity, onClose }: FormProps) {
 
 export function ActivityModal({ isOpen, activity, onClose }: FormProps & { isOpen: boolean }) {
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose}>
+    <NamedModal label={activityTitle(activity)} isOpen={isOpen} onDidDismiss={onClose}>
       <ActivityForm activity={activity} onClose={onClose} />
-    </IonModal>
+    </NamedModal>
   )
 }

@@ -1,6 +1,7 @@
-import { IonContent, IonItem, IonList, IonModal, IonTextarea } from '@ionic/react'
+import { IonContent, IonItem, IonList, IonTextarea } from '@ionic/react'
 import { type ReactNode, useState } from 'react'
 import { DurationMinutesItem } from '../../components/DurationMinutesItem'
+import { NamedModal } from '../../components/NamedModal'
 import { FULL_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
 import { finishMinutes, isClockPastLimit, MAX_DURATION_MINUTES } from '../../domain/pastTime'
@@ -11,6 +12,8 @@ import { useNow } from '../../hooks/useNow'
 import { SheetHeader } from './SheetHeader'
 
 export type SheetMode = 'finish' | 'summary'
+
+const sheetTitle = (mode: SheetMode) => (mode === 'finish' ? COMMON_COPY.workoutSummary : COMMON_COPY.summary)
 
 type FinishFormProps = {
   mode: SheetMode
@@ -53,7 +56,7 @@ function FinishForm({ mode, initialSummary, startedAt, onCancel, onSave, onDelet
   return (
     <>
       <SheetHeader
-        title={mode === 'finish' ? COMMON_COPY.workoutSummary : COMMON_COPY.summary}
+        title={sheetTitle(mode)}
         onCancel={onCancel}
         onSave={() => onSave(summary.trim(), showDuration ? finishMinutes(duration) : null)}
       />
@@ -88,8 +91,8 @@ export function FinishSheet({ mode, ...form }: FinishSheetProps) {
   }
 
   return (
-    <IonModal isOpen={mode !== null} onDidDismiss={form.onCancel} {...FULL_SHEET}>
+    <NamedModal label={sheetTitle(shown)} isOpen={mode !== null} onDidDismiss={form.onCancel} {...FULL_SHEET}>
       <FinishForm mode={shown} {...form} />
-    </IonModal>
+    </NamedModal>
   )
 }

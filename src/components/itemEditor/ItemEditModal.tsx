@@ -7,7 +7,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonModal,
   IonTitle,
   IonToggle,
   IonToolbar,
@@ -26,6 +25,7 @@ import {
   setPair,
   withSets,
 } from '../../domain/routineEdit'
+import { NamedModal } from '../NamedModal'
 import { FULL_SHEET } from '../sheet'
 import { Stepper } from '../Stepper'
 
@@ -102,7 +102,7 @@ function ItemForm({ item, sectionSets, showStartWeight, onChange, onDelete, onAd
 
 export function ItemEditModal({ editing, showStartWeight = true, onClose, ...handlers }: Props) {
   return (
-    <IonModal isOpen={editing !== undefined} onDidDismiss={onClose} {...FULL_SHEET}>
+    <NamedModal label={ITEM_EDITOR_COPY.editExercise} isOpen={editing !== undefined} onDidDismiss={onClose} {...FULL_SHEET}>
       <IonHeader>
         <IonToolbar>
           <IonTitle>{ITEM_EDITOR_COPY.editExercise}</IonTitle>
@@ -118,6 +118,6 @@ export function ItemEditModal({ editing, showStartWeight = true, onClose, ...han
           <ItemForm {...editing} {...handlers} showStartWeight={showStartWeight} />
         )}
       </IonContent>
-    </IonModal>
+    </NamedModal>
   )
 }

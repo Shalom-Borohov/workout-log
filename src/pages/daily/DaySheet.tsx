@@ -6,12 +6,12 @@ import {
   IonLabel,
   IonList,
   IonListHeader,
-  IonModal,
   IonTitle,
   IonToolbar,
   useIonRouter,
 } from '@ionic/react'
 import { useRef } from 'react'
+import { NamedModal } from '../../components/NamedModal'
 import { HALF_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
 import { findDailyLog } from '../../domain/daily'
@@ -34,52 +34,53 @@ interface DaySheetProps {
 export function DaySheet({ day, routines, logs, records, onClose }: DaySheetProps) {
   const modal = useRef<HTMLIonModalElement>(null)
   const router = useIonRouter()
-  const drills = day ? sheetDrills(routines, logs, day.date) : []
-  const dayRecords = day ? recordsOn(records, day.date) : []
 
   async function openRecord(id: string) {
     await modal.current?.dismiss()
     router.push(workoutDetailPath(DAILY_PATH, id))
   }
 
+  if (day === null) {
+    return null
+  }
+  const title = formatDay(day.day)
+  const drills = sheetDrills(routines, logs, day.date)
+  const dayRecords = recordsOn(records, day.date)
+
   return (
-    <IonModal ref={modal} isOpen={day !== null} onDidDismiss={onClose} {...HALF_SHEET}>
-      {day && (
-        <>
-          <IonHeader>
-            <IonToolbar>
-              <IonTitle>{formatDay(day.day)}</IonTitle>
-              <IonButtons slot="end">
-                <IonButton onClick={() => void modal.current?.dismiss()}>{COMMON_COPY.close}</IonButton>
-              </IonButtons>
-            </IonToolbar>
-          </IonHeader>
-          <IonContent>
-            {drills.length > 0 && (
-              <IonList inset>
-                {drills.map((routine) => (
-                  <DayDrillRow
-                    key={routine.id}
-                    routine={routine}
-                    day={day}
-                    log={findDailyLog(logs, routine.id, day.date)}
-                  />
-                ))}
-              </IonList>
-            )}
-            {dayRecords.length > 0 && (
-              <IonList inset>
-                <IonListHeader>
-                  <IonLabel>{DAILY_COPY.records}</IonLabel>
-                </IonListHeader>
-                {dayRecords.map((record) => (
-                  <DayRecordRow key={record.id} record={record} onOpen={() => void openRecord(record.id)} />
-                ))}
-              </IonList>
-            )}
-          </IonContent>
-        </>
-      )}
-    </IonModal>
+    <NamedModal label={title} ref={modal} isOpen onDidDismiss={onClose} {...HALF_SHEET}>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>{title}</IonTitle>
+          <IonButtons slot="end">
+            <IonButton onClick={() => void modal.current?.dismiss()}>{COMMON_COPY.close}</IonButton>
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent>
+        {drills.length > 0 && (
+          <IonList inset>
+            {drills.map((routine) => (
+              <DayDrillRow
+                key={routine.id}
+                routine={routine}
+                day={day}
+                log={findDailyLog(logs, routine.id, day.date)}
+              />
+            ))}
+          </IonList>
+        )}
+        {dayRecords.length > 0 && (
+          <IonList inset>
+            <IonListHeader>
+              <IonLabel>{DAILY_COPY.records}</IonLabel>
+            </IonListHeader>
+            {dayRecords.map((record) => (
+              <DayRecordRow key={record.id} record={record} onOpen={() => void openRecord(record.id)} />
+            ))}
+          </IonList>
+        )}
+      </IonContent>
+    </NamedModal>
   )
 }

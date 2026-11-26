@@ -4,6 +4,24 @@
   "ignorePatterns": [".claude/**"],
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@ionic/react",
+            "importNames": ["IonModal"],
+            "message": "Use NamedModal from src/components/NamedModal, so VoiceOver announces the sheet by name."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/components/NamedModal.tsx"],
+      "rules": { "no-restricted-imports": "off" }
+    }
+  ]
 }

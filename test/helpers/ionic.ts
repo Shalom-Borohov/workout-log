@@ -40,6 +40,8 @@ export const alertPresented = () => presented('ionAlertDidPresent')
 
 export const modalPresented = () => presented('ionModalDidPresent')
 
+export const dialogName = (modal: Element) => modal.shadowRoot?.querySelector('[role="dialog"]')?.getAttribute('aria-label')
+
 export const toasts = () => Array.from(document.querySelectorAll('ion-toast'), (toast) => toast.message)
 
 export function ionElement(selector: string, scope = VISIBLE_PAGE) {

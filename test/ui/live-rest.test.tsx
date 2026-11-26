@@ -1,9 +1,11 @@
 import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { timer, timerOutline } from 'ionicons/icons'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { saveWorkout } from '../../src/data/repo'
 import { freezeDate } from '../helpers/clock'
 import { resetDb } from '../helpers/db'
+import { iconOf } from '../helpers/icons'
 import { ionElement } from '../helpers/ionic'
 import { cardButton, heading, openRest, restButton, spyPlayed, tickSquat as tick } from '../helpers/live'
 import { renderAt } from '../helpers/renderAt'
@@ -41,6 +43,7 @@ describe('live rest timer', () => {
     await tick(user, 1)
 
     expect(screen.queryByRole('timer')).not.toBeInTheDocument()
+    expect(iconOf(await ionElement('ion-button.rest-button'))).toBe(timerOutline)
     await openRest(user)
 
     expect(screen.getByRole('timer')).toHaveTextContent('1:00')
@@ -78,6 +81,7 @@ describe('live rest timer', () => {
 
     expect(played.at(-1)).toBe(false)
     expect(await ionElement('ion-button.rest-button.rest-ended')).toBeInTheDocument()
+    expect(iconOf(await ionElement('ion-button.rest-button'))).toBe(timer)
   })
 
   it('stays quiet when the rest ended while the app was in the background', async () => {

@@ -7,7 +7,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonModal,
   IonNote,
   IonSegment,
   IonSegmentButton,
@@ -18,6 +17,7 @@ import {
 } from '@ionic/react'
 import { chatbubbleEllipsesOutline } from 'ionicons/icons'
 import { useState } from 'react'
+import { NamedModal } from '../../components/NamedModal'
 import { TOAST_OPTIONS } from '../../components/toast'
 import { COMMON_COPY } from '../../copy/common'
 import { ignoreTapsFor } from '../../navigation/tapGuard'
@@ -108,9 +108,9 @@ export function FeedbackSettings() {
           <IonLabel>{SETTINGS_COPY.reportBugOrIdea}</IonLabel>
         </IonItem>
       </IonList>
-      <IonModal isOpen={open} onDidDismiss={() => setOpen(false)}>
+      <NamedModal label={SETTINGS_COPY.report} isOpen={open} onDidDismiss={() => setOpen(false)}>
         <FeedbackForm onClose={() => setOpen(false)} />
-      </IonModal>
+      </NamedModal>
     </>
   )
 }
