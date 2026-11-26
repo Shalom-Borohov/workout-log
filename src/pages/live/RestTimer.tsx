@@ -1,5 +1,5 @@
 import { IonButton, IonIcon, IonToolbar } from '@ionic/react'
-import { add, remove, timerOutline, volumeHighOutline, volumeMuteOutline } from 'ionicons/icons'
+import { add, remove, timer, timerOutline, volumeHighOutline, volumeMuteOutline } from 'ionicons/icons'
 import { COMMON_COPY } from '../../copy/common'
 import { formatClock } from '../../domain/format'
 import { MIN_REST_SECONDS } from '../../domain/rest'
@@ -16,7 +16,7 @@ export function RestButton({ rest, onToggle }: { rest: Rest; onToggle: () => voi
       aria-label={rest.ended ? LIVE_COPY.restOver : LIVE_COPY.rest}
       onClick={onToggle}
     >
-      <IonIcon slot="icon-only" icon={timerOutline} aria-hidden="true" />
+      <IonIcon slot="icon-only" icon={rest.ended ? timer : timerOutline} aria-hidden="true" />
     </IonButton>
   )
 }

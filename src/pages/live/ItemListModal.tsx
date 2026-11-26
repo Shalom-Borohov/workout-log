@@ -1,5 +1,6 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar } from '@ionic/react'
+import { IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/react'
 import { useState } from 'react'
+import { NamedModal } from '../../components/NamedModal'
 import { HALF_SHEET } from '../../components/sheet'
 import { COMMON_COPY } from '../../copy/common'
 import type { Workout } from '../../domain/types'
@@ -35,7 +36,7 @@ export function ItemListModal({ mode, workout, current, editor, onSelect, onEdit
   }
 
   return (
-    <IonModal isOpen={mode !== null} onDidDismiss={close} {...HALF_SHEET}>
+    <NamedModal label={COMMON_COPY.exercises} isOpen={mode !== null} onDidDismiss={close} {...HALF_SHEET}>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
@@ -68,6 +69,6 @@ export function ItemListModal({ mode, workout, current, editor, onSelect, onEdit
         ))}
         {editing && <RoutineActions workout={workout} onEdit={onEdit} />}
       </IonContent>
-    </IonModal>
+    </NamedModal>
   )
 }
