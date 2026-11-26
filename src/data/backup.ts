@@ -3,7 +3,7 @@ import { AppError } from '../domain/appError'
 import { isBodyArea } from '../domain/bodyAreas'
 import { dailyLogId } from '../domain/daily'
 import { isDrillColor } from '../domain/drillColors'
-import type { ActivityDetails, DailyExercise, DataSnapshot, ExerciseArea, SetLog, Target } from '../domain/types'
+import type { ActivityDetails, DailyExercise, DataSnapshot, ExerciseArea, ReplacedBy, SetLog, Target } from '../domain/types'
 import { isNumber, isObject, isString } from './guards'
 import { readStoredData } from './storedData'
 import {
@@ -116,8 +116,11 @@ const isWorkoutExercise = (exercise: unknown): exercise is LegacyWorkoutExercise
   optional(isString)(exercise.tip) &&
   optional(isString)(exercise.note)
 
+const isReplacedBy = (replacedBy: unknown): replacedBy is ReplacedBy =>
+  isObject(replacedBy) && isString(replacedBy.id) && isNumber(replacedBy.sets)
+
 const isWorkoutItem = (item: unknown): item is LegacyWorkoutItem =>
-  isObject(item) && isString(item.id) && arrayOf(isWorkoutExercise)(item.exercises)
+  isObject(item) && isString(item.id) && arrayOf(isWorkoutExercise)(item.exercises) && optional(isReplacedBy)(item.replacedBy)
 
 const isWorkoutSection = (section: unknown): section is LegacyWorkoutSection =>
   isObject(section) && isString(section.name) && arrayOf(isWorkoutItem)(section.items)

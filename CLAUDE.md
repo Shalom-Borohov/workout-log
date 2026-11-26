@@ -31,6 +31,7 @@ Code is in three layers, and dependencies point downward only:
   - `progress.ts`: workout start/prefill, history, ↑/★ changes.
   - `workoutEdits.ts`: set and skip edits on a workout, plus navigation helpers.
   - `workoutStructure.ts`: adding, inserting, moving, editing and removing exercises in a workout, without touching its routine.
+  - `workoutReplace.ts`: "החלפת תרגיל" in a workout, which splits an exercise with ticked sets and marks the ticked part (`replacedBy`, spec item 116).
   - `routineEdit.ts`: routine editor operations.
   - `routineFromWorkout.ts`: an edited workout → routine (for "עדכון"/"שמירה כאימון חדש" at סיום), and `matchesRoutine` for whether to offer it.
   - `timeline.ts`: week grouping.

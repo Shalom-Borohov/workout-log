@@ -3,7 +3,7 @@ import { useConfirmDelete } from '../../hooks/useConfirmDelete'
 import { LIVE_COPY } from './copy'
 import { NO_HISTORY, type PreviousExerciseLookup } from '../../domain/progress'
 import type { Change } from '../../domain/routineEdit'
-import type { RoutineItem, Workout } from '../../domain/types'
+import type { RoutineExercise, RoutineItem, Workout } from '../../domain/types'
 import { hasTickedSet } from '../../domain/workoutEdits'
 import {
   addItems,
@@ -14,6 +14,7 @@ import {
   locateItem,
   removeItem,
 } from '../../domain/workoutStructure'
+import { replaceInWorkout } from '../../domain/workoutReplace'
 
 export type WorkoutEdit = (edit: (current: Workout) => Workout) => void
 
@@ -29,7 +30,7 @@ export function useOverviewEditor(workout: Workout, previous: PreviousExerciseLo
     )
   }
 
-  const flow = useItemEditorFlow<number>(insert, change)
+  const flow = useItemEditorFlow<number>(insert, change, replace)
 
   const located = flow.editingId === null ? undefined : locateItem(workout, flow.editingId)
 
@@ -40,6 +41,12 @@ export function useOverviewEditor(workout: Workout, previous: PreviousExerciseLo
 
   function change(id: string, edit: Change<RoutineItem>) {
     onEdit((current) => editItem(current, id, edit, previousExercises))
+  }
+
+  function replace(id: string, exerciseIndex: number, exercise: RoutineExercise) {
+    const donePartId = crypto.randomUUID()
+
+    onEdit((current) => replaceInWorkout(current, id, exerciseIndex, exercise, previousExercises, donePartId))
   }
 
   function removeNow(id: string) {

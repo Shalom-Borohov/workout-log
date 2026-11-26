@@ -2,6 +2,11 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '4.2.2',
+    features: [],
+    fixes: ['החלפת תרגיל אחרי סטים מסומנים משאירה אותם בתרגיל הקודם, והתרגיל החדש מתחיל אחריו עם הסטים שנשארו'],
+  },
+  {
     version: '4.2.1',
     features: [],
     fixes: ['בעדכון האימון ובשמירה כאימון חדש, חלק שנשאר ריק שומר את מספר הסטים שלו'],

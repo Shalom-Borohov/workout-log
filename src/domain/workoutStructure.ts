@@ -16,8 +16,14 @@ export function setCount(item: WorkoutItem): number {
   return Math.max(...item.exercises.map((exercise) => exercise.sets.length))
 }
 
+export function plannedCount(items: WorkoutItem[], item: WorkoutItem): number {
+  const leftover = items.find((other) => other.replacedBy?.id === item.id)
+
+  return leftover?.replacedBy ? leftover.replacedBy.sets : setCount(item)
+}
+
 export function commonSets(section: WorkoutSection, emptyCount = DEFAULT_SETS): number {
-  const counts = section.items.map(setCount)
+  const counts = section.items.filter((item) => !item.replacedBy).map((item) => plannedCount(section.items, item))
   const frequency = (count: number) => counts.filter((other) => other === count).length
 
   return counts.reduce<number>(
@@ -55,7 +61,7 @@ export function insertItemsAfter(workout: Workout, afterId: string, routineItems
   return mapItems(workout, located.ref.section, (items) => insertAfter(items, afterId, added))
 }
 
-function mapItems(workout: Workout, sectionIndex: number, change: (items: WorkoutItem[]) => WorkoutItem[]): Workout {
+export function mapItems(workout: Workout, sectionIndex: number, change: (items: WorkoutItem[]) => WorkoutItem[]): Workout {
   return {
     ...workout,
     sections: workout.sections.map((section, index) => (index === sectionIndex ? { ...section, items: change(section.items) } : section)),

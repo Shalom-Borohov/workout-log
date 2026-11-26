@@ -1,7 +1,7 @@
 import { exercisesOf, targetAmount } from './progress'
 import { createRoutine, newItem, withSets } from './routineEdit'
 import type { Routine, RoutineExercise, RoutineSection, Workout, WorkoutExercise, WorkoutSection } from './types'
-import { commonSets, setCount } from './workoutStructure'
+import { commonSets, plannedCount } from './workoutStructure'
 
 function startingWeight(base: Routine | undefined, name: string): number | null {
   const match = base && exercisesOf(base).find((exercise) => exercise.name === name)
@@ -23,6 +23,15 @@ function sameSectionsInOrder(sections: WorkoutSection[], baseSections: RoutineSe
   })
 }
 
+function withoutReplacedParts(workout: Workout): WorkoutSection[] {
+  const ids = new Set(workout.sections.flatMap((section) => section.items.map((item) => item.id)))
+
+  return workout.sections.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => !(item.replacedBy && ids.has(item.replacedBy.id))),
+  }))
+}
+
 export function routineFromWorkout(
   workout: Workout,
   base: Routine | undefined,
@@ -37,16 +46,19 @@ export function routineFromWorkout(
   })
 
   const baseSections = sameSectionsInOrder(workout.sections, base ? base.sections : [])
+  const allItems = workout.sections.flatMap((section) => section.items)
 
-  const sections = workout.sections.map((section, sectionIndex): RoutineSection => {
+  const sections = withoutReplacedParts(workout).map((section, sectionIndex): RoutineSection => {
     const baseSection = baseSections[sectionIndex]
-    const sets = commonSets(section, baseSection?.sets)
+    const sets = commonSets(workout.sections[sectionIndex], baseSection?.sets)
 
     return {
       id: baseSection?.id ?? ids(),
       name: section.name,
       sets,
-      items: section.items.map((item) => withSets(newItem(item.id, item.exercises.map(toExercise)), setCount(item), sets)),
+      items: section.items.map((item) =>
+        withSets(newItem(item.id, item.exercises.map(toExercise)), plannedCount(allItems, item), sets),
+      ),
     }
   })
 
@@ -69,5 +81,5 @@ function plan(sections: PlanSource): string {
 }
 
 export function matchesRoutine(workout: Workout, routine: Routine): boolean {
-  return plan(workout.sections) === plan(routine.sections)
+  return plan(withoutReplacedParts(workout)) === plan(routine.sections)
 }

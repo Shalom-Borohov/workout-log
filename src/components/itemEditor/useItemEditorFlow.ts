@@ -10,6 +10,8 @@ type PickerRequest<Section> =
 
 export type PickerMode = 'add' | 'replace'
 
+export type ExerciseReplace = (id: string, exerciseIndex: number, exercise: RoutineExercise) => void
+
 export interface ItemSheetsFlow {
   picking: boolean
   pickerMode: PickerMode
@@ -32,6 +34,7 @@ export interface ItemEditorFlow<Section> extends ItemSheetsFlow {
 export function useItemEditorFlow<Section>(
   insert: (target: AddTarget<Section>, items: RoutineItem[]) => void,
   change: (id: string, change: Change<RoutineItem>) => void,
+  replace: ExerciseReplace = (id, exerciseIndex, exercise) => change(id, (item) => replaceExercise(item, exerciseIndex, exercise)),
 ): ItemEditorFlow<Section> {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [request, setRequest] = useState<PickerRequest<Section> | null>(null)
@@ -72,9 +75,7 @@ export function useItemEditorFlow<Section>(
     if (!picking || request?.mode !== 'replace') {
       return
     }
-    const { exerciseIndex } = request
-
-    change(request.id, (item) => replaceExercise(item, exerciseIndex, exercise))
+    replace(request.id, request.exerciseIndex, exercise)
     setPicking(false)
   }
 

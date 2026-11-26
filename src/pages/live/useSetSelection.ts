@@ -6,7 +6,7 @@ import { setCount } from '../../domain/workoutStructure'
 
 export type Cell = { exercise: number; set: number }
 
-type Selected = { itemId: string; cell: Cell }
+type Selected = { itemId: string; exerciseName: string; cell: Cell }
 
 interface SetHandlers {
   onChange: (exercise: number, set: number, patch: Partial<SetLog>) => void
@@ -26,8 +26,10 @@ function firstUndone(item: WorkoutItem): Cell | undefined {
   return cells(item).find((cell) => !item.exercises[cell.exercise].sets[cell.set].done)
 }
 
-function stillThere(item: WorkoutItem, { exercise, set }: Cell): boolean {
-  return exercise < item.exercises.length && set < item.exercises[exercise].sets.length
+function stillThere(item: WorkoutItem, { exerciseName, cell: { exercise, set } }: Selected): boolean {
+  const selectedExercise = item.exercises.at(exercise)
+
+  return selectedExercise !== undefined && selectedExercise.name === exerciseName && set < selectedExercise.sets.length
 }
 
 export function useSetSelection(item: WorkoutItem, { onChange, onDuplicate, onRemove }: SetHandlers) {
@@ -44,8 +46,8 @@ export function useSetSelection(item: WorkoutItem, { onChange, onDuplicate, onRe
   }
 
   return {
-    current: selected !== null && stillThere(item, selected.cell) ? selected.cell : firstUndone(item),
-    select: (cell: Cell) => setSelected({ itemId: item.id, cell }),
+    current: selected !== null && stillThere(item, selected) ? selected.cell : firstUndone(item),
+    select: (cell: Cell) => setSelected({ itemId: item.id, exerciseName: item.exercises[cell.exercise].name, cell }),
     change: (exercise: number, set: number, patch: Partial<SetLog>) => {
       if (patch.done === true) {
         setSelected(null)
