@@ -41,6 +41,7 @@ export function TimelinePage() {
 
   function chooseAddition() {
     presentSheet({
+      htmlAttributes: { 'aria-label': COMMON_COPY.add },
       buttons: [
         { text: TIMELINE_COPY.pastWorkout, handler: () => setAdding('past') },
         { text: TIMELINE_COPY.otherActivity, handler: () => setAdding('activity') },

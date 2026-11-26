@@ -2,6 +2,15 @@ import type { Release } from '../domain/releases'
 
 export const CHANGELOG: Release[] = [
   {
+    version: '4.2.3',
+    features: [],
+    fixes: [
+      'הלשונית שבחרת מסומנת גם באייקון מלא ולא רק בצבע, ולשונית אימונים קיבלה אייקון של דף',
+      'כשהמנוחה נגמרת ⏱ מתמלא, ולא רק נצבע בירוק',
+      'VoiceOver מקריא את השם של כל חלון שנפתח',
+    ],
+  },
+  {
     version: '4.2.2',
     features: [],
     fixes: [

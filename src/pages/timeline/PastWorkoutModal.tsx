@@ -5,7 +5,6 @@ import {
   IonHeader,
   IonItem,
   IonList,
-  IonModal,
   IonSelect,
   IonSelectOption,
   IonTitle,
@@ -13,6 +12,7 @@ import {
   useIonRouter,
 } from '@ionic/react'
 import { useState } from 'react'
+import { NamedModal } from '../../components/NamedModal'
 import { COMMON_COPY } from '../../copy/common'
 import { TIMELINE_COPY } from './copy'
 import { useRoutines } from '../../data/hooks'
@@ -95,8 +95,8 @@ function PastWorkoutForm({ onClose }: { onClose: () => void }) {
 
 export function PastWorkoutModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose}>
+    <NamedModal label={TIMELINE_COPY.pastWorkout} isOpen={isOpen} onDidDismiss={onClose}>
       <PastWorkoutForm onClose={onClose} />
-    </IonModal>
+    </NamedModal>
   )
 }

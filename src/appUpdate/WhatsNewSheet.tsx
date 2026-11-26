@@ -7,10 +7,10 @@ import {
   IonLabel,
   IonList,
   IonListHeader,
-  IonModal,
   IonTitle,
   IonToolbar,
 } from '@ionic/react'
+import { NamedModal } from '../components/NamedModal'
 import { HALF_SHEET } from '../components/sheet'
 import { COMMON_COPY } from '../copy/common'
 import type { Release } from '../domain/releases'
@@ -44,7 +44,7 @@ function ChangeList({ title, changes }: { title: string; changes: string[] }) {
 
 export function WhatsNewSheet({ isOpen, releases, onClose }: WhatsNewSheetProps) {
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose} {...HALF_SHEET}>
+    <NamedModal label={APP_UPDATE_COPY.whatsNew} isOpen={isOpen} onDidDismiss={onClose} {...HALF_SHEET}>
       <IonHeader>
         <IonToolbar>
           <IonTitle>{APP_UPDATE_COPY.whatsNew}</IonTitle>
@@ -64,6 +64,6 @@ export function WhatsNewSheet({ isOpen, releases, onClose }: WhatsNewSheetProps)
           </IonList>
         ))}
       </IonContent>
-    </IonModal>
+    </NamedModal>
   )
 }

@@ -7,7 +7,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonModal,
   IonNote,
   IonSearchbar,
   IonTitle,
@@ -25,6 +24,7 @@ import type { RoutineExercise } from '../../domain/types'
 import { useNow } from '../../hooks/useNow'
 import { useSearch } from '../../hooks/useSearch'
 import { BodyAreaIcon } from '../bodyArea/BodyAreaIcon'
+import { NamedModal } from '../NamedModal'
 import { FULL_SHEET } from '../sheet'
 import { ITEM_EDITOR_COPY } from './copy'
 import type { PickerMode } from './useItemEditorFlow'
@@ -84,6 +84,7 @@ export function ExercisePicker({ isOpen, mode, onAdd, onCreate, onReplace, onClo
   const typedName = search.query.trim()
   const adding = mode === 'add'
   const tickedCount = ticks.ticked.length
+  const title = adding ? COMMON_COPY.addExercise : ITEM_EDITOR_COPY.replaceExercise
 
   function dismissed() {
     search.clear()
@@ -92,13 +93,13 @@ export function ExercisePicker({ isOpen, mode, onAdd, onCreate, onReplace, onClo
   }
 
   return (
-    <IonModal ref={modal} isOpen={isOpen} onDidDismiss={dismissed} {...FULL_SHEET}>
+    <NamedModal label={title} ref={modal} isOpen={isOpen} onDidDismiss={dismissed} {...FULL_SHEET}>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
             <IonButton onClick={() => void modal.current?.dismiss()}>{COMMON_COPY.cancel}</IonButton>
           </IonButtons>
-          <IonTitle>{adding ? COMMON_COPY.addExercise : ITEM_EDITOR_COPY.replaceExercise}</IonTitle>
+          <IonTitle>{title}</IonTitle>
           {adding && (
             <IonButtons slot="end">
               <IonButton strong disabled={tickedCount === 0} onClick={() => onAdd(ticks.ticked)}>
@@ -132,6 +133,6 @@ export function ExercisePicker({ isOpen, mode, onAdd, onCreate, onReplace, onClo
           />
         </IonList>
       </IonContent>
-    </IonModal>
+    </NamedModal>
   )
 }

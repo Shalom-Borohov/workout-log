@@ -1,5 +1,14 @@
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react'
-import { barbell, calendarOutline, listOutline, timeOutline } from 'ionicons/icons'
+import {
+  barbell,
+  barbellOutline,
+  calendar,
+  calendarOutline,
+  reader,
+  readerOutline,
+  time,
+  timeOutline,
+} from 'ionicons/icons'
 import { Navigate, Route, useLocation } from 'react-router-dom'
 import { UpdateBar } from './appUpdate/UpdateBar'
 import { useWhatsNew } from './appUpdate/useWhatsNew'
@@ -20,8 +29,16 @@ import { TimelinePage } from './pages/timeline/TimelinePage'
 import { WorkoutDetailPage } from './pages/timeline/WorkoutDetailPage'
 import { RestClock } from './rest/restClock'
 
+const TABS = [
+  { tab: 'timeline', path: TIMELINE_PATH, label: COMMON_COPY.timeline, filled: time, outline: timeOutline },
+  { tab: 'daily', path: DAILY_PATH, label: COMMON_COPY.daily, filled: calendar, outline: calendarOutline },
+  { tab: 'routines', path: ROUTINES_PATH, label: COMMON_COPY.routines, filled: reader, outline: readerOutline },
+  { tab: 'exercises', path: EXERCISES_PATH, label: COMMON_COPY.exercises, filled: barbell, outline: barbellOutline },
+] as const
+
 export function Tabs() {
-  const inWorkout = isWorkoutPath(useLocation().pathname)
+  const { pathname } = useLocation()
+  const inWorkout = isWorkoutPath(pathname)
   const whatsNew = useWhatsNew(inWorkout)
 
   return (
@@ -48,22 +65,12 @@ export function Tabs() {
       </IonRouterOutlet>
       <UpdateBar inWorkout={inWorkout} />
       <IonTabBar slot="bottom" className={inWorkout ? 'ion-hide' : undefined}>
-        <IonTabButton tab="timeline" href={TIMELINE_PATH}>
-          <IonIcon icon={timeOutline} aria-hidden="true" />
-          <IonLabel>{COMMON_COPY.timeline}</IonLabel>
-        </IonTabButton>
-        <IonTabButton tab="daily" href={DAILY_PATH}>
-          <IonIcon icon={calendarOutline} aria-hidden="true" />
-          <IonLabel>{COMMON_COPY.daily}</IonLabel>
-        </IonTabButton>
-        <IonTabButton tab="routines" href={ROUTINES_PATH}>
-          <IonIcon icon={listOutline} aria-hidden="true" />
-          <IonLabel>{COMMON_COPY.routines}</IonLabel>
-        </IonTabButton>
-        <IonTabButton tab="exercises" href={EXERCISES_PATH}>
-          <IonIcon icon={barbell} aria-hidden="true" />
-          <IonLabel>{COMMON_COPY.exercises}</IonLabel>
-        </IonTabButton>
+        {TABS.map(({ tab, path, label, filled, outline }) => (
+          <IonTabButton key={tab} tab={tab} href={path}>
+            <IonIcon icon={pathname.startsWith(path) ? filled : outline} aria-hidden="true" />
+            <IonLabel>{label}</IonLabel>
+          </IonTabButton>
+        ))}
       </IonTabBar>
       <WhatsNewSheet isOpen={whatsNew.isOpen} releases={whatsNew.releases} onClose={whatsNew.close} />
       <RestClock />
